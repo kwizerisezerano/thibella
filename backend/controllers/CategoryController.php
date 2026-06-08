@@ -60,7 +60,7 @@ class CategoryController
             [trim($d['title']), trim($d['description'] ?? ''), trim($d['slug']), $d['image'] ?? null]
         );
 
-        Response::success(['id' => $id], 'Category created', 201);
+        Response::success(['id' => $id], 'Category created');
     }
 
     // ── PUT /api/categories?id=1  (admin) ────────────────────────────────────

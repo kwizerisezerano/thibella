@@ -17,6 +17,13 @@ class UserController
             'ii', [$limit, $offset]
         );
 
+        $rows = array_map(function ($u) {
+            $u['name']  = decrypt($u['name']);
+            $u['email'] = decrypt($u['email']);
+            $u['phone'] = decrypt($u['phone']);
+            return $u;
+        }, $rows);
+
         Response::paginated($rows, $total, $page, $limit, 'users');
     }
 
@@ -37,6 +44,9 @@ class UserController
         );
 
         if (!$user) Response::error('User not found', 404);
+        $user['name']  = decrypt($user['name']);
+        $user['email'] = decrypt($user['email']);
+        $user['phone'] = decrypt($user['phone']);
         Response::success($user);
     }
 
@@ -51,7 +61,11 @@ class UserController
             Response::error('Forbidden', 403);
         }
 
-        [$fields, $types, $values] = buildUpdate(jsonBody(), [
+        $body = jsonBody();
+        if (isset($body['name']))  $body['name']  = encrypt($body['name']);
+        if (isset($body['phone'])) $body['phone'] = encrypt($body['phone']);
+
+        [$fields, $types, $values] = buildUpdate($body, [
             'name'  => 's',
             'phone' => 's',
         ]);

@@ -70,7 +70,7 @@ class SubcategoryController
             [$name, $categoryId, $slug, $image]
         );
 
-        Response::success(['id' => $id], 'Subcategory created', 201);
+        Response::success(['id' => $id], 'Subcategory created');
     }
 
     // ── PUT /api/subcategories?id=1  (admin) ─────────────────────────────────

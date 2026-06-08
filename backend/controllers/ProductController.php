@@ -110,7 +110,7 @@ class ProductController
             [$name, $desc, $price, $size, $color, $type, $isOnSale, $imageUrl, $images, $brand, $catId, $subCatId]
         );
 
-        Response::success(['id' => $id], 'Product created', 201);
+        Response::success(['id' => $id], 'Product created');
     }
 
     // ── PUT /api/products?id=1  (admin) ──────────────────────────────────────

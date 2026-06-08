@@ -130,7 +130,7 @@ class OrderController
             );
         }
 
-        Response::success(['orderId' => $orderId], 'Order placed successfully', 201);
+        Response::success(['orderId' => $orderId], 'Order placed successfully');
     }
 
     // ── PUT /api/orders?id=1  (admin) ────────────────────────────────────────

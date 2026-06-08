@@ -3,17 +3,19 @@ export async function apiFetch<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const baseUrl = useRuntimeConfig().public.baseUrl;
-    
-  // Remove leading slash from endpoint if it exists
+
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+
+  const token = import.meta.client ? localStorage.getItem('token') : null;
+
   try {
-    // Construct the URL properly
     const url = `${baseUrl}/${cleanEndpoint}`;
-    console.log('Fetching from 1:', url); // Debugging
+    console.log('Fetching from 1:', url);
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
       ...options,

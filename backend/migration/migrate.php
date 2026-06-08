@@ -340,9 +340,11 @@ run_migration($conn, '009_seed_admin_user', function (mysqli $conn) {
 });
 
 // ── To add a new migration in the future, append here: ───────────────────────
-// run_migration($conn, '010_your_migration_name', function (mysqli $conn) {
-//     $conn->query("ALTER TABLE `products` ADD COLUMN `brand` varchar(100) DEFAULT NULL");
-// });
+run_migration($conn, '010_add_email_hash_to_users', function (mysqli $conn) {
+    $conn->query("ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `email_hash` varchar(64) DEFAULT NULL");
+    $conn->query("ALTER TABLE `users` ADD UNIQUE KEY IF NOT EXISTS `email_hash` (`email_hash`)");
+});
+
 
 $conn->close();
 echo "\n✅ Migration runner finished.\n";

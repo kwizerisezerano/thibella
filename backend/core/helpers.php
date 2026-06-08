@@ -7,7 +7,7 @@
 function getPagination(int $defaultLimit = 16): array
 {
     $page   = max(1, (int) ($_GET['page']  ?? 1));
-    $limit  = max(1, min((int) ($_GET['limit'] ?? $defaultLimit), 100)); // cap at 100
+    $limit  = max(1, min((int) ($_GET['limit'] ?? $defaultLimit), 100));
     $offset = ($page - 1) * $limit;
 
     return [$page, $limit, $offset];
@@ -43,7 +43,6 @@ function jsonBody(): array
 
 /**
  * Build a dynamic SET clause for UPDATE queries
- * Returns [fields_sql, types, values] or calls Response::error if nothing to update
  */
 function buildUpdate(array $data, array $fieldMap): array
 {
@@ -60,4 +59,41 @@ function buildUpdate(array $data, array $fieldMap): array
     }
 
     return [$fields, $types, $values];
+}
+
+/**
+ * Encrypt a plain string using AES-256-CBC
+ */
+function encrypt(string $value): string
+{
+    require_once __DIR__ . '/Env.php';
+    loadEnv(__DIR__ . '/../.env');
+    $key = hex2bin(env('ENCRYPTION_KEY'));
+    $iv  = random_bytes(16);
+    $enc = openssl_encrypt($value, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+    return base64_encode($iv . $enc);
+}
+
+/**
+ * Decrypt an encrypted string
+ */
+function decrypt(string $value): string
+{
+    require_once __DIR__ . '/Env.php';
+    loadEnv(__DIR__ . '/../.env');
+    $key  = hex2bin(env('ENCRYPTION_KEY'));
+    $raw  = base64_decode($value);
+    $iv   = substr($raw, 0, 16);
+    $enc  = substr($raw, 16);
+    return openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv) ?: $value;
+}
+
+/**
+ * Deterministic HMAC hash for DB lookup (email)
+ */
+function emailHash(string $email): string
+{
+    require_once __DIR__ . '/Env.php';
+    loadEnv(__DIR__ . '/../.env');
+    return hash_hmac('sha256', strtolower(trim($email)), env('ENCRYPTION_KEY'));
 }

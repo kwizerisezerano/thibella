@@ -26,23 +26,25 @@ class AuthController
             Response::error('name, email, phone and password are required', 400);
         }
 
-        $name     = trim($d['name']);
-        $email    = strtolower(trim($d['email']));
-        $phone    = trim($d['phone']);
-        $password = password_hash($d['password'], PASSWORD_DEFAULT);
-        $role     = 'user';
+        $name      = encrypt(trim($d['name']));
+        $emailPlain = strtolower(trim($d['email']));
+        $email     = encrypt($emailPlain);
+        $phone     = encrypt(trim($d['phone']));
+        $emailHash = emailHash($emailPlain);
+        $password  = password_hash($d['password'], PASSWORD_DEFAULT);
+        $role      = 'user';
 
-        if (DB::fetchOne('SELECT id FROM users WHERE email = ?', 's', [$email])) {
+        if (DB::fetchOne('SELECT id FROM users WHERE email_hash = ?', 's', [$emailHash])) {
             Response::error('Email already registered', 409);
         }
 
         DB::insert(
-            'INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)',
-            'sssss',
-            [$name, $email, $phone, $password, $role]
+            'INSERT INTO users (name, email, phone, password, role, email_hash) VALUES (?, ?, ?, ?, ?, ?)',
+            'ssssss',
+            [$name, $email, $phone, $password, $role, $emailHash]
         );
 
-        Response::success(null, 'Registered successfully', 201);
+        Response::success(null, 'Registered successfully');
     }
 
     // POST /api/auth/login
@@ -55,10 +57,11 @@ class AuthController
             Response::error('email and password are required', 400);
         }
 
-        $email = strtolower(trim($d['email']));
-        $user  = DB::fetchOne(
-            'SELECT id, name, email, phone, password, role FROM users WHERE email = ?',
-            's', [$email]
+        $email     = strtolower(trim($d['email']));
+        $emailHash = emailHash($email);
+        $user      = DB::fetchOne(
+            'SELECT id, name, email, phone, password, role FROM users WHERE email_hash = ?',
+            's', [$emailHash]
         );
 
         if (!$user || !password_verify($d['password'], $user['password'])) {
@@ -76,6 +79,9 @@ class AuthController
         ], $this->jwt['secret_key'], 'HS256');
 
         unset($user['password']);
+        $user['name']  = decrypt($user['name']);
+        $user['email'] = decrypt($user['email']);
+        $user['phone'] = decrypt($user['phone']);
         $user['token'] = $token;
 
         Response::success($user, 'Login successful');

@@ -188,7 +188,7 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    const res = await $fetch('https://api.thibella.com/public/auth/login.php', {
+    const res = await $fetch(`${useRuntimeConfig().public.baseUrl}/auth/login`, {
       method: 'POST',
       body: {
         email: formData.value.email,
@@ -203,10 +203,10 @@ const handleLogin = async () => {
 
     // ✅ Store everything in one place — including userId and token
     userStore.setUser({
-      userId: res.userId,   // ✅ links user to their orders
-      name: res.name,
-      role: res.role,
-      token: res.token,     // ✅ let the store handle token, not manual localStorage
+      userId: String(res.data.id),
+      name: res.data.name,
+      role: res.data.role,
+      token: res.data.token,
     })
 
     // ✅ Remember email if checkbox is checked (moved before navigation)
