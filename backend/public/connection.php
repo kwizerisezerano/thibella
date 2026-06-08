@@ -1,15 +1,4 @@
 <?php
-
-// Database connection
-$host = 'localhost';
-$user = "root";
-$password = "";
-$database = "thibella_db";
-
-try {
-    $conn = new mysqli($host, $user, $password, $database);
-} catch (Exception $e) {
-    echo json_encode(["error" => "Connection failed: ",
-    "message" => $e->getMessage()]);
-    die();
-}
+// Deprecated — all DB access goes through core/DB.php
+require_once __DIR__ . '/../core/Response.php';
+Response::error('Direct connection file is deprecated', 410);

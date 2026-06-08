@@ -1,2 +1,28 @@
-# Composer dependencies
+# Dependencies
 /vendor/
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+/logs/
+
+# PHP uploads / temp
+/uploads/
+/tmp/
+
+# Composer lock is optional to commit — keep it for reproducible installs
+# composer.lock

@@ -1,9 +1,8 @@
 <?php
 
-require_once "auth.php";
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../core/Response.php';
 
 if ($authUser['role'] !== 'admin') {
-    http_response_code(403);
-    echo json_encode(["error" => "Admin access required"]);
-    exit;
+    Response::error('Admin access required', 403);
 }

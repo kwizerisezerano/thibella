@@ -1,8 +1,11 @@
 <?php
 
+require_once __DIR__ . '/../core/Env.php';
+loadEnv(__DIR__ . '/../.env');
+
 return [
-    "secret_key" => "5f2f8c8f06e9bc3603bbbdada924f29370949e5f4054e178936e83e4bb71a6c3af017833a319888a4bcb2dac8c229e29b882d0b1ad5ad0cf307a036bc9be7910",
-    "issuer" => "thibella-api",
-    "audience" => "thibella-client",
-    "expiry" => (60 * 60)
+    'secret_key' => env('JWT_SECRET'),
+    'issuer'     => env('JWT_ISSUER', 'thibella-api'),
+    'audience'   => env('JWT_AUDIENCE', 'thibella-client'),
+    'expiry'     => (int) env('JWT_EXPIRY', 3600),
 ];
