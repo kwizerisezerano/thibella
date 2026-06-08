@@ -1,0 +1,3 @@
+[submodule "umuco-nuxt"]
+	path = umuco-nuxt
+	url = https://github.com/Mahoro-dev/umuco-nuxt.git

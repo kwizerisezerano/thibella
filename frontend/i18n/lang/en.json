@@ -1,0 +1,30 @@
+{
+  "navigation": {
+    "home": "HOME",
+    "services": "SERVICES",
+    "contact": "CONTACT",
+    "about": "ABOUT",
+    "stores": "STORES"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "createAccount": "Create account"
+  },
+  "menu": {
+    "close": "Close menu",
+    "openMenu": "Open menu",
+    "search": "Search",
+    "cart": {
+      "title": "Cart",
+      "items": "items in cart, view bag"
+    }
+  },
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "kinyarwanda": "Kinyarwanda"
+  },
+  "company": {
+    "name": "Your Company"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "navigation": {
+    "home": "AHABANZA",
+    "services": "SERIVISI",
+    "contact": "TWANDIKIRE",
+    "about": "TURI BA Nده",
+    "stores": "AHO DUCURUZA"
+  },
+  "auth": {
+    "signIn": "Injira",
+    "createAccount": "Iyandikishe"
+  },
+  "menu": {
+    "close": "Funga menu",
+    "openMenu": "Fungura menu",
+    "search": "Shakisha",
+    "cart": {
+      "title": "Igiciro",
+      "items": "ibintu biri mu gitebo, reba igitebo"
+    }
+  },
+  "language": {
+    "select": "Hitamo Ururimi",
+    "english": "Icyongereza",
+    "kinyarwanda": "Ikinyarwanda"
+  },
+  "company": {
+    "name": "Kompanyi Yawe"
+  }
+}
