@@ -345,6 +345,28 @@ run_migration($conn, '010_add_email_hash_to_users', function (mysqli $conn) {
     $conn->query("ALTER TABLE `users` ADD UNIQUE KEY IF NOT EXISTS `email_hash` (`email_hash`)");
 });
 
+run_migration($conn, '011_encrypt_admin_user', function (mysqli $conn) {
+    require_once __DIR__ . '/../core/helpers.php';
+    require_once __DIR__ . '/../core/Env.php';
+    loadEnv(__DIR__ . '/../.env');
+
+    $namePlain  = env('ADMIN_NAME', 'Thibella');
+    $emailPlain = strtolower(trim(env('ADMIN_EMAIL', 'admin@thibella.com')));
+    $phonePlain = env('ADMIN_PHONE', '+250700000000');
+
+    $encName   = encrypt($namePlain);
+    $encEmail  = encrypt($emailPlain);
+    $encPhone  = encrypt($phonePlain);
+    $emailHash = emailHash($emailPlain);
+
+    $stmt = $conn->prepare(
+        "UPDATE `users` SET name = ?, email = ?, phone = ?, email_hash = ? WHERE role = 'admin' AND email_hash IS NULL"
+    );
+    $stmt->bind_param('ssss', $encName, $encEmail, $encPhone, $emailHash);
+    $stmt->execute();
+    $stmt->close();
+});
+
 
 $conn->close();
 echo "\n✅ Migration runner finished.\n";

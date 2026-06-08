@@ -20,7 +20,7 @@ Protected routes need: `Authorization: Bearer <token>`
 
 ### Run the migration
 ```bash
-php backend/migration/migrate.php
+php backend/migration/migrate.php // C:\xampp\php\php.exe backend\migration\migrate.php
 ```
 
 This will:
