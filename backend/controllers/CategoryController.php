@@ -70,7 +70,9 @@ class CategoryController
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
 
-        [$fields, $types, $values] = buildUpdate(jsonBody(), [
+        $d = jsonBody();
+
+        [$fields, $types, $values] = buildUpdate($d, [
             'title'       => 's',
             'description' => 's',
             'slug'        => 's',
@@ -78,6 +80,11 @@ class CategoryController
         ]);
 
         if (empty($fields)) Response::error('No fields to update', 400);
+
+        if (isset($d['slug'])) {
+            $existing = DB::fetchOne('SELECT id FROM categories WHERE slug = ? AND id != ?', 'si', [$d['slug'], $id]);
+            if ($existing) Response::error('Slug already in use', 409);
+        }
 
         DB::execute(
             'UPDATE categories SET ' . implode(', ', $fields) . ' WHERE id = ?',

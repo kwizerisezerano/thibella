@@ -80,7 +80,9 @@ class SubcategoryController
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
 
-        [$fields, $types, $values] = buildUpdate(jsonBody(), [
+        $d = jsonBody();
+
+        [$fields, $types, $values] = buildUpdate($d, [
             'name'        => 's',
             'slug'        => 's',
             'category_id' => 'i',
@@ -88,6 +90,11 @@ class SubcategoryController
         ]);
 
         if (empty($fields)) Response::error('No fields to update', 400);
+
+        if (isset($d['slug'])) {
+            $existing = DB::fetchOne('SELECT id FROM subcategories WHERE slug = ? AND id != ?', 'si', [$d['slug'], $id]);
+            if ($existing) Response::error('Slug already in use', 409);
+        }
 
         DB::execute(
             'UPDATE subcategories SET ' . implode(', ', $fields) . ' WHERE id = ?',
