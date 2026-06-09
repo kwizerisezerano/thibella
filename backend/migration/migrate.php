@@ -111,7 +111,7 @@ run_migration($conn, '003_create_users', function (mysqli $conn) {
             `id`         int(11)               NOT NULL AUTO_INCREMENT,
             `name`       varchar(100)          DEFAULT NULL,
             `email`      varchar(150)          DEFAULT NULL,
-            `phone`      varchar(20)           DEFAULT NULL,
+            `phone`      varchar(500)          DEFAULT NULL,
             `password`   varchar(255)          DEFAULT NULL,
             `role`       enum('admin','user')  DEFAULT 'user',
             `created_at` timestamp             NOT NULL DEFAULT current_timestamp(),
@@ -343,6 +343,12 @@ run_migration($conn, '009_seed_admin_user', function (mysqli $conn) {
 run_migration($conn, '010_add_email_hash_to_users', function (mysqli $conn) {
     $conn->query("ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `email_hash` varchar(64) DEFAULT NULL");
     $conn->query("ALTER TABLE `users` ADD UNIQUE KEY IF NOT EXISTS `email_hash` (`email_hash`)");
+});
+
+run_migration($conn, '011_widen_phone_and_encrypted_fields', function (mysqli $conn) {
+    $conn->query("ALTER TABLE `users` MODIFY COLUMN `phone` varchar(500) DEFAULT NULL");
+    $conn->query("ALTER TABLE `users` MODIFY COLUMN `name` varchar(500) DEFAULT NULL");
+    $conn->query("ALTER TABLE `users` MODIFY COLUMN `email` varchar(500) DEFAULT NULL");
 });
 
 run_migration($conn, '011_encrypt_admin_user', function (mysqli $conn) {
