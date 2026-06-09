@@ -86,20 +86,24 @@ class ProductController
     //   possibleImagesUrls(JSON)
     public function store(): void
     {
-        $name       = trim($_POST['productName']      ?? '');
-        $catId      = (int) ($_POST['category_id']    ?? 0);
-        $desc       = trim($_POST['description']      ?? '');
-        $price      = (int) ($_POST['priceCents']     ?? 0);
-        $subCatId   = (int) ($_POST['subCategory_id'] ?? 0);
-        $type       = trim($_POST['type']             ?? '');
-        $isOnSale   = (int) ($_POST['isOnSale']       ?? 0);
-        $imageUrl   = trim($_POST['imageUrl']         ?? '');
-        $brand      = trim($_POST['brand']            ?? '');
-        $size       = $this->safeJson($_POST['size']               ?? '[]');
-        $color      = $this->safeJson($_POST['color']              ?? '[]');
-        $images     = $this->safeJson($_POST['possibleImagesUrls'] ?? '[]');
+        $d        = jsonBody();
+        $name     = trim($d['productName'] ?? '');
+        $catId    = !empty($d['category_id']) ? (int) $d['category_id'] : null;
+        $desc     = trim($d['description']      ?? '');
+        $price    = (int) ($d['priceCents']     ?? 0);
+        $subCatId = !empty($d['subCategory_id']) ? (int) $d['subCategory_id'] : null;
+        $type     = trim($d['type']             ?? '');
+        $isOnSale = (int) ($d['isOnSale']       ?? 0);
+        $imageUrl = trim($d['imageUrl']         ?? '');
+        $brand    = trim($d['brand']            ?? '');
+        $size     = $this->safeJson(is_array($d['size']               ?? null) ? json_encode($d['size'])               : ($d['size']               ?? '[]'));
+        $color    = $this->safeJson(is_array($d['color']              ?? null) ? json_encode($d['color'])              : ($d['color']              ?? '[]'));
+        $images   = $this->safeJson(is_array($d['possibleImagesUrls'] ?? null) ? json_encode($d['possibleImagesUrls']) : ($d['possibleImagesUrls'] ?? '[]'));
 
         if (!$name || !$catId) Response::error('productName and category_id are required', 400);
+
+        if (DB::fetchOne('SELECT id FROM products WHERE productName = ? AND category_id = ?', 'si', [$name, $catId]))
+            Response::error('Product with this name already exists in the same category', 409);
 
         $id = DB::insert(
             'INSERT INTO products
@@ -120,7 +124,25 @@ class ProductController
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
 
-        [$fields, $types, $values] = buildUpdate(jsonBody(), [
+        $d       = jsonBody();
+        $current = DB::fetchOne('SELECT * FROM products WHERE id = ?', 'i', [$id]);
+        if (!$current) Response::error('Product not found', 404);
+
+        foreach (['productName','description','type','imageUrl','brand'] as $f) {
+            if (array_key_exists($f, $d) && (string)$d[$f] === (string)($current[$f] ?? '')) unset($d[$f]);
+        }
+        foreach (['priceCents','isOnSale','category_id','subCategory_id'] as $f) {
+            if (array_key_exists($f, $d) && (int)$d[$f] === (int)($current[$f] ?? 0)) unset($d[$f]);
+        }
+        foreach (['size', 'color', 'possibleImagesUrls'] as $f) {
+            if (array_key_exists($f, $d)) {
+                $incoming = is_array($d[$f]) ? json_encode($d[$f]) : (string)$d[$f];
+                if ($incoming === (string)($current[$f] ?? '')) unset($d[$f]);
+                else $d[$f] = $incoming;
+            }
+        }
+
+        [$fields, $types, $values] = buildUpdate($d, [
             'productName'        => 's',
             'description'        => 's',
             'priceCents'         => 'i',
@@ -135,7 +157,7 @@ class ProductController
             'subCategory_id'     => 'i',
         ]);
 
-        if (empty($fields)) Response::error('No fields to update', 400);
+        if (empty($fields)) Response::success(null, 'Nothing to update, values are the same');
 
         DB::execute(
             'UPDATE products SET ' . implode(', ', $fields) . ' WHERE id = ?',
@@ -151,6 +173,9 @@ class ProductController
     {
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
+
+        if (!DB::fetchOne('SELECT id FROM products WHERE id = ?', 'i', [$id]))
+            Response::error('Product not found', 404);
 
         DB::execute('DELETE FROM products WHERE id = ?', 'i', [$id]);
         Response::success(null, 'Product deleted');

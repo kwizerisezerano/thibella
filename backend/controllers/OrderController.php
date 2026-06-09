@@ -142,9 +142,14 @@ class OrderController
 
         $status = trim(jsonBody()['status'] ?? '');
 
-        if (!in_array($status, self::VALID_STATUSES)) {
+        if (!in_array($status, self::VALID_STATUSES))
             Response::error('Invalid status. Allowed: ' . implode(', ', self::VALID_STATUSES), 400);
-        }
+
+        $current = DB::fetchOne('SELECT status FROM orders WHERE id = ?', 'i', [$id]);
+        if (!$current) Response::error('Order not found', 404);
+
+        if ($current['status'] === $status)
+            Response::success(null, 'Nothing to update, status is already ' . $status);
 
         DB::execute('UPDATE orders SET status = ? WHERE id = ?', 'si', [$status, $id]);
         Response::success(null, 'Order status updated');

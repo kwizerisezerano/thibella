@@ -49,9 +49,12 @@ class CategoryController
             Response::error('title and slug are required', 400);
         }
 
-        // Duplicate slug check
         if (DB::fetchOne('SELECT id FROM categories WHERE slug = ?', 's', [$d['slug']])) {
             Response::error('Slug already in use', 409);
+        }
+
+        if (DB::fetchOne('SELECT id FROM categories WHERE title = ?', 's', [$d['title']])) {
+            Response::error('Category title already exists', 409);
         }
 
         $id = DB::insert(
@@ -72,6 +75,14 @@ class CategoryController
 
         $d = jsonBody();
 
+        $current = DB::fetchOne('SELECT * FROM categories WHERE id = ?', 'i', [$id]);
+        if (!$current) Response::error('Category not found', 404);
+
+        // Remove fields that haven't changed
+        foreach (['title', 'description', 'slug', 'image'] as $f) {
+            if (isset($d[$f]) && (string)$d[$f] === (string)$current[$f]) unset($d[$f]);
+        }
+
         [$fields, $types, $values] = buildUpdate($d, [
             'title'       => 's',
             'description' => 's',
@@ -79,11 +90,11 @@ class CategoryController
             'image'       => 's',
         ]);
 
-        if (empty($fields)) Response::error('No fields to update', 400);
+        if (empty($fields)) Response::success(null, 'Nothing to update, values are the same');
 
         if (isset($d['slug'])) {
-            $existing = DB::fetchOne('SELECT id FROM categories WHERE slug = ? AND id != ?', 'si', [$d['slug'], $id]);
-            if ($existing) Response::error('Slug already in use', 409);
+            if (DB::fetchOne('SELECT id FROM categories WHERE slug = ? AND id != ?', 'si', [$d['slug'], $id]))
+                Response::error('Slug already in use', 409);
         }
 
         DB::execute(
@@ -100,6 +111,9 @@ class CategoryController
     {
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
+
+        if (!DB::fetchOne('SELECT id FROM categories WHERE id = ?', 'i', [$id]))
+            Response::error('Category not found', 404);
 
         DB::execute('DELETE FROM categories WHERE id = ?', 'i', [$id]);
         Response::success(null, 'Category deleted');
