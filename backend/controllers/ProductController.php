@@ -64,7 +64,7 @@ class ProductController
         $orderSQL = 'ORDER BY ' . ($sortMap[qStr('sort', 'newest')] ?? 'id DESC');
 
         // ── Pagination ───────────────────────────────────────────────────────
-        [$page, $limit, $offset] = getPagination(16);
+        [$page, $limit, $offset] = getPagination(10);
 
         $total = DB::count('products', ltrim($whereSQL, 'WHERE '), $types, $values);
 

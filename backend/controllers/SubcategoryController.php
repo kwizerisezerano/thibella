@@ -30,19 +30,23 @@ class SubcategoryController
         }
 
         if ($catId = qInt('category_id')) {
-            $rows = DB::fetchAll(
-                'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC',
-                'i', [$catId]
+            [$page, $limit, $offset] = getPagination(10);
+            $total = DB::count('subcategories', 'category_id = ?', 'i', [$catId]);
+            $rows  = DB::fetchAll(
+                'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC LIMIT ? OFFSET ?',
+                'iii', [$catId, $limit, $offset]
             );
             if ($withCat) {
                 $cat = $this->getCategory($catId);
                 foreach ($rows as &$row) $row['category'] = $cat;
             }
-            Response::success($rows);
+            Response::paginated($rows, $total, $page, $limit, 'subcategories');
         }
 
-        $rows = DB::fetchAll('SELECT * FROM subcategories ORDER BY name ASC');
-        Response::success($rows);
+        [$page, $limit, $offset] = getPagination(10);
+        $total = DB::count('subcategories');
+        $rows  = DB::fetchAll('SELECT * FROM subcategories ORDER BY name ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
+        Response::paginated($rows, $total, $page, $limit, 'subcategories');
     }
 
     // ── POST /api/subcategories  (admin) ─────────────────────────────────────

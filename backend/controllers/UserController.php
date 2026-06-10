@@ -9,7 +9,7 @@ class UserController
     // ── GET /api/users  (admin) ──────────────────────────────────────────────
     public function index(): void
     {
-        [$page, $limit, $offset] = getPagination(20);
+        [$page, $limit, $offset] = getPagination(10);
 
         $total = DB::count('users');
         $rows  = DB::fetchAll(

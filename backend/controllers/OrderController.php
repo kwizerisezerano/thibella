@@ -69,12 +69,14 @@ class OrderController
             Response::error('Forbidden', 403);
         }
 
+        [$page, $limit, $offset] = getPagination(10);
+        $total  = DB::fetchOne('SELECT COUNT(*) as c FROM orders WHERE user_id = ?', 'i', [$userId])['c'];
         $rows   = DB::fetchAll(
-            'SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC',
-            'i', [$userId]
+            'SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC LIMIT ? OFFSET ?',
+            'iii', [$userId, $limit, $offset]
         );
 
-        Response::success(array_map(fn($o) => $this->withItems($this->mask($o)), $rows));
+        Response::paginated(array_map(fn($o) => $this->withItems($this->mask($o)), $rows), $total, $page, $limit, 'orders');
     }
 
     // ── POST /api/orders  (auth) ─────────────────────────────────────────────

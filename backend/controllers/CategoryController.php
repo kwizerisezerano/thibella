@@ -30,13 +30,17 @@ class CategoryController
 
         $rows = DB::fetchAll('SELECT * FROM categories ORDER BY title ASC');
 
+        [$page, $limit, $offset] = getPagination(10);
+        $total = DB::count('categories');
+        $rows  = DB::fetchAll('SELECT * FROM categories ORDER BY title ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
+
         if ($withSubs) {
             foreach ($rows as &$row) {
                 $row['subcategories'] = $this->getSubcategories($row['id']);
             }
         }
 
-        Response::success($rows);
+        Response::paginated($rows, $total, $page, $limit, 'categories');
     }
 
     // ── POST /api/categories  (admin) ────────────────────────────────────────
