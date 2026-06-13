@@ -109,9 +109,9 @@ run_migration($conn, '003_create_users', function (mysqli $conn) {
     $conn->query("
         CREATE TABLE IF NOT EXISTS `users` (
             `id`         int(11)               NOT NULL AUTO_INCREMENT,
-            `name`       varchar(100)          DEFAULT NULL,
-            `email`      varchar(150)          DEFAULT NULL,
-            `phone`      varchar(500)          DEFAULT NULL,
+            `name`       varchar(500)          DEFAULT NULL,
+            `email`      varchar(500)          DEFAULT NULL,
+            `phone`      varchar(500)           DEFAULT NULL,
             `password`   varchar(255)          DEFAULT NULL,
             `role`       enum('admin','user')  DEFAULT 'user',
             `created_at` timestamp             NOT NULL DEFAULT current_timestamp(),
@@ -372,6 +372,7 @@ run_migration($conn, '011_encrypt_admin_user', function (mysqli $conn) {
     $stmt->execute();
     $stmt->close();
 });
+
 
 
 $conn->close();

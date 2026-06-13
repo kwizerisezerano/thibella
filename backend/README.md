@@ -18,16 +18,39 @@ Protected routes need: `Authorization: Bearer <token>`
 
 ## Getting Started
 
-### Run the migration
+### 1. Install dependencies
 ```bash
-php backend/migration/migrate.php // C:\xampp\php\php.exe backend\migration\migrate.php
+cd C:\xampp\htdocs\thibella
+C:\xampp\php\php.exe backend\composer.phar install
+```
+> This installs `firebase/php-jwt` into `backend/vendor/`. Only needed once.
+
+### 2. Configure environment
+Copy or edit `backend/.env` — set your DB credentials and keys:
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=thibella_db
+ENCRYPTION_KEY=<32-byte hex key>
+JWT_SECRET=<secret>
+ADMIN_NAME=Thibella
+ADMIN_EMAIL=admin@thibella.com
+ADMIN_PHONE=+250700000000
+ADMIN_PASSWORD=Thibella@2025
+```
+
+### 3. Run the migration
+```bash
+cd C:\xampp\htdocs\thibella
+C:\xampp\php\php.exe backend\migration\migrate.php
 ```
 
 This will:
-1. Drop and recreate the `thibella_db` database
+1. Create the `thibella_db` database if it doesn't exist
 2. Create all tables (`categories`, `subcategories`, `users`, `products`, `orders`, `order_items`)
 3. Seed all categories and subcategories
-4. Create the default admin user (see below)
+4. Create the default admin user with encrypted fields (see below)
 
 ### Default Admin User
 
@@ -228,5 +251,5 @@ backend/
 │   ├── orders.php
 │   └── users.php
 └── migration/
-    └── migrate.php             ← drops DB, recreates tables, seeds categories + admin user
+    └── migrate.php             ← additive migration runner — creates tables, seeds data, encrypts admin user
 ```
