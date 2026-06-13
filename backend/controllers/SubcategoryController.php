@@ -30,19 +30,23 @@ class SubcategoryController
         }
 
         if ($catId = qInt('category_id')) {
-            $rows = DB::fetchAll(
-                'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC',
-                'i', [$catId]
+            [$page, $limit, $offset] = getPagination(10);
+            $total = DB::count('subcategories', 'category_id = ?', 'i', [$catId]);
+            $rows  = DB::fetchAll(
+                'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC LIMIT ? OFFSET ?',
+                'iii', [$catId, $limit, $offset]
             );
             if ($withCat) {
                 $cat = $this->getCategory($catId);
                 foreach ($rows as &$row) $row['category'] = $cat;
             }
-            Response::success($rows);
+            Response::paginated($rows, $total, $page, $limit, 'subcategories');
         }
 
-        $rows = DB::fetchAll('SELECT * FROM subcategories ORDER BY name ASC');
-        Response::success($rows);
+        [$page, $limit, $offset] = getPagination(10);
+        $total = DB::count('subcategories');
+        $rows  = DB::fetchAll('SELECT * FROM subcategories ORDER BY name ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
+        Response::paginated($rows, $total, $page, $limit, 'subcategories');
     }
 
     // ── POST /api/subcategories  (admin) ─────────────────────────────────────
@@ -60,9 +64,11 @@ class SubcategoryController
         $categoryId = (int) $d['category_id'];
         $image      = $d['image'] ?? null;
 
-        if (DB::fetchOne('SELECT id FROM subcategories WHERE slug = ?', 's', [$slug])) {
+        if (DB::fetchOne('SELECT id FROM subcategories WHERE slug = ?', 's', [$slug]))
             Response::error('Slug already in use', 409);
-        }
+
+        if (DB::fetchOne('SELECT id FROM subcategories WHERE name = ? AND category_id = ?', 'si', [$name, $categoryId]))
+            Response::error('Subcategory name already exists in this category', 409);
 
         $id = DB::insert(
             'INSERT INTO subcategories (name, category_id, slug, image) VALUES (?, ?, ?, ?)',
@@ -80,14 +86,30 @@ class SubcategoryController
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
 
-        [$fields, $types, $values] = buildUpdate(jsonBody(), [
+        $d = jsonBody();
+
+        $current = DB::fetchOne('SELECT * FROM subcategories WHERE id = ?', 'i', [$id]);
+        if (!$current) Response::error('Subcategory not found', 404);
+
+        // Remove fields that haven't changed
+        foreach (['name', 'slug', 'image'] as $f) {
+            if (isset($d[$f]) && (string)$d[$f] === (string)$current[$f]) unset($d[$f]);
+        }
+        if (isset($d['category_id']) && (int)$d['category_id'] === (int)$current['category_id']) unset($d['category_id']);
+
+        [$fields, $types, $values] = buildUpdate($d, [
             'name'        => 's',
             'slug'        => 's',
             'category_id' => 'i',
             'image'       => 's',
         ]);
 
-        if (empty($fields)) Response::error('No fields to update', 400);
+        if (empty($fields)) Response::success(null, 'Nothing to update, values are the same');
+
+        if (isset($d['slug'])) {
+            if (DB::fetchOne('SELECT id FROM subcategories WHERE slug = ? AND id != ?', 'si', [$d['slug'], $id]))
+                Response::error('Slug already in use', 409);
+        }
 
         DB::execute(
             'UPDATE subcategories SET ' . implode(', ', $fields) . ' WHERE id = ?',
@@ -103,6 +125,9 @@ class SubcategoryController
     {
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
+
+        if (!DB::fetchOne('SELECT id FROM subcategories WHERE id = ?', 'i', [$id]))
+            Response::error('Subcategory not found', 404);
 
         DB::execute('DELETE FROM subcategories WHERE id = ?', 'i', [$id]);
         Response::success(null, 'Subcategory deleted');

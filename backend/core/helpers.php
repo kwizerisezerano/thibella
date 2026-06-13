@@ -81,11 +81,14 @@ function decrypt(string $value): string
 {
     require_once __DIR__ . '/Env.php';
     loadEnv(__DIR__ . '/../.env');
-    $key  = hex2bin(env('ENCRYPTION_KEY'));
-    $raw  = base64_decode($value);
-    $iv   = substr($raw, 0, 16);
-    $enc  = substr($raw, 16);
-    return openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv) ?: $value;
+    $raw = base64_decode($value, true);
+    if ($raw === false || strlen($raw) <= 16) return $value; // not encrypted
+    $key = hex2bin(env('ENCRYPTION_KEY'));
+    $iv  = substr($raw, 0, 16);
+    $enc = substr($raw, 16);
+    if (strlen($iv) !== 16) return $value;
+    $result = openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+    return $result !== false ? $result : $value;
 }
 
 /**

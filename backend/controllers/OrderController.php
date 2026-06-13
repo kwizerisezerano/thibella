@@ -69,12 +69,14 @@ class OrderController
             Response::error('Forbidden', 403);
         }
 
+        [$page, $limit, $offset] = getPagination(10);
+        $total  = DB::fetchOne('SELECT COUNT(*) as c FROM orders WHERE user_id = ?', 'i', [$userId])['c'];
         $rows   = DB::fetchAll(
-            'SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC',
-            'i', [$userId]
+            'SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC LIMIT ? OFFSET ?',
+            'iii', [$userId, $limit, $offset]
         );
 
-        Response::success(array_map(fn($o) => $this->withItems($this->mask($o)), $rows));
+        Response::paginated(array_map(fn($o) => $this->withItems($this->mask($o)), $rows), $total, $page, $limit, 'orders');
     }
 
     // ── POST /api/orders  (auth) ─────────────────────────────────────────────
@@ -142,9 +144,14 @@ class OrderController
 
         $status = trim(jsonBody()['status'] ?? '');
 
-        if (!in_array($status, self::VALID_STATUSES)) {
+        if (!in_array($status, self::VALID_STATUSES))
             Response::error('Invalid status. Allowed: ' . implode(', ', self::VALID_STATUSES), 400);
-        }
+
+        $current = DB::fetchOne('SELECT status FROM orders WHERE id = ?', 'i', [$id]);
+        if (!$current) Response::error('Order not found', 404);
+
+        if ($current['status'] === $status)
+            Response::success(null, 'Nothing to update, status is already ' . $status);
 
         DB::execute('UPDATE orders SET status = ? WHERE id = ?', 'si', [$status, $id]);
         Response::success(null, 'Order status updated');

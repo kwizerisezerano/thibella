@@ -9,7 +9,7 @@ class UserController
     // ── GET /api/users  (admin) ──────────────────────────────────────────────
     public function index(): void
     {
-        [$page, $limit, $offset] = getPagination(20);
+        [$page, $limit, $offset] = getPagination(10);
 
         $total = DB::count('users');
         $rows  = DB::fetchAll(
@@ -57,11 +57,20 @@ class UserController
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
 
-        if ($authUser['role'] !== 'admin' && $authUser['id'] !== $id) {
+        if ($authUser['role'] !== 'admin' && $authUser['id'] !== $id)
             Response::error('Forbidden', 403);
-        }
+
+        $current = DB::fetchOne('SELECT name, phone FROM users WHERE id = ?', 'i', [$id]);
+        if (!$current) Response::error('User not found', 404);
 
         $body = jsonBody();
+
+        // Skip fields where decrypted current value matches incoming value
+        if (isset($body['name'])  && $body['name']  === decrypt($current['name']))  unset($body['name']);
+        if (isset($body['phone']) && $body['phone'] === decrypt($current['phone'])) unset($body['phone']);
+
+        if (empty($body)) Response::success(null, 'Nothing to update, values are the same');
+
         if (isset($body['name']))  $body['name']  = encrypt($body['name']);
         if (isset($body['phone'])) $body['phone'] = encrypt($body['phone']);
 
@@ -86,6 +95,9 @@ class UserController
     {
         $id = qInt('id');
         if (!$id) Response::error('id is required', 400);
+
+        if (!DB::fetchOne('SELECT id FROM users WHERE id = ?', 'i', [$id]))
+            Response::error('User not found', 404);
 
         DB::execute('DELETE FROM users WHERE id = ?', 'i', [$id]);
         Response::success(null, 'User deleted');
