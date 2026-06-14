@@ -66,7 +66,8 @@
               @click="isOpen = !isOpen"
               class="flex items-center gap-1 border border-green-300 dark:border-green-600 rounded px-2 py-1 text-sm text-green-700 dark:text-green-300 bg-transparent hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
             >
-              {{ languages.find(l => l.value === currentLanguage)?.flag }} {{ currentLanguage.toUpperCase() }}
+              <img :src="`https://flagcdn.com/20x15/${languages.find(l => l.value === currentLanguage)?.flag}.png`" width="20" height="15" class="rounded-sm" />
+              {{ currentLanguage.toUpperCase() }}
               <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -80,10 +81,11 @@
       v-for="lang in languages"
       :key="lang.value"
       @click="currentLanguage = lang.value; isOpen = false"
-      class="w-full text-left px-3 py-1.5 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"
+      class="w-full text-left px-3 py-1.5 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors flex items-center gap-2"
       :class="{ 'bg-green-100 dark:bg-green-900/50': currentLanguage === lang.value }"
     >
-      {{ lang.flag }} {{ lang.label }}
+      <img :src="`https://flagcdn.com/20x15/${lang.flag}.png`" width="20" height="15" class="rounded-sm" />
+      {{ lang.label }}
     </button>
   </div>
 </div>
@@ -161,16 +163,17 @@
           </template>
           
           <!-- Mobile Language Selector -->
-          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-            <select
-              v-model="currentLanguage"
-              class="w-full p-2 bg-gray-50 dark:bg-gray-800 text-green-700 border border-gray-200 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300"
-              @change="mobileMenuOpen = false"
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 flex gap-2">
+            <button
+              v-for="lang in languages"
+              :key="lang.value"
+              @click="currentLanguage = lang.value; mobileMenuOpen = false"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded border text-sm text-green-700 dark:text-green-300 transition-colors"
+              :class="currentLanguage === lang.value ? 'border-green-500 bg-green-50 dark:bg-green-900/40' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'"
             >
-              <option value="en">🇺🇸 </option>
-              <option value="rw">🇷🇼 </option>
-              <option value="fr">🇫🇷 </option>
-            </select>
+              <img :src="`https://flagcdn.com/20x15/${lang.flag}.png`" width="20" height="15" class="rounded-sm" />
+              {{ lang.label }}
+            </button>
           </div>
           
           <!-- Mobile Account Link -->
@@ -273,9 +276,9 @@ const isOpen = ref(false)
 const dropdownRef = ref(null)
 
 const languages = [
-  { value: 'en', label: 'EN', flag: '🇺🇸' },
-  { value: 'rw', label: 'RW', flag: '🇷🇼' },
-  { value: 'fr', label: 'FR', flag: '🇫🇷' },
+  { value: 'en', label: 'EN', flag: 'us' },
+  { value: 'rw', label: 'RW', flag: 'rw' },
+  { value: 'fr', label: 'FR', flag: 'fr' },
 ]
 
 onMounted(() => document.addEventListener('click', handleClickOutside))

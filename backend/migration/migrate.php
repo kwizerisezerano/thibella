@@ -6,10 +6,11 @@
  * - NEVER drops the database.
  * - Tracks every migration in `_migrations` table.
  * - Only runs migrations that haven't been executed yet.
- * - To add a new migration: add a new entry to $migrations below.
+ * - To add a new migration: append a new run_migration() call at the bottom.
  */
 
 require_once __DIR__ . '/../core/Env.php';
+require_once __DIR__ . '/../core/helpers.php';
 loadEnv(__DIR__ . '/../.env');
 
 $host     = env('DB_HOST', 'localhost');
@@ -31,9 +32,9 @@ echo "=== Thibella Migration Runner ===\n\n";
 // ── Bootstrap _migrations tracker ────────────────────────────────────────────
 $conn->query("
     CREATE TABLE IF NOT EXISTS `_migrations` (
-        `id`         int(11)      NOT NULL AUTO_INCREMENT,
-        `name`       varchar(200) NOT NULL,
-        `ran_at`     timestamp    NOT NULL DEFAULT current_timestamp(),
+        `id`     int(11)      NOT NULL AUTO_INCREMENT,
+        `name`   varchar(200) NOT NULL,
+        `ran_at` timestamp    NOT NULL DEFAULT current_timestamp(),
         PRIMARY KEY (`id`),
         UNIQUE KEY `name` (`name`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
@@ -69,9 +70,7 @@ function run_migration(mysqli $conn, string $name, callable $fn): void
     echo "  ✔ ran      : $name\n";
 }
 
-// ── Migrations list ───────────────────────────────────────────────────────────
-// To add a new migration: append a new run_migration() call at the bottom.
-// Never edit or remove existing ones — that's the golden rule.
+// ── Migrations ────────────────────────────────────────────────────────────────
 
 run_migration($conn, '001_create_categories', function (mysqli $conn) {
     $conn->query("
@@ -108,15 +107,16 @@ run_migration($conn, '002_create_subcategories', function (mysqli $conn) {
 run_migration($conn, '003_create_users', function (mysqli $conn) {
     $conn->query("
         CREATE TABLE IF NOT EXISTS `users` (
-            `id`         int(11)               NOT NULL AUTO_INCREMENT,
-            `name`       varchar(500)          DEFAULT NULL,
-            `email`      varchar(500)          DEFAULT NULL,
-            `phone`      varchar(500)           DEFAULT NULL,
-            `password`   varchar(255)          DEFAULT NULL,
-            `role`       enum('admin','user')  DEFAULT 'user',
-            `created_at` timestamp             NOT NULL DEFAULT current_timestamp(),
+            `id`         int(11)              NOT NULL AUTO_INCREMENT,
+            `name`       varchar(500)         DEFAULT NULL,
+            `email`      varchar(500)         DEFAULT NULL,
+            `phone`      varchar(500)         DEFAULT NULL,
+            `password`   varchar(255)         DEFAULT NULL,
+            `role`       enum('admin','user') DEFAULT 'user',
+            `created_at` timestamp            NOT NULL DEFAULT current_timestamp(),
+            `email_hash` varchar(64)          DEFAULT NULL,
             PRIMARY KEY (`id`),
-            UNIQUE KEY `email` (`email`)
+            UNIQUE KEY `email_hash` (`email_hash`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
     ");
 });
@@ -127,7 +127,8 @@ run_migration($conn, '004_create_products', function (mysqli $conn) {
             `id`                 int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             `productName`        varchar(255)     NOT NULL,
             `description`        text             NOT NULL,
-            `priceCents`         int(11)          NOT NULL,
+            `priceCents`         int(11)          NOT NULL DEFAULT 0,
+            `stock`              int(11)          NOT NULL DEFAULT 0,
             `size`               varchar(50)      DEFAULT NULL,
             `color`              varchar(50)      DEFAULT NULL,
             `type`               varchar(100)     DEFAULT NULL,
@@ -154,7 +155,7 @@ run_migration($conn, '005_create_orders', function (mysqli $conn) {
     $conn->query("
         CREATE TABLE IF NOT EXISTS `orders` (
             `id`                  int(11)      NOT NULL AUTO_INCREMENT,
-            `user_id`             int(11)      UNSIGNED NOT NULL,
+            `user_id`             int(11) UNSIGNED NOT NULL,
             `full_name`           varchar(100) DEFAULT NULL,
             `phone_number`        varchar(30)  DEFAULT NULL,
             `email`               varchar(100) DEFAULT NULL,
@@ -166,8 +167,8 @@ run_migration($conn, '005_create_orders', function (mysqli $conn) {
             `payment_method`      varchar(50)  DEFAULT NULL,
             `mobile_money_number` varchar(30)  DEFAULT NULL,
             `orderTotalAmount`    int(15)      DEFAULT NULL,
-            `created_at`          timestamp    NOT NULL DEFAULT current_timestamp(),
             `status`              varchar(20)  NOT NULL DEFAULT 'pending',
+            `created_at`          timestamp    NOT NULL DEFAULT current_timestamp(),
             PRIMARY KEY (`id`),
             KEY `fk_orders_user` (`user_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
@@ -217,7 +218,6 @@ run_migration($conn, '007_seed_categories', function (mysqli $conn) {
 });
 
 run_migration($conn, '008_seed_subcategories', function (mysqli $conn) {
-    // [category_slug, name, slug, image]
     $subcategories = [
         // CLOTHES
         ['clothing', 'Clothes (Men)',           'men',                   'https://res.cloudinary.com/dck2vzccq/image/upload/v1780415860/men_clothes_hcmu9u.jpg'],
@@ -255,52 +255,52 @@ run_migration($conn, '008_seed_subcategories', function (mysqli $conn) {
         ['shoes', 'Heels',                'heels',              null],
         ['shoes', 'Loafers & Slip-Ons',   'loafers-slip-ons',   null],
         // ELECTRONICS
-        ['electronics', 'Mobile Devices',        'mobile-devices',     'https://res.cloudinary.com/dck2vzccq/image/upload/v1780418006/Mobile_Devices_gzp2ph.jpg'],
-        ['electronics', 'Smartphone',            'smartphone',         'https://res.cloudinary.com/dck2vzccq/image/upload/v1780562661/smartphoneSubcategory_bmyblm.jpg'],
-        ['electronics', 'Keypad Phone',          'keypad-phone',       'https://res.cloudinary.com/dck2vzccq/image/upload/v1780563156/key_pad_phone_btydem.jpg'],
-        ['electronics', 'Tablets',               'tablets',            null],
-        ['electronics', 'Laptops',               'laptops',            null],
-        ['electronics', 'Desktop Computers',     'desktop-computers',  null],
-        ['electronics', 'Smartwatches',          'smartwatches',       null],
-        ['electronics', 'Watches',               'watches',            'https://res.cloudinary.com/dck2vzccq/image/upload/v1780574815/watches_ecrcpu.jpg'],
-        ['electronics', 'Headphones & Earbuds',  'headphones-earbuds', null],
-        ['electronics', 'Bluetooth Speakers',    'bluetooth-speakers', null],
-        ['electronics', 'TV & Monitors',         'tv-monitors',        null],
-        ['electronics', 'Cameras & Photography', 'cameras-photography',null],
-        ['electronics', 'Phone Accessories',     'phone-accessories',  'https://res.cloudinary.com/dck2vzccq/image/upload/v1777384133/2efd16286dfb4442ac1c9c7806dfaabf_eh8wqh.jpg'],
-        ['electronics', 'Chargers & Cables',     'chargers-cables',    null],
-        ['electronics', 'Power Banks',           'power-banks',        null],
-        ['electronics', 'Radio',                 'radio',              'https://res.cloudinary.com/dck2vzccq/image/upload/v1780574668/radion_wpneni.webp'],
-        ['electronics', 'Home Appliances',       'home-appliances',    null],
-        ['electronics', 'Gaming',                'gaming',             null],
-        ['electronics', 'Printers & Scanners',   'printers-scanners',  null],
+        ['electronics', 'Mobile Devices',        'mobile-devices',      'https://res.cloudinary.com/dck2vzccq/image/upload/v1780418006/Mobile_Devices_gzp2ph.jpg'],
+        ['electronics', 'Smartphone',            'smartphone',          'https://res.cloudinary.com/dck2vzccq/image/upload/v1780562661/smartphoneSubcategory_bmyblm.jpg'],
+        ['electronics', 'Keypad Phone',          'keypad-phone',        'https://res.cloudinary.com/dck2vzccq/image/upload/v1780563156/key_pad_phone_btydem.jpg'],
+        ['electronics', 'Tablets',               'tablets',             null],
+        ['electronics', 'Laptops',               'laptops',             null],
+        ['electronics', 'Desktop Computers',     'desktop-computers',   null],
+        ['electronics', 'Smartwatches',          'smartwatches',        null],
+        ['electronics', 'Watches',               'watches',             'https://res.cloudinary.com/dck2vzccq/image/upload/v1780574815/watches_ecrcpu.jpg'],
+        ['electronics', 'Headphones & Earbuds',  'headphones-earbuds',  null],
+        ['electronics', 'Bluetooth Speakers',    'bluetooth-speakers',  null],
+        ['electronics', 'TV & Monitors',         'tv-monitors',         null],
+        ['electronics', 'Cameras & Photography', 'cameras-photography', null],
+        ['electronics', 'Phone Accessories',     'phone-accessories',   'https://res.cloudinary.com/dck2vzccq/image/upload/v1777384133/2efd16286dfb4442ac1c9c7806dfaabf_eh8wqh.jpg'],
+        ['electronics', 'Chargers & Cables',     'chargers-cables',     null],
+        ['electronics', 'Power Banks',           'power-banks',         null],
+        ['electronics', 'Radio',                 'radio',               'https://res.cloudinary.com/dck2vzccq/image/upload/v1780574668/radion_wpneni.webp'],
+        ['electronics', 'Home Appliances',       'home-appliances',     null],
+        ['electronics', 'Gaming',                'gaming',              null],
+        ['electronics', 'Printers & Scanners',   'printers-scanners',   null],
         // KITCHEN
-        ['kitchen', 'Cookware',               'cookware',             null],
-        ['kitchen', 'Bakeware',               'bakeware',             null],
-        ['kitchen', 'Kitchen Knives & Tools', 'kitchen-knives-tools', null],
-        ['kitchen', 'Pots & Pans',            'pots-pans',            null],
-        ['kitchen', 'Plates & Bowls',         'plates-bowls',         null],
-        ['kitchen', 'Cups & Mugs',            'cups-mugs',            null],
-        ['kitchen', 'Cutlery & Utensils',     'cutlery-utensils',     null],
-        ['kitchen', 'Kitchen Storage',        'kitchen-storage',      null],
-        ['kitchen', 'Blenders & Mixers',      'blenders-mixers',      null],
-        ['kitchen', 'Coffee & Tea Makers',    'coffee-tea-makers',    null],
-        ['kitchen', 'Food Containers',        'food-containers',      null],
-        ['kitchen', 'Dining Sets',            'dining-sets',          null],
-        ['kitchen', 'Kitchen Cleaning',       'kitchen-cleaning',     null],
+        ['kitchen--dining', 'Cookware',               'cookware',             null],
+        ['kitchen--dining', 'Bakeware',               'bakeware',             null],
+        ['kitchen--dining', 'Kitchen Knives & Tools', 'kitchen-knives-tools', null],
+        ['kitchen--dining', 'Pots & Pans',            'pots-pans',            null],
+        ['kitchen--dining', 'Plates & Bowls',         'plates-bowls',         null],
+        ['kitchen--dining', 'Cups & Mugs',            'cups-mugs',            null],
+        ['kitchen--dining', 'Cutlery & Utensils',     'cutlery-utensils',     null],
+        ['kitchen--dining', 'Kitchen Storage',        'kitchen-storage',      null],
+        ['kitchen--dining', 'Blenders & Mixers',      'blenders-mixers',      null],
+        ['kitchen--dining', 'Coffee & Tea Makers',    'coffee-tea-makers',    null],
+        ['kitchen--dining', 'Food Containers',        'food-containers',      null],
+        ['kitchen--dining', 'Dining Sets',            'dining-sets',          null],
+        ['kitchen--dining', 'Kitchen Cleaning',       'kitchen-cleaning',     null],
         // CARS
-        ['cars', 'Petrol Cars',      'petrol-cars',    'https://res.cloudinary.com/dck2vzccq/image/upload/v1780417477/petrol_car_xi6vxs.jpg'],
-        ['cars', 'Diesel Cars',      'diesel-cars',    null],
-        ['cars', 'Hybrid Cars',      'hybrid-cars',    null],
-        ['cars', 'Electric Cars',    'electric-cars',  null],
-        ['cars', 'Automatic Cars',   'automatic-cars', 'https://res.cloudinary.com/dck2vzccq/image/upload/v1778834053/f8c1ead3c1e74356878f7c0871eee904_w98axc.jpg'],
-        ['cars', 'Manual Cars',      'manual-cars',    null],
-        ['cars', 'SUVs',             'suvs',           null],
-        ['cars', 'Pickup Trucks',    'pickup-trucks',  null],
-        ['cars', 'Minivans & Buses', 'minivans-buses', null],
-        ['cars', 'Motorcycles',      'motorcycles',    null],
-        ['cars', 'Car Accessories',  'car-accessories',null],
-        ['cars', 'Car Spare Parts',  'car-spare-parts',null],
+        ['cars', 'Petrol Cars',      'petrol-cars',     'https://res.cloudinary.com/dck2vzccq/image/upload/v1780417477/petrol_car_xi6vxs.jpg'],
+        ['cars', 'Diesel Cars',      'diesel-cars',     null],
+        ['cars', 'Hybrid Cars',      'hybrid-cars',     null],
+        ['cars', 'Electric Cars',    'electric-cars',   null],
+        ['cars', 'Automatic Cars',   'automatic-cars',  'https://res.cloudinary.com/dck2vzccq/image/upload/v1778834053/f8c1ead3c1e74356878f7c0871eee904_w98axc.jpg'],
+        ['cars', 'Manual Cars',      'manual-cars',     null],
+        ['cars', 'SUVs',             'suvs',            null],
+        ['cars', 'Pickup Trucks',    'pickup-trucks',   null],
+        ['cars', 'Minivans & Buses', 'minivans-buses',  null],
+        ['cars', 'Motorcycles',      'motorcycles',     null],
+        ['cars', 'Car Accessories',  'car-accessories', null],
+        ['cars', 'Car Spare Parts',  'car-spare-parts', null],
         // DRINKWARE
         ['drinkware', 'Water Bottle',          'water-bottle',         'https://res.cloudinary.com/dck2vzccq/image/upload/v1780573588/water_bottle_no_2_p1jvhg.jpg'],
         ['drinkware', 'Coffee Bottle',         'coffee-bottle',        'https://res.cloudinary.com/dck2vzccq/image/upload/v1780573765/tea_bottle_aguhpv.webp'],
@@ -325,55 +325,20 @@ run_migration($conn, '008_seed_subcategories', function (mysqli $conn) {
 });
 
 run_migration($conn, '009_seed_admin_user', function (mysqli $conn) {
-    $name  = env('ADMIN_NAME', 'Thibella');
-    $email = env('ADMIN_EMAIL', 'admin@thibella.com');
-    $phone = env('ADMIN_PHONE', '+250700000000');
-    $pass  = password_hash(env('ADMIN_PASSWORD', 'Thibella@2025'), PASSWORD_DEFAULT);
-    $role  = 'admin';
-
-    $stmt = $conn->prepare(
-        "INSERT IGNORE INTO `users` (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)"
-    );
-    $stmt->bind_param('sssss', $name, $email, $phone, $pass, $role);
-    $stmt->execute();
-    $stmt->close();
-});
-
-// ── To add a new migration in the future, append here: ───────────────────────
-run_migration($conn, '010_add_email_hash_to_users', function (mysqli $conn) {
-    $conn->query("ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `email_hash` varchar(64) DEFAULT NULL");
-    $conn->query("ALTER TABLE `users` ADD UNIQUE KEY IF NOT EXISTS `email_hash` (`email_hash`)");
-});
-
-run_migration($conn, '011_widen_phone_and_encrypted_fields', function (mysqli $conn) {
-    $conn->query("ALTER TABLE `users` MODIFY COLUMN `phone` varchar(500) DEFAULT NULL");
-    $conn->query("ALTER TABLE `users` MODIFY COLUMN `name` varchar(500) DEFAULT NULL");
-    $conn->query("ALTER TABLE `users` MODIFY COLUMN `email` varchar(500) DEFAULT NULL");
-});
-
-run_migration($conn, '011_encrypt_admin_user', function (mysqli $conn) {
-    require_once __DIR__ . '/../core/helpers.php';
-    require_once __DIR__ . '/../core/Env.php';
-    loadEnv(__DIR__ . '/../.env');
-
-    $namePlain  = env('ADMIN_NAME', 'Thibella');
     $emailPlain = strtolower(trim(env('ADMIN_EMAIL', 'admin@thibella.com')));
-    $phonePlain = env('ADMIN_PHONE', '+250700000000');
-
-    $encName   = encrypt($namePlain);
-    $encEmail  = encrypt($emailPlain);
-    $encPhone  = encrypt($phonePlain);
-    $emailHash = emailHash($emailPlain);
+    $name       = encrypt(env('ADMIN_NAME', 'Thibella'));
+    $email      = encrypt($emailPlain);
+    $phone      = encrypt(env('ADMIN_PHONE', '+250700000000'));
+    $pass       = password_hash(env('ADMIN_PASSWORD', 'Thibella@2025'), PASSWORD_DEFAULT);
+    $emailHash  = emailHash($emailPlain);
+    $role       = 'admin';
 
     $stmt = $conn->prepare(
-        "UPDATE `users` SET name = ?, email = ?, phone = ?, email_hash = ? WHERE role = 'admin' AND email_hash IS NULL"
+        "INSERT IGNORE INTO `users` (name, email, phone, password, role, email_hash) VALUES (?, ?, ?, ?, ?, ?)"
     );
-    $stmt->bind_param('ssss', $encName, $encEmail, $encPhone, $emailHash);
+    $stmt->bind_param('ssssss', $name, $email, $phone, $pass, $role, $emailHash);
     $stmt->execute();
     $stmt->close();
 });
 
-
-
-$conn->close();
-echo "\n✅ Migration runner finished.\n";
+// ── To add a new migration, append here: ──────────────n";
