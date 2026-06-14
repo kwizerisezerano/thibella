@@ -27,13 +27,13 @@
           @click="fetchData"
           class="mt-6 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full text-sm font-medium transition-colors"
         >
-          Try again
+          {{ $t('categories.tryAgain') }}
         </button>
       </div>
 
       <!-- Direct products (no subcategories) -->
       <template v-else-if="subcategories.length === 0 && products.length > 0">
-        <p class="text-sm text-gray-400 mb-6 font-medium uppercase tracking-widest">All Products</p>
+        <p class="text-sm text-gray-400 mb-6 font-medium uppercase tracking-widest">{{ $t('categories.allProducts') }}</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-5">
           <div
             v-for="(product, i) in products"
@@ -50,7 +50,7 @@
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div class="absolute top-2 left-0 right-0 flex justify-center">
                 <span class="bg-green-600 text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full shadow">
-                  💬 Negotiable
+                  💬 {{ $t('products.negotiable') }}
                 </span>
               </div>
             </div>
@@ -66,7 +66,7 @@
       <!-- Subcategories Grid -->
       <template v-else-if="subcategories.length > 0">
         <p class="text-sm text-gray-400 mb-6 font-medium uppercase tracking-widest">
-          {{ subcategories.length }} Subcategories
+          {{ $t('categories.subcategories', { count: subcategories.length }) }}
         </p>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-5">
@@ -120,12 +120,12 @@
       <!-- Empty State -->
       <div v-else class="text-center py-24">
         <div class="text-6xl mb-4">📦</div>
-        <p class="text-gray-400 text-lg font-medium">No items found in this category</p>
+        <p class="text-gray-400 text-lg font-medium">{{ $t('categories.noItems') }}</p>
         <button
           @click="navigateTo('/')"
           class="mt-6 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-full text-sm font-semibold transition-colors"
         >
-          Go back
+          {{ $t('categories.goBack') }}
         </button>
       </div>
 
@@ -134,10 +134,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
+const { locale, t } = useI18n()
 
 const loading = ref(true)
 const error = ref(null)
@@ -154,35 +156,29 @@ const fetchData = async () => {
 
   try {
     const slug = route.params.slug
-
-    // 1. Fetch subcategory/category data using slug (returns array or single item)
     const categoryRes = await $fetch(
       `https://api.thibella.com/public/subcategories/get-subcategory-by-slug.php?slug=${slug}`,
-      {
-        headers: { 'Content-Type': 'application/json', 'Accept-Language': 'en' }
-       }
+      { headers: { 'Content-Type': 'application/json', 'Accept-Language': locale.value } }
     )
 
     const categoryData = Array.isArray(categoryRes.data) ? categoryRes.data[0] : categoryRes.data
-
     subcategories.value = categoryRes.data ?? []
-    
+
     if (categoryData) {
       categoryTitle.value = categoryData.name || categoryData.title
       categoryImage.value = categoryData.image
-      const categoryId = categoryData.category_id || categoryData.id
     } else {
-      error.value = 'Category not found'
+      error.value = t('categories.notFound')
     }
   } catch (err) {
-    console.error('Error fetching category data:', err)
-    error.value = 'Failed to load category'
+    error.value = t('categories.failedLoad')
   } finally {
     loading.value = false
   }
 }
 
 onMounted(fetchData)
+watch(locale, fetchData)
 
 const goToSubcategory = (sub) => {
   navigateTo({

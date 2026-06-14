@@ -341,4 +341,135 @@ run_migration($conn, '009_seed_admin_user', function (mysqli $conn) {
     $stmt->close();
 });
 
-// ── To add a new migration, append here: ──────────────n";
+// ── To add a new migration, append here: ────────────────────────────────────
+
+run_migration($conn, '010_add_translation_columns', function (mysqli $conn) {
+    $conn->query("ALTER TABLE `categories`
+        ADD COLUMN IF NOT EXISTS `title_rw`       varchar(150) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS `title_fr`       varchar(150) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS `description_rw` text         DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS `description_fr` text         DEFAULT NULL
+    ");
+    $conn->query("ALTER TABLE `subcategories`
+        ADD COLUMN IF NOT EXISTS `name_rw` varchar(150) DEFAULT NULL,
+        ADD COLUMN IF NOT EXISTS `name_fr` varchar(150) DEFAULT NULL
+    ");
+});
+
+run_migration($conn, '011_seed_category_translations', function (mysqli $conn) {
+    $t = [
+        ['clothing',        'Imyenda',               'Vêtements',    'Imyenda harimo amakabutura, amashati na tiresi',              'Vêtements incluant chemises, sweats et pantalons'],
+        ['shoes',           'Inkweto',              'Chaussures',   'Ubwoko bwose bw\'inkweto harimo za sport na casual',           'Tous types de chaussures sport et casual'],
+        ['electronics',     'Ikoranabuhanga',        'Électronique', 'Ibikoresho bya tekinoloji nk\'amasaha, amafone na televiziyo', 'Appareils électroniques, montres, écouteurs et gadgets'],
+        ['kitchen--dining', 'Igikoni',               'Cuisine',      'Ibikoresho by\'igikoni, ibikapu n\'amatafari',                'Essentiels de cuisine, vaisselle et sets de table'],
+        ['cars',            'Imodoka',               'Voitures',     'Imodoka nshya na za kera, SUV na bike',                       'Voitures neuves et d\'occasion, SUV et accessoires'],
+        ['drinkware',       'Ibikoresho by\'kunywa', 'Boissons',    'Amacupa, ibikombe n\'ibikoresho by\'kunywa',                   'Bouteilles, tasses et accessoires de boisson'],
+    ];
+    $stmt = $conn->prepare("UPDATE `categories` SET title_rw=?, title_fr=?, description_rw=?, description_fr=? WHERE slug=?");
+    foreach ($t as [$slug, $rw, $fr, $drw, $dfr]) {
+        $stmt->bind_param('sssss', $rw, $fr, $drw, $dfr, $slug);
+        $stmt->execute();
+    }
+    $stmt->close();
+});
+
+run_migration($conn, '012_seed_subcategory_translations', function (mysqli $conn) {
+    $t = [
+        ['men',                   'Imyenda y\'Abagabo',       'Vêtements Hommes'],
+        ['clothes-women',         'Imyenda y\'Abagore',       'Vêtements Femmes'],
+        ['kids-clothes',          'Imyenda y\'Abana',         'Vêtements Enfants'],
+        ['t-shirts',              'Amatisheti',               'T-Shirts'],
+        ['hoodies-sweatshirts',   'Amahudie',                 'Sweats à capuche'],
+        ['shirts-blouses',        'Amashati',                 'Chemises et Blouses'],
+        ['jeans',                 'Amajeani',                 'Jeans'],
+        ['trousers-chinos',       'Amakabutura',              'Pantalons et Chinos'],
+        ['dresses',               'Imideri',                  'Robes'],
+        ['skirts',                'Amashati made',             'Jupes'],
+        ['jackets-coats',         'Amakoti',                  'Vestes et Manteaux'],
+        ['suits-blazers',         'Amasuti',                  'Costumes et Blazers'],
+        ['shorts',                'Amashoti',                 'Shorts'],
+        ['activewear-sportswear', 'Imyenda ya siporo',        'Vêtements de sport'],
+        ['underwear-lingerie',    'Imyenda y\'imbere',        'Sous-vêtements'],
+        ['socks',                 'Amaporoho',                'Chaussettes'],
+        ['pyjamas-loungewear',    'Imyenda yo gusinzira',     'Pyjamas'],
+        ['abayas-modest-wear',    'Imyenda y\'idini',         'Vêtements modestes'],
+        ['school-uniforms',       'Imyenda y\'ishuri',        'Uniformes scolaires'],
+        ['traditional-cultural',  'Imyenda y\'amasano',       'Vêtements traditionnels'],
+        ['for-everyone-shoes',    'Inkweto za bose',          'Chaussures pour tous'],
+        ['mens-shoes',            'Inkweto z\'Abagabo',       'Chaussures Hommes'],
+        ['womens-shoes',          'Inkweto z\'Abagore',       'Chaussures Femmes'],
+        ['kids-shoes',            'Inkweto z\'Abana',         'Chaussures Enfants'],
+        ['sneakers',              'Sneakers',                 'Baskets'],
+        ['running-shoes',         'Inkweto zo gutera',        'Chaussures de course'],
+        ['sport-shoes',           'Inkweto za siporo',        'Chaussures de sport'],
+        ['casual-shoes',          'Inkweto za buri munsi',    'Chaussures casual'],
+        ['formal-shoes',          'Inkweto z\'ibikorwa',      'Chaussures formelles'],
+        ['boots',                 'Amabutu',                  'Bottes'],
+        ['sandals-flip-flops',    'Amasandali',               'Sandales'],
+        ['heels',                 'Inkweto z\'intako',        'Talons'],
+        ['loafers-slip-ons',      'Inkweto zidafunga',        'Mocassins'],
+        ['mobile-devices',        'Ibikoresho bya telefone',  'Appareils mobiles'],
+        ['smartphone',            'Telefone ngiri',           'Smartphone'],
+        ['keypad-phone',          'Telefone y\'inkingi',      'Téléphone à touches'],
+        ['tablets',               'Tablette',                 'Tablettes'],
+        ['laptops',               'Mudasobwa ngufi',          'Ordinateurs portables'],
+        ['desktop-computers',     'Mudasobwa nini',           'Ordinateurs de bureau'],
+        ['smartwatches',          'Isaha ya telefone',        'Montres connectées'],
+        ['watches',               'Amasaha',                  'Montres'],
+        ['headphones-earbuds',    'Ama-casque',               'Écouteurs'],
+        ['bluetooth-speakers',    'Haut-parleur',             'Enceintes Bluetooth'],
+        ['tv-monitors',           'Televiziyo',               'TV et Moniteurs'],
+        ['cameras-photography',   'Kamera',                   'Appareils photo'],
+        ['phone-accessories',     'Ibikoresho bya telefone',  'Accessoires téléphone'],
+        ['chargers-cables',       'Ama-chargeur',             'Chargeurs et Câbles'],
+        ['power-banks',           'Bateri ngarurampamba',     'Batteries externes'],
+        ['radio',                 'Radiyo',                   'Radio'],
+        ['home-appliances',       'Ibikoresho by\'urugo',     'Électroménager'],
+        ['gaming',                'Imikino',                  'Jeux vidéo'],
+        ['printers-scanners',     'Imperemuzi',               'Imprimantes'],
+        ['cookware',              'Ibikoresho byo guteka',    'Ustensiles de cuisine'],
+        ['bakeware',              'Ibikoresho byo gukora',    'Moules de cuisson'],
+        ['kitchen-knives-tools',  'Amacupa n\'ibikoresho',    'Couteaux de cuisine'],
+        ['pots-pans',             'Ibikapu',                  'Casseroles et poêles'],
+        ['plates-bowls',          'Amasahani',                'Assiettes et bols'],
+        ['cups-mugs',             'Inkomere',                 'Tasses et mugs'],
+        ['cutlery-utensils',      'Ibikoresho byo kurya',     'Couverts'],
+        ['kitchen-storage',       'Ibibiko by\'igikoni',      'Rangement cuisine'],
+        ['blenders-mixers',       'Gakondo',                  'Mixeurs'],
+        ['coffee-tea-makers',     'Igikoresho cy\'icyayi',    'Cafetières et théières'],
+        ['food-containers',       'Ibibiko by\'ibiribwa',     'Boîtes alimentaires'],
+        ['dining-sets',           'Amaseti yo kurya',         'Sets de table'],
+        ['kitchen-cleaning',      'Isuku y\'igikoni',         'Nettoyage cuisine'],
+        ['petrol-cars',           'Imodoka ya peterori',      'Voitures essence'],
+        ['diesel-cars',           'Imodoka ya mazutu',        'Voitures diesel'],
+        ['hybrid-cars',           'Imodoka hybrid',           'Voitures hybrides'],
+        ['electric-cars',         'Imodoka ya amashanyarazi', 'Voitures électriques'],
+        ['automatic-cars',        'Imodoka automatike',       'Voitures automatiques'],
+        ['manual-cars',           'Imodoka y\'intoki',        'Voitures manuelles'],
+        ['suvs',                  'SUV',                      'SUV'],
+        ['pickup-trucks',         'Pick-up',                  'Camionnettes'],
+        ['minivans-buses',        'Minivani na bisi',         'Minivans et bus'],
+        ['motorcycles',           'Moto',                     'Motos'],
+        ['car-accessories',       'Ibikoresho by\'imodoka',   'Accessoires auto'],
+        ['car-spare-parts',       'Pièces de rechange',       'Pièces détachées'],
+        ['water-bottle',          'Icupa y\'amazi',           'Bouteille d\'eau'],
+        ['coffee-bottle',         'Icupa y\'ikawa',           'Bouteille à café'],
+        ['thermos-flasks',        'Termos',                   'Thermos'],
+        ['tumblers',              'Tumblers',                 'Gobelets'],
+        ['sports-water-bottles',  'Icupa ya siporo',          'Gourdes sport'],
+        ['glass-bottles',         'Icupa y\'inzobe',          'Bouteilles en verre'],
+        ['kids-drinking-cups',    'Inkombe z\'abana',         'Tasses enfants'],
+        ['wine-glasses',          'Verre de vin',             'Verres à vin'],
+        ['mugs',                  'Inkombe',                  'Mugs'],
+        ['juice-jugs-pitchers',   'Ibikapu by\'amashyushyu',  'Carafes à jus'],
+    ];
+    $stmt = $conn->prepare("UPDATE `subcategories` SET name_rw=?, name_fr=? WHERE slug=?");
+    foreach ($t as [$slug, $rw, $fr]) {
+        $stmt->bind_param('sss', $rw, $fr, $slug);
+        $stmt->execute();
+    }
+    $stmt->close();
+});
+
+$conn->close();
+echo "\n✅ Migration runner finished.\n";

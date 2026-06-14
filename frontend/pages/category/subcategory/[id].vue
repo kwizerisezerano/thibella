@@ -1,10 +1,12 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '~/stores/cart'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
 const cartStore = useCartStore()
+const { locale } = useI18n()
 
 const error = ref(null)
 const parsedProducts = ref([])
@@ -21,7 +23,8 @@ function safeParseJson(str) {
 
 // Fetch products by subcategory ID
 const { data, error: fetchError } = await useFetch(
-  `https://api.thibella.com/public/products/get_by_subcategory.php?subcategory_id=${route.params.id}`
+  `https://api.thibella.com/public/products/get_by_subcategory.php?subcategory_id=${route.params.id}`,
+  { headers: { 'Accept-Language': locale.value } }
 )
 
 if (fetchError.value || !data.value || !data.value.success) {
@@ -55,16 +58,16 @@ if (data.value?.products?.[0]?.category_id) {
 // If we have a category_id, fetch sibling subcategories for the chip row
 if (categoryId.value) {
   const { data: subData } = await useFetch(
-    `https://api.thibella.com/public/subcategories/getSubcategoryiesByCategoryId.php?category_id=${categoryId.value}`
+    `https://api.thibella.com/public/subcategories/getSubcategoryiesByCategoryId.php?category_id=${categoryId.value}`,
+    { headers: { 'Accept-Language': locale.value } }
   )
-
   if (subData.value?.data) {
     subcategories.value = subData.value.data
   }
 } else {
-  // Fallback: fetch all subcategories
   const { data: subData } = await useFetch(
-    `https://api.thibella.com/public/subcategories/get.php`
+    `https://api.thibella.com/public/subcategories/get.php`,
+    { headers: { 'Accept-Language': locale.value } }
   )
   if (subData.value?.subcategories) {
     subcategories.value = subData.value.subcategories
@@ -92,7 +95,7 @@ const goToProduct = (id) => {
         @click="router.back()"
         class="flex items-center gap-1 text-sm text-gray-500 hover:text-green-600 transition-colors"
       >
-        ← Back
+        ← {{ $t('categories.back') }}
       </button>
 
       <h1 class="text-xl font-bold text-green-900 dark:text-white capitalize">
@@ -127,7 +130,7 @@ const goToProduct = (id) => {
       v-else-if="parsedProducts.length === 0"
       class="text-center py-16 text-gray-400"
     >
-      No products found in this subcategory
+      {{ $t('categories.noProducts') }}
     </div>
 
     <!-- Products grid -->
@@ -156,7 +159,7 @@ const goToProduct = (id) => {
           <!-- Price Negotiable Badge -->
           <div class="absolute top-2 left-0 right-0 flex justify-center">
             <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md tracking-wide">
-              💬 Price Negotiable
+              💬 {{ $t('products.negotiable') }}
             </span>
           </div>
         </div>

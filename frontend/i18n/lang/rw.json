@@ -1,30 +1,118 @@
 {
-  "navigation": {
-    "home": "AHABANZA",
-    "services": "SERIVISI",
-    "contact": "TWANDIKIRE",
-    "about": "TURI BA Nده",
-    "stores": "AHO DUCURUZA"
+  "nav": {
+    "home": "Ahabanza",
+    "products": "Ibicuruzwa",
+    "categories": "Ibyiciro"
   },
   "auth": {
     "signIn": "Injira",
-    "createAccount": "Iyandikishe"
+    "createAccount": "Iyandikishe",
+    "logout": "Sohoka"
   },
-  "menu": {
-    "close": "Funga menu",
-    "openMenu": "Fungura menu",
-    "search": "Shakisha",
-    "cart": {
-      "title": "Igiciro",
-      "items": "ibintu biri mu gitebo, reba igitebo"
-    }
+  "search": {
+    "placeholder": "Shakisha ibicuruzwa...",
+    "results": "igisubizo | ibisubizo",
+    "for": "kuri",
+    "clear": "Siba gushakisha",
+    "noResults": "Nta bicuruzwa byabonetse kuri"
+  },
+  "products": {
+    "title": "Ibicuruzwa Byacu",
+    "subtitle": "Reba ibicuruzwa bya Thibella ubone ibyo ukunda",
+    "loading": "Gutegura ibicuruzwa...",
+    "loadMore": "Reba Ibindi",
+    "loading_more": "Gutegura...",
+    "negotiable": "Igiciro Gishobora Guhanganwa",
+    "loadError": "Ikosa mu gutegura ibicuruzwa"
+  },
+  "categories": {
+    "loading": "Gutegura ibyiciro...",
+    "error": "Ntibishobotse guterura ibyiciro",
+    "allProducts": "Ibicuruzwa Byose",
+    "subcategories": "Ibyiciro bito {count}",
+    "notFound": "Icyiciro nticyabonetse",
+    "failedLoad": "Ntibishobotse guterura icyiciro",
+    "noItems": "Nta bintu byabonetse muri iki cyiciro",
+    "goBack": "Subira inyuma",
+    "tryAgain": "Gerageza nanone",
+    "back": "Subira",
+    "noProducts": "Nta bicuruzwa byabonetse muri iki cyiciro gito"
   },
   "language": {
     "select": "Hitamo Ururimi",
-    "english": "Icyongereza",
-    "kinyarwanda": "Ikinyarwanda"
+    "en": "Icyongereza",
+    "rw": "Ikinyarwanda",
+    "fr": "Igifaransa"
   },
-  "company": {
-    "name": "Kompanyi Yawe"
+  "darkMode": {
+    "toggle": "Hindura imiterere y'umucyo"
+  },
+  "footer": {
+    "aboutUs": "Abo Turi Bo",
+    "aboutDesc": "Turi isoko yawe y'icyizere ku murwa, itanga ibicuruzwa bya kalite hamwe n'serivisi nziza. Intego yacu ni ukuguteza imbere uburambe bwiza bw'ubucuruzi.",
+    "newsletter": "Amakuru",
+    "newsletterSub": "Iyandikishe kugira ngo ubone amakuru n'amatangaza",
+    "emailPlaceholder": "Imeli yawe",
+    "subscribe": "Iyandikishe",
+    "followUs": "Dukurikire",
+    "paymentMethods": "Uburyo bwo kwishyura:",
+    "rights": "Uburenganzira bwose buhariwe.",
+    "hours": "Ku wa Mbere-Gatandatu: 8h - 20h"
+  },
+  "profile": {
+    "login": "Injira",
+    "logout": "Sohoka",
+    "logoutConfirm": "Urifuza gusohoka?",
+    "cancel": "Reka",
+    "confirm": "Emeza",
+    "loggingOut": "Gusohoka..."
+  },
+  "login": {
+    "welcome": "Murakaza Neza",
+    "subtitle": "Injira muri konti yawe",
+    "continueGoogle": "Komeza na Google",
+    "continueFacebook": "Komeza na Facebook",
+    "orWith": "Cyangwa komeza na",
+    "emailLabel": "Imeli cyangwa izina",
+    "passwordLabel": "Ijambo ry'ibanga",
+    "passwordPlaceholder": "Injiza ijambo ry'ibanga",
+    "rememberMe": "Nzirikana",
+    "forgotPassword": "Wibagiwe ijambo ry'ibanga?",
+    "signingIn": "Kwinjira...",
+    "signIn": "Injira",
+    "noAccount": "Nta konti ufite?",
+    "signUp": "Iyandikishe"
+  },
+  "signup": {
+    "title": "Fungura Konti",
+    "subtitle": "Injira mu muryango wacu uyu munsi",
+    "fullName": "Amazina Yuzuye",
+    "email": "Aderesi Imeli",
+    "phone": "Numero ya Telefone (Ntibisabwa)",
+    "password": "Ijambo ry'Ibanga",
+    "passwordHint": "Nibura inyuguti 8 hamwe n'imibare",
+    "confirmPassword": "Emeza Ijambo ry'Ibanga",
+    "terms": "Nemera",
+    "termsLink": "Amategeko n'Amabwiriza",
+    "and": "na",
+    "privacyLink": "Politiki y'Ibanga",
+    "creating": "Gufungura Konti...",
+    "create": "Fungura Konti",
+    "orWith": "Cyangwa komeza na",
+    "hasAccount": "Usanzwe ufite konti?",
+    "loginLink": "Injira"
+  },
+  "product": {
+    "loading": "Gutegura amakuru y'igicuruzwa...",
+    "notFound": "Igicuruzwa nticyabonetse",
+    "goBack": "Subira Inyuma",
+    "colors": "Amabara Aboneka:",
+    "selected": "Wahisemo:",
+    "sizes": "Ingano Ziboneka:",
+    "selectedSize": "Ingano wahisemo:",
+    "callSeller": "Vugana n'Umucuruzi"
+  },
+  "searchBar": {
+    "placeholder": "Shakisha kuri Thibella..."
   }
 }

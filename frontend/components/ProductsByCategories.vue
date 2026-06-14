@@ -3,12 +3,12 @@
     <section class="bg-transparent py-8 antialiased md:py-12">
       <!-- Loading State -->
       <div v-if="loading" class="mx-auto max-w-screen-xl px-4 2xl:px-0 text-center">
-        <p class="text-green-600 dark:text-gray-400">Loading categories...</p>
+        <p class="text-green-600 dark:text-gray-400">{{ $t('categories.loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-if="error" class="mx-auto max-w-screen-xl px-4 2xl:px-0 text-center">
-        <p class="text-red-600 dark:text-red-400">Error: {{ error }}</p>
+        <p class="text-red-600 dark:text-red-400">{{ $t('categories.error') }}</p>
       </div>
 
       <!-- Categories Section -->
@@ -52,10 +52,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSearchStore } from '~/stores/search';
+import { useI18n } from 'vue-i18n';
 
+const { locale } = useI18n()
+const baseUrl = useRuntimeConfig().public.baseUrl
 const searchStore = useSearchStore();
 const router = useRouter();
 
@@ -64,68 +67,26 @@ const loading = ref(true);
 const error = ref(null);
 const loadingCategoryId = ref(null);
 
-const isMatchingSearch = (title) => {
-  if (!searchStore.query) return true;
-  return title?.toLowerCase().includes(searchStore.query.toLowerCase());
-};
-
-onMounted(async () => {
+const fetchCategories = async () => {
   try {
     loading.value = true;
     error.value = null;
-
-    const res = await $fetch('https://api.thibella.com/public/categories/get-categories.php', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept-Language': 'en'
-      }
+    const res = await $fetch(`${baseUrl}/categories`, {
+      headers: { 'Accept-Language': locale.value }
     });
-
-    categories.value = res.data ?? [];
-
+    categories.value = res.categories ?? res.data ?? [];
   } catch (err) {
-    console.error('Error fetching categories:', err);
-    error.value = 'Failed to load categories';
+    error.value = 'error';
   } finally {
     loading.value = false;
   }
-});
+};
 
-// const handleCategoryClick = async (category) => {
-//   if (!category.slug) return;
-//   if (loadingCategoryId.value) return;
-
-//   loadingCategoryId.value = category.id;
-
-//   try {
-//     const res = await $fetch(
-//       `https://api.thibella.com/public/subcategories/get.php?category_id=${category.id}`,
-//       { headers: { 'Content-Type': 'application/json' } }
-//     );
-
-//     const subcategories = res.data ?? [];
-
-//     console.log("see subcategories",subcategories);
-
-//     if (subcategories.length > 0) {
-//       // router.push(`/category/${category.slug}/${subcategories[0].id}`); // ✅ has subcategories
-//       router.push(`/category/subcategory/${subcategories[0].id}`); // ✅ has subcategories
-//     } else {
-//       router.push(`/category/${category.slug}`);               // ✅ go straight to products
-//     }
-
-//   } catch (err) {
-//     console.error('Error checking subcategories:', err);
-//     router.push(`/category/${category.slug}`);
-//   } finally {
-//     loadingCategoryId.value = null;
-//   }
-// };
+onMounted(fetchCategories);
+watch(locale, fetchCategories);
 
 const handleCategoryClick = (category) => {
   if (!category.slug) return
   router.push(`/category/${category.slug}`)
 }
-
 </script>

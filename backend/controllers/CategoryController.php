@@ -7,36 +7,36 @@ require_once __DIR__ . '/../core/helpers.php';
 class CategoryController
 {
     // ── GET /api/categories ──────────────────────────────────────────────────
-    // ?id=1                 → single by id
-    // ?slug=cars            → single by slug
-    // ?with_subcategories=1 → attach subcategories to each category
     public function index(): void
     {
+        $locale   = getLocale();
         $withSubs = qInt('with_subcategories') === 1;
 
         if ($id = qInt('id')) {
             $row = DB::fetchOne('SELECT * FROM categories WHERE id = ?', 'i', [$id]);
             if (!$row) Response::error('Category not found', 404);
-            if ($withSubs) $row['subcategories'] = $this->getSubcategories($row['id']);
+            $row = $this->applyLocale($row, $locale);
+            if ($withSubs) $row['subcategories'] = $this->getSubcategories($row['id'], $locale);
             Response::success($row);
         }
 
         if ($slug = qStr('slug')) {
             $row = DB::fetchOne('SELECT * FROM categories WHERE slug = ?', 's', [$slug]);
             if (!$row) Response::error('Category not found', 404);
-            if ($withSubs) $row['subcategories'] = $this->getSubcategories($row['id']);
+            $row = $this->applyLocale($row, $locale);
+            if ($withSubs) $row['subcategories'] = $this->getSubcategories($row['id'], $locale);
             Response::success($row);
         }
-
-        $rows = DB::fetchAll('SELECT * FROM categories ORDER BY title ASC');
 
         [$page, $limit, $offset] = getPagination(10);
         $total = DB::count('categories');
         $rows  = DB::fetchAll('SELECT * FROM categories ORDER BY title ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
 
+        $rows = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
+
         if ($withSubs) {
             foreach ($rows as &$row) {
-                $row['subcategories'] = $this->getSubcategories($row['id']);
+                $row['subcategories'] = $this->getSubcategories($row['id'], $locale);
             }
         }
 
@@ -123,12 +123,29 @@ class CategoryController
         Response::success(null, 'Category deleted');
     }
 
-    // ── Private helper ────────────────────────────────────────────────────────
-    private function getSubcategories(int $categoryId): array
+    // ── Private helpers ───────────────────────────────────────────────────────
+    private function applyLocale(array $row, string $locale): array
     {
-        return DB::fetchAll(
+        if ($locale !== 'en') {
+            $row['title']       = $row["title_{$locale}"]       ?: $row['title'];
+            $row['description'] = $row["description_{$locale}"] ?: $row['description'];
+        }
+        unset($row['title_rw'], $row['title_fr'], $row['description_rw'], $row['description_fr']);
+        return $row;
+    }
+
+    private function getSubcategories(int $categoryId, string $locale = 'en'): array
+    {
+        $rows = DB::fetchAll(
             'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC',
             'i', [$categoryId]
         );
+        return array_map(function ($r) use ($locale) {
+            if ($locale !== 'en') {
+                $r['name'] = $r["name_{$locale}"] ?: $r['name'];
+            }
+            unset($r['name_rw'], $r['name_fr']);
+            return $r;
+        }, $rows);
     }
 }

@@ -13,11 +13,13 @@ class SubcategoryController
     // ?with_category=1   → attach parent category object to each result
     public function index(): void
     {
+        $locale  = getLocale();
         $withCat = qInt('with_category') === 1;
 
         if ($id = qInt('id')) {
             $row = DB::fetchOne('SELECT * FROM subcategories WHERE id = ?', 'i', [$id]);
             if (!$row) Response::error('Subcategory not found', 404);
+            $row = $this->applyLocale($row, $locale);
             if ($withCat) $row['category'] = $this->getCategory($row['category_id']);
             Response::success($row);
         }
@@ -25,6 +27,7 @@ class SubcategoryController
         if ($slug = qStr('slug')) {
             $row = DB::fetchOne('SELECT * FROM subcategories WHERE slug = ?', 's', [$slug]);
             if (!$row) Response::error('Subcategory not found', 404);
+            $row = $this->applyLocale($row, $locale);
             if ($withCat) $row['category'] = $this->getCategory($row['category_id']);
             Response::success($row);
         }
@@ -36,6 +39,7 @@ class SubcategoryController
                 'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC LIMIT ? OFFSET ?',
                 'iii', [$catId, $limit, $offset]
             );
+            $rows = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
             if ($withCat) {
                 $cat = $this->getCategory($catId);
                 foreach ($rows as &$row) $row['category'] = $cat;
@@ -46,6 +50,7 @@ class SubcategoryController
         [$page, $limit, $offset] = getPagination(10);
         $total = DB::count('subcategories');
         $rows  = DB::fetchAll('SELECT * FROM subcategories ORDER BY name ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
+        $rows  = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
         Response::paginated($rows, $total, $page, $limit, 'subcategories');
     }
 
@@ -134,6 +139,15 @@ class SubcategoryController
     }
 
     // ── Private helper ────────────────────────────────────────────────────────
+    private function applyLocale(array $row, string $locale): array
+    {
+        if ($locale !== 'en') {
+            $row['name'] = $row["name_{$locale}"] ?: $row['name'];
+        }
+        unset($row['name_rw'], $row['name_fr']);
+        return $row;
+    }
+
     private function getCategory(int $id): ?array
     {
         return DB::fetchOne('SELECT * FROM categories WHERE id = ?', 'i', [$id]);
