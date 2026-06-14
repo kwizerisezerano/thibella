@@ -123,12 +123,8 @@ const stopAutoplay = () => {
   if (autoplayInterval) clearInterval(autoplayInterval);
 };
 
-onMounted(() => {
-    fetchCategories()
-    startAutoplay()
-  }
-);
-watch(locale, fetchCategories);
+watch(locale, fetchCategories, { immediate: true });
+onMounted(startAutoplay);
 onUnmounted(() => stopAutoplay());
 </script>
 

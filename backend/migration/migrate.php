@@ -359,7 +359,7 @@ run_migration($conn, '010_add_translation_columns', function (mysqli $conn) {
 run_migration($conn, '011_seed_category_translations', function (mysqli $conn) {
     $t = [
         ['clothing',        'Imyenda',               'Vêtements',    'Imyenda harimo amakabutura, amashati na tiresi',              'Vêtements incluant chemises, sweats et pantalons'],
-        ['shoes',           'Inkweto',              'Chaussures',   'Ubwoko bwose bw\'inkweto harimo za sport na casual',           'Tous types de chaussures sport et casual'],
+        ['shoes',           'Inkweto',               'Chaussures',   'Ubwoko bwose bw\'inkweto harimo za sport na casual',           'Tous types de chaussures sport et casual'],
         ['electronics',     'Ikoranabuhanga',        'Électronique', 'Ibikoresho bya tekinoloji nk\'amasaha, amafone na televiziyo', 'Appareils électroniques, montres, écouteurs et gadgets'],
         ['kitchen--dining', 'Igikoni',               'Cuisine',      'Ibikoresho by\'igikoni, ibikapu n\'amatafari',                'Essentiels de cuisine, vaisselle et sets de table'],
         ['cars',            'Imodoka',               'Voitures',     'Imodoka nshya na za kera, SUV na bike',                       'Voitures neuves et d\'occasion, SUV et accessoires'],

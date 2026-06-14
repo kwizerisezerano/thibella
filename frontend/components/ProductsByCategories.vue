@@ -82,8 +82,7 @@ const fetchCategories = async () => {
   }
 };
 
-onMounted(fetchCategories);
-watch(locale, fetchCategories);
+watch(locale, fetchCategories, { immediate: true });
 
 const handleCategoryClick = (category) => {
   if (!category.slug) return

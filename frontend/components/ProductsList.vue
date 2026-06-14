@@ -280,8 +280,7 @@ const loadInitial = async () => {
   }
 };
 
-onMounted(loadInitial);
-watch(locale, loadInitial);
+watch(locale, loadInitial, { immediate: true });
 
 const loadMore = async () => {
   if (loadingMore.value || !hasMoreProducts.value) return;
