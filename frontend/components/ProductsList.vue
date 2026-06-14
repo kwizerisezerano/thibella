@@ -9,39 +9,37 @@
       >
         <p class="text-sm text-green-600 dark:text-gray-400">
           <span class="font-bold text-green-800 dark:text-white">
-            {{ displayedProducts.length }} result{{ displayedProducts.length !== 1 ? 's' : '' }}
+            {{ displayedProducts.length }} {{ $t('search.results', displayedProducts.length) }}
           </span>
-          for 
-          <span class="text-green-700 dark:text-green-400 font-semibold">
-            "{{ query }}"
-          </span>
+          {{ $t('search.for') }}
+          <span class="text-green-700 dark:text-green-400 font-semibold">"{{ query }}"</span>
         </p>
         <button
           @click="clearSearch"
           class="text-xs font-bold text-green-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 underline transition-colors"
         >
-          Clear search
+          {{ $t('search.clear') }}
         </button>
       </div>
 
       <!-- Page Title -->
       <div class="mx-auto max-w-screen-xl px-4 2xl:px-0 mb-6">
         <h1 class="text-3xl font-extrabold tracking-tight text-green-800 dark:text-white sm:text-4xl text-center">
-          Our Products
+          {{ $t('products.title') }}
         </h1>
         <p class="mt-2 text-sm text-green-500 dark:text-gray-400 text-center">
-          Explore the Thibella collection and discover products you'll love
+          {{ $t('products.subtitle') }}
         </p>
       </div>
 
       <!-- Loading State -->
       <div v-if="loading && fetchedProducts.length === 0" class="mx-auto max-w-screen-xl px-4 2xl:px-0 text-center">
-        <p class="text-green-600 dark:text-green-400">Loading products...</p>
+        <p class="text-green-600 dark:text-green-400">{{ $t('products.loading') }}</p>
       </div>
 
       <!-- Error State -->
       <div v-if="error" class="mx-auto max-w-screen-xl px-4 2xl:px-0 text-center">
-        <p class="text-red-600 dark:text-red-400">Error loading products: {{ error }}</p>
+        <p class="text-red-600 dark:text-red-400">{{ $t('products.loadError') }}: {{ error }}</p>
       </div>
 
       <!-- Product Grid -->
@@ -65,7 +63,7 @@
             <!-- Price Negotiable Badge -->
             <div class="absolute top-2 left-0 right-0 flex justify-center">
               <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md tracking-wide">
-                💬 Price Negotiable
+                💬 {{ $t('products.negotiable') }}
               </span>
             </div>
           </div>
@@ -91,8 +89,8 @@
           :disabled="loadingMore"
           class="px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200"
         >
-          <span v-if="loadingMore">Loading...</span>
-          <span v-else>Show More</span>
+          <span v-if="loadingMore">{{ $t('products.loading_more') }}</span>
+          <span v-else>{{ $t('products.loadMore') }}</span>
         </button>
       </div>
 
@@ -236,53 +234,54 @@ const cartStore = useCartStore();
 console.log("Displayed Products:", displayedProducts.value);
 </script> -->
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';  // add watch
+import { ref, computed, onMounted, watch } from 'vue';
 import { useSearchStore } from '~/stores/search';
 import { useCartStore } from '~/stores/cart';
 import { useRouter } from "vue-router";
+import { useI18n } from 'vue-i18n';
 
+const { locale } = useI18n();
+const baseUrl = useRuntimeConfig().public.baseUrl;
 const router = useRouter();
 const searchStore = useSearchStore();
+const cartStore = useCartStore();
 
-// Reactive state
 const fetchedProducts = ref([]);
 const loading = ref(true);
 const error = ref(null);
-
-// Pagination state
 const currentPage = ref(1);
 const pageLimit = ref(20);
 const totalProducts = ref(0);
 const loadingMore = ref(false);
 
-const hasMoreProducts = computed(() => 
-  // Hide "Show More" when filtering — we already have all loaded products
+const hasMoreProducts = computed(() =>
   !searchStore.query && fetchedProducts.value.length < totalProducts.value
 );
 
 const fetchProducts = async (page) => {
-  const res = await $fetch('https://api.thibella.com/public/products/get-products.php', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json', 'Accept-Language': 'en' },
+  const res = await $fetch(`${baseUrl}/products`, {
+    headers: { 'Accept-Language': locale.value },
     params: { page, limit: pageLimit.value }
   });
   return res;
 };
 
-onMounted(async () => {
+const loadInitial = async () => {
   try {
     loading.value = true;
     const res = await fetchProducts(1);
-    fetchedProducts.value = res.data;
-    totalProducts.value = res.pagination.total_products;
+    fetchedProducts.value = res.products ?? [];
+    totalProducts.value = res.pagination?.total ?? 0;
     currentPage.value = 1;
   } catch (err) {
-    console.error('Error fetching products:', err);
-    error.value = 'Failed to load products';
+    error.value = 'error';
   } finally {
     loading.value = false;
   }
-});
+};
+
+onMounted(loadInitial);
+watch(locale, loadInitial);
 
 const loadMore = async () => {
   if (loadingMore.value || !hasMoreProducts.value) return;
@@ -290,7 +289,7 @@ const loadMore = async () => {
     loadingMore.value = true;
     const nextPage = currentPage.value + 1;
     const res = await fetchProducts(nextPage);
-    fetchedProducts.value = [...fetchedProducts.value, ...res.data];
+    fetchedProducts.value = [...fetchedProducts.value, ...(res.products ?? [])];
     currentPage.value = nextPage;
   } catch (err) {
     console.error('Error loading more:', err);
@@ -299,37 +298,24 @@ const loadMore = async () => {
   }
 };
 
-// Search
 const query = computed(() => searchStore.query);
 
 const filteredItems = computed(() => {
   const products = fetchedProducts.value;
   if (!query.value) return products;
-
   const q = query.value.toLowerCase();
-  return products.filter((product) => {
-    const nameMatch = product.productName?.toLowerCase().includes(q);
-    // Add more fields your API returns, e.g. category name
-    const categoryMatch = product.categoryName?.toLowerCase().includes(q)
-      || product.category?.toLowerCase().includes(q);
-    return nameMatch || categoryMatch;
-  });
+  return products.filter(p =>
+    p.productName?.toLowerCase().includes(q) ||
+    p.categoryName?.toLowerCase().includes(q)
+  );
 });
 
-// Clear search helper (used by "no results" button)
-const clearSearch = () => {
-  searchStore.setQuery('');
-};
+const clearSearch = () => searchStore.setQuery('');
 
-// Sorting
-// Change this line
 const sortOption = useState('sortOption', () => 'default');
 
 const displayedProducts = computed(() => {
-  // When searching, return filtered results as-is (API order)
   if (query.value) return filteredItems.value;
-
-  // Only sort when browsing without a search query
   return [...filteredItems.value].sort((a, b) => {
     if (sortOption.value === 'price-asc') return (a.priceCents || 0) - (b.priceCents || 0);
     if (sortOption.value === 'price-desc') return (b.priceCents || 0) - (a.priceCents || 0);
@@ -342,8 +328,6 @@ const displayedProducts = computed(() => {
 const goToProductDetails = (id) => {
   if (id) router.push(`products/${id}`);
 };
-
-const cartStore = useCartStore();
 </script>
 <style scoped>
 .add-to-cart-btn {

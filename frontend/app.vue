@@ -14,15 +14,19 @@ import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
-
 const cartStore = useCartStore();
 
 onMounted(() => {
+  // Remove the HTML splash screen now that Vue has hydrated
+  if (typeof window !== 'undefined' && window.__removeSplash) {
+    window.__removeSplash()
+  }
+
   cartStore.loadCart();
 
-    const productId = route.query.product;
-    if (productId) {
-      router.push(`/products/${productId}`);
-    }
+  const productId = route.query.product;
+  if (productId) {
+    router.push(`/products/${productId}`);
+  }
 });
 </script>

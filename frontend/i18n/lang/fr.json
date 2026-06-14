@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "products": "Produits",
+    "categories": "Catégories"
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "createAccount": "Créer un compte",
+    "logout": "Se déconnecter"
+  },
+  "search": {
+    "placeholder": "Rechercher des produits...",
+    "results": "résultat | résultats",
+    "for": "pour",
+    "clear": "Effacer",
+    "noResults": "Aucun produit trouvé pour"
+  },
+  "products": {
+    "title": "Nos Produits",
+    "subtitle": "Explorez la collection Thibella et découvrez des produits que vous allez aimer",
+    "loading": "Chargement des produits...",
+    "loadMore": "Voir Plus",
+    "loading_more": "Chargement...",
+    "negotiable": "Prix Négociable",
+    "loadError": "Erreur lors du chargement des produits"
+  },
+  "categories": {
+    "loading": "Chargement des catégories...",
+    "error": "Impossible de charger les catégories",
+    "allProducts": "Tous les produits",
+    "subcategories": "{count} Sous-catégories",
+    "notFound": "Catégorie introuvable",
+    "failedLoad": "Impossible de charger la catégorie",
+    "noItems": "Aucun article trouvé dans cette catégorie",
+    "goBack": "Retour",
+    "tryAgain": "Réessayer",
+    "back": "Retour",
+    "noProducts": "Aucun produit trouvé dans cette sous-catégorie"
+  },
+  "language": {
+    "select": "Choisir la langue",
+    "en": "Anglais",
+    "rw": "Kinyarwanda",
+    "fr": "Français"
+  },
+  "darkMode": {
+    "toggle": "Basculer le mode sombre"
+  },
+  "footer": {
+    "aboutUs": "À propos",
+    "aboutDesc": "Nous sommes votre boutique en ligne de confiance, offrant des produits de qualité avec un excellent service client. Notre mission est de vous offrir la meilleure expérience d'achat.",
+    "newsletter": "Newsletter",
+    "newsletterSub": "Abonnez-vous pour recevoir des offres et mises à jour",
+    "emailPlaceholder": "Votre email",
+    "subscribe": "S'abonner",
+    "followUs": "Suivez-nous",
+    "paymentMethods": "Moyens de paiement :",
+    "rights": "Tous droits réservés.",
+    "hours": "Lun-Sam : 8h - 20h"
+  },
+  "profile": {
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "logoutConfirm": "Voulez-vous vraiment vous déconnecter ?",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "loggingOut": "Déconnexion..."
+  },
+  "login": {
+    "welcome": "Bon retour",
+    "subtitle": "Connectez-vous à votre compte",
+    "continueGoogle": "Continuer avec Google",
+    "continueFacebook": "Continuer avec Facebook",
+    "orWith": "Ou continuer avec",
+    "emailLabel": "Email ou nom d'utilisateur",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signingIn": "Connexion...",
+    "signIn": "Se connecter",
+    "noAccount": "Pas encore de compte ?",
+    "signUp": "S'inscrire"
+  },
+  "signup": {
+    "title": "Créer un compte",
+    "subtitle": "Rejoignez-nous aujourd'hui",
+    "fullName": "Nom complet",
+    "email": "Adresse email",
+    "phone": "Numéro de téléphone (facultatif)",
+    "password": "Mot de passe",
+    "passwordHint": "Minimum 8 caractères avec lettres et chiffres",
+    "confirmPassword": "Confirmer le mot de passe",
+    "terms": "J'accepte les",
+    "termsLink": "Conditions d'utilisation",
+    "and": "et la",
+    "privacyLink": "Politique de confidentialité",
+    "creating": "Création du compte...",
+    "create": "Créer un compte",
+    "orWith": "Ou continuer avec",
+    "hasAccount": "Déjà un compte ?",
+    "loginLink": "Se connecter"
+  },
+  "product": {
+    "loading": "Chargement du produit...",
+    "notFound": "Produit introuvable",
+    "goBack": "Retour",
+    "colors": "Couleurs disponibles :",
+    "selected": "Sélectionné :",
+    "sizes": "Tailles disponibles :",
+    "selectedSize": "Taille sélectionnée :",
+    "callSeller": "Contacter le vendeur"
+  },
+  "searchBar": {
+    "placeholder": "Rechercher sur Thibella..."
+  }
+}

@@ -10,7 +10,7 @@
         @keydown.escape="closeSuggestions"
         @keydown.arrow-down.prevent="highlightNext"
         @keydown.arrow-up.prevent="highlightPrev"
-        placeholder="Search thibella..."
+        :placeholder="t('searchBar.placeholder')"
         class="w-full px-4 py-2 pl-10 pr-10 border border-green-300 dark:border-green-600 
                rounded-xl bg-green-50 dark:bg-green-800 text-green-900 dark:text-green-100 
                focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -74,6 +74,9 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSearchStore } from '~/stores/search'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const searchStore = useSearchStore()

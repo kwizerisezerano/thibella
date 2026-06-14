@@ -67,36 +67,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, toRaw, computed, watch } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const isDarkMode = ref(false);
+const { locale } = useI18n();
+const baseUrl = useRuntimeConfig().public.baseUrl;
+
 const currentSlide = ref(0);
-
-const products = ref([]);
 const categories = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-// const { data } = await useFetch(
-//   'https://api.thibella.com/public/categories/get-categories.php'
-// )
-
 const fetchCategories = async () => {
   try {
-    const res = await $fetch('https://api.thibella.com/public/categories/get-categories.php', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept-Language': 'en'
-      }
+    const res = await $fetch(`${baseUrl}/categories`, {
+      headers: { 'Accept-Language': locale.value }
     })
-
-    categories.value = Array.isArray(res) ? res : res.data ?? []
-
-    console.log('Fetched categories:', toRaw(categories.value))
-
+    categories.value = res.categories ?? res.data ?? []
   } catch (err) {
-    console.error('Error fetching categories:', err)
     error.value = 'Failed to load categories'
   } finally {
     loading.value = false
@@ -112,16 +100,6 @@ const slides = computed(() =>
     route: `category/${item.slug}`
   }))
 )
-
-watch(categories.value, (newCategories) => {
-  console.log('categories updated:', toRaw(newCategories))
-}, { immediate: true })
-
-watch(slides, (newSlides) => {
-  console.log('slides updated:', toRaw(newSlides))
-}, { immediate: true })
-
-console.log('slides computed', slides.value);
 
 let autoplayInterval = null;
 
@@ -145,13 +123,12 @@ const stopAutoplay = () => {
   if (autoplayInterval) clearInterval(autoplayInterval);
 };
 
-onMounted(
-  
-  () => {
+onMounted(() => {
     fetchCategories()
     startAutoplay()
   }
 );
+watch(locale, fetchCategories);
 onUnmounted(() => stopAutoplay());
 </script>
 

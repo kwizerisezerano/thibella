@@ -78,7 +78,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
-              Login
+              {{ $t('profile.login') }}
             </button>
           </NuxtLink>
         </div>
@@ -87,20 +87,20 @@
         <div v-if="role" class="border-t border-gray-200 dark:border-gray-700">
           <!-- Logout Confirmation -->
           <div v-if="showLogoutConfirm" class="px-4 py-3 bg-red-50 dark:bg-gray-700">
-            <p class="text-sm text-gray-800 dark:text-white mb-3">Are you sure you want to logout?</p>
+            <p class="text-sm text-gray-800 dark:text-white mb-3">{{ $t('profile.logoutConfirm') }}</p>
             <div class="flex justify-end gap-2">
               <button 
                 @click.stop="cancelLogout"
                 class="px-3 py-1.5 text-sm text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors"
               >
-                Cancel
+                {{ $t('profile.cancel') }}
               </button>
               <button 
                 @click.stop="handleLogout"
                 :disabled="isLoading"
                 class="px-3 py-1.5 text-sm bg-red-500 hover:bg-red-600 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ isLoading ? 'Logging out...' : 'Confirm' }}
+                {{ isLoading ? $t('profile.loggingOut') : $t('profile.confirm') }}
               </button>
             </div>
           </div>
@@ -124,7 +124,7 @@
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
               />
             </svg>
-            Logout
+            {{ $t('profile.logout') }}
           </button>
         </div>
 
@@ -134,10 +134,12 @@
 </template>
 
 <script setup lang="ts">
-
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '~/stores/user'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const userStore = useUserStore()
 const { name, role } = storeToRefs(userStore);

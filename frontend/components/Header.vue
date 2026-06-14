@@ -44,7 +44,7 @@
             :to="item.path"
             class="text-sm sm:text-base text-green-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            {{ item.label }}
+            {{ $t(item.label) }}
           </NuxtLink>
         </nav>
 
@@ -66,7 +66,8 @@
               @click="isOpen = !isOpen"
               class="flex items-center gap-1 border border-green-300 dark:border-green-600 rounded px-2 py-1 text-sm text-green-700 dark:text-green-300 bg-transparent hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
             >
-              {{ languages.find(l => l.value === currentLanguage)?.flag }} {{ currentLanguage.toUpperCase() }}
+              <img :src="`https://flagcdn.com/20x15/${languages.find(l => l.value === currentLanguage)?.flag}.png`" width="20" height="15" class="rounded-sm" />
+              {{ currentLanguage.toUpperCase() }}
               <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -79,11 +80,12 @@
     <button
       v-for="lang in languages"
       :key="lang.value"
-      @click="currentLanguage = lang.value; isOpen = false"
-      class="w-full text-left px-3 py-1.5 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"
+      @click="switchLanguage(lang.value)"
+      class="w-full text-left px-3 py-1.5 text-sm text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors flex items-center gap-2"
       :class="{ 'bg-green-100 dark:bg-green-900/50': currentLanguage === lang.value }"
     >
-      {{ lang.flag }} {{ lang.label }}
+      <img :src="`https://flagcdn.com/20x15/${lang.flag}.png`" width="20" height="15" class="rounded-sm" />
+      {{ lang.label }}
     </button>
   </div>
 </div>
@@ -155,22 +157,23 @@
               @click="mobileMenuOpen = false"
               class="py-3 px-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
             >
-              {{ item.label }}
+              {{ $t(item.label) }}
             </NuxtLink>
             <div v-if="index < menuItems.length - 1" class="border-b border-gray-100 dark:border-gray-800 my-1"></div>
           </template>
           
           <!-- Mobile Language Selector -->
-          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-            <select
-              v-model="currentLanguage"
-              class="w-full p-2 bg-gray-50 dark:bg-gray-800 text-green-700 border border-gray-200 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300"
-              @change="mobileMenuOpen = false"
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 flex gap-2">
+            <button
+              v-for="lang in languages"
+              :key="lang.value"
+              @click="switchLanguage(lang.value)"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded border text-sm text-green-700 dark:text-green-300 transition-colors"
+              :class="currentLanguage === lang.value ? 'border-green-500 bg-green-50 dark:bg-green-900/40' : 'border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'"
             >
-              <option value="en">🇺🇸 </option>
-              <option value="rw">🇷🇼 </option>
-              <option value="fr">🇫🇷 </option>
-            </select>
+              <img :src="`https://flagcdn.com/20x15/${lang.flag}.png`" width="20" height="15" class="rounded-sm" />
+              {{ lang.label }}
+            </button>
           </div>
           
           <!-- Mobile Account Link -->
@@ -192,91 +195,48 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useCartStore } from '~/stores/cart'
 import { useSearchStore } from '~/stores/search'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
-
-// USE THE COMPOSABLE!
 const { isDark, toggleDarkMode } = useDarkMode()
+const { locale, setLocale } = useI18n()
 
-// State
 const mobileMenuOpen = ref(false)
-const currentLanguage = ref('rw')
 const router = useRouter()
 const searchStore = useSearchStore()
-const searchQuery = ref(searchStore.query)
-const wishlistCount = ref(5)
-
-const menuItems = [
-  {
-    label: "Home",
-    path: "/"
-  },
-  {
-    label: "Products",
-    path: "/products"
-  },
-  {
-    label: "Categories",
-    path: "/categories"
-  },
-  // {
-  //   label: "orders",
-  //   path: "/orders/history"
-  // },
-]
-
-
-// Cart Store
 const cartStore = useCartStore()
 const cartCount = computed(() => cartStore.cartTotalQuantity)
 
-// Set initial currency based on default language
-onMounted(() => { 
-  // Trigger the language change to set initial currency
-  currentLanguage.value = currentLanguage.value
-})
+const menuItems = [
+  { label: 'nav.home',       path: '/' },
+  { label: 'nav.products',   path: '/products' },
+  { label: 'nav.categories', path: '/categories' },
+]
 
+const languages = [
+  { value: 'en', label: 'EN', flag: 'us' },
+  { value: 'rw', label: 'RW', flag: 'rw' },
+  { value: 'fr', label: 'FR', flag: 'fr' },
+]
 
+const currentLanguage = computed(() => locale.value)
 
-const performSearch = (query) => {
-  searchQuery.value = query
-  searchStore.setQuery(query)
-  // Navigate to home page if not already there
-  if (router.currentRoute.value.path !== '/') {
-    router.push('/')
+function switchLanguage(lang) {
+  setLocale(lang)
+  switch (lang) {
+    case 'en': cartStore.setCurrency('USD'); break
+    case 'rw': cartStore.setCurrency('RWF'); break
+    case 'fr': cartStore.setCurrency('EUR'); break
   }
+  isOpen.value = false
+  mobileMenuOpen.value = false
 }
-
-
-// Watch language changes and update currency accordingly
-watch(currentLanguage, (newLang) => {
-  console.log('Language changed to:', newLang)
-  // Update currency based on language
-  switch(newLang) {
-    case 'en':
-      cartStore.setCurrency('USD')
-      break
-    case 'rw':
-      cartStore.setCurrency('RWF')
-      break
-    case 'fr':
-      cartStore.setCurrency('EUR')
-      break
-  }
-  // Here you would implement actual language switching logic
-})
 
 const isOpen = ref(false)
 const dropdownRef = ref(null)
-
-const languages = [
-  { value: 'en', label: 'EN', flag: '🇺🇸' },
-  { value: 'rw', label: 'RW', flag: '🇷🇼' },
-  { value: 'fr', label: 'FR', flag: '🇫🇷' },
-]
 
 onMounted(() => document.addEventListener('click', handleClickOutside))
 onUnmounted(() => document.removeEventListener('click', handleClickOutside))

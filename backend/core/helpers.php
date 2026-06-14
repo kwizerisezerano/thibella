@@ -100,3 +100,14 @@ function emailHash(string $email): string
     loadEnv(__DIR__ . '/../.env');
     return hash_hmac('sha256', strtolower(trim($email)), env('ENCRYPTION_KEY'));
 }
+
+/**
+ * Get the request locale from Accept-Language header (en, rw, fr)
+ */
+function getLocale(): string
+{
+    $supported = ['en', 'rw', 'fr'];
+    $header    = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'en';
+    $lang      = strtolower(substr(trim(explode(',', $header)[0]), 0, 2));
+    return in_array($lang, $supported) ? $lang : 'en';
+}

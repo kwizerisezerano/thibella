@@ -34,15 +34,15 @@
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-8">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-green-700 dark:text-green mb-2">Create Account</h1>
-        <p class="text-gray-600 dark:text-gray-300">Join us today and get started</p>
+        <h1 class="text-3xl font-bold text-green-700 dark:text-green mb-2">{{ $t('signup.title') }}</h1>
+        <p class="text-gray-600 dark:text-gray-300">{{ $t('signup.subtitle') }}</p>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="handleSubmit" class="space-y-5">
         <!-- Full Name -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('signup.fullName') }}</label>
           <input
             v-model="formData.fullName"
             type="text"
@@ -55,7 +55,7 @@
 
         <!-- Email -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('signup.email') }}</label>
           <input
             v-model="formData.email"
             type="email"
@@ -68,7 +68,7 @@
 
         <!-- Phone Number -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number (Optional)</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('signup.phone') }}</label>
           <input
             v-model="formData.phone"
             type="tel"
@@ -80,7 +80,7 @@
 
         <!-- Password -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('signup.password') }}</label>
           <div class="relative">
             <input
               v-model="formData.password"
@@ -97,13 +97,13 @@
               {{ showPassword ? '👁️' : '👁️‍🗨️' }}
             </button>
           </div>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Minimum 8 characters with letters and numbers</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $t('signup.passwordHint') }}</p>
           <p v-if="errors.password" class="text-red-500 dark:text-red-400 text-xs mt-1">{{ errors.password }}</p>
         </div>
 
         <!-- Confirm Password -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm Password</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ $t('signup.confirmPassword') }}</label>
           <div class="relative">
             <input
               v-model="formData.confirmPassword"
@@ -132,7 +132,7 @@
             class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500 dark:bg-gray-700 dark:ring-offset-gray-800"
           />
           <label class="ml-2 text-sm text-gray-600 dark:text-gray-300">
-            I agree to the <a href="#" class="text-green-600 dark:text-green-400 hover:underline">Terms & Conditions</a> and <a href="#" class="text-green-600 dark:text-green-400 hover:underline">Privacy Policy</a>
+            {{ $t('signup.terms') }} <a href="#" class="text-green-600 dark:text-green-400 hover:underline">{{ $t('signup.termsLink') }}</a> {{ $t('signup.and') }} <a href="#" class="text-green-600 dark:text-green-400 hover:underline">{{ $t('signup.privacyLink') }}</a>
           </label>
         </div>
         <p v-if="errors.agreeToTerms" class="text-red-500 dark:text-red-400 text-xs">{{ errors.agreeToTerms }}</p>
@@ -147,7 +147,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
           </svg>
-          {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+          {{ isLoading ? $t('signup.creating') : $t('signup.create') }}
         </button>
 
         <!-- Social Login -->
@@ -156,7 +156,7 @@
             <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with</span>
+            <span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">{{ $t('signup.orWith') }}</span>
           </div>
         </div>
 
@@ -189,7 +189,7 @@
         <!-- Login Link -->
         <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           Already have an account?
-          <NuxtLink to="/login" class="text-green-600 dark:text-green-400 font-semibold hover:underline">Login</NuxtLink>
+          <NuxtLink to="/login" class="text-green-600 dark:text-green-400 font-semibold hover:underline">{{ $t('signup.loginLink') }}</NuxtLink>
         </p>
       </form>
     </div>
@@ -198,6 +198,9 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // ─── Toast system ────────────────────────────────────────────────────────────
 const toasts = ref([])

@@ -1,30 +1,118 @@
 {
-  "navigation": {
-    "home": "HOME",
-    "services": "SERVICES",
-    "contact": "CONTACT",
-    "about": "ABOUT",
-    "stores": "STORES"
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "categories": "Categories"
   },
   "auth": {
     "signIn": "Sign in",
-    "createAccount": "Create account"
+    "createAccount": "Create account",
+    "logout": "Logout"
   },
-  "menu": {
-    "close": "Close menu",
-    "openMenu": "Open menu",
-    "search": "Search",
-    "cart": {
-      "title": "Cart",
-      "items": "items in cart, view bag"
-    }
+  "search": {
+    "placeholder": "Search products...",
+    "results": "result | results",
+    "for": "for",
+    "clear": "Clear search",
+    "noResults": "No products found for"
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "Explore the Thibella collection and discover products you'll love",
+    "loading": "Loading products...",
+    "loadMore": "Show More",
+    "loading_more": "Loading...",
+    "negotiable": "Price Negotiable",
+    "loadError": "Error loading products"
+  },
+  "categories": {
+    "loading": "Loading categories...",
+    "error": "Failed to load categories",
+    "allProducts": "All Products",
+    "subcategories": "{count} Subcategories",
+    "notFound": "Category not found",
+    "failedLoad": "Failed to load category",
+    "noItems": "No items found in this category",
+    "goBack": "Go back",
+    "tryAgain": "Try again",
+    "back": "Back",
+    "noProducts": "No products found in this subcategory"
   },
   "language": {
     "select": "Select Language",
-    "english": "English",
-    "kinyarwanda": "Kinyarwanda"
+    "en": "English",
+    "rw": "Kinyarwanda",
+    "fr": "French"
   },
-  "company": {
-    "name": "Your Company"
+  "darkMode": {
+    "toggle": "Toggle dark mode"
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "aboutDesc": "We are your trusted online store, offering quality products with excellent customer service. Our mission is to provide you with the best shopping experience.",
+    "newsletter": "Newsletter",
+    "newsletterSub": "Subscribe to get offers & updates",
+    "emailPlaceholder": "Your email",
+    "subscribe": "Subscribe",
+    "followUs": "Follow Us",
+    "paymentMethods": "Payment Methods:",
+    "rights": "All rights reserved.",
+    "hours": "Mon-Sat: 8AM - 8PM"
+  },
+  "profile": {
+    "login": "Login",
+    "logout": "Logout",
+    "logoutConfirm": "Are you sure you want to logout?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loggingOut": "Logging out..."
+  },
+  "login": {
+    "welcome": "Welcome Back",
+    "subtitle": "Sign in to your account",
+    "continueGoogle": "Continue with Google",
+    "continueFacebook": "Continue with Facebook",
+    "orWith": "Or continue with",
+    "emailLabel": "Email or Username",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signingIn": "Signing in...",
+    "signIn": "Sign In",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "signup": {
+    "title": "Create Account",
+    "subtitle": "Join us today and get started",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number (Optional)",
+    "password": "Password",
+    "passwordHint": "Minimum 8 characters with letters and numbers",
+    "confirmPassword": "Confirm Password",
+    "terms": "I agree to the",
+    "termsLink": "Terms & Conditions",
+    "and": "and",
+    "privacyLink": "Privacy Policy",
+    "creating": "Creating Account...",
+    "create": "Create Account",
+    "orWith": "Or continue with",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Login"
+  },
+  "product": {
+    "loading": "Loading product details...",
+    "notFound": "Product not found",
+    "goBack": "Go Back",
+    "colors": "Available Colors:",
+    "selected": "Selected:",
+    "sizes": "Available Sizes:",
+    "selectedSize": "Selected size:",
+    "callSeller": "Call Seller"
+  },
+  "searchBar": {
+    "placeholder": "Search thibella..."
   }
 }

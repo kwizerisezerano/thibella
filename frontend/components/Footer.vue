@@ -6,10 +6,9 @@
         
         <!-- About Us Section -->
         <div>
-          <h3 class="text-green-900 dark:text-white text-lg font-semibold mb-4">About Us</h3>
+          <h3 class="text-green-900 dark:text-white text-lg font-semibold mb-4">{{ $t('footer.aboutUs') }}</h3>
           <p class="text-sm leading-relaxed mb-4 text-green-600 dark:text-gray-400">
-            We are your trusted online store, offering quality products with excellent customer service. 
-            Our mission is to provide you with the best shopping experience.
+            {{ $t('footer.aboutDesc') }}
           </p>
             <div class="space-y-2 text-sm">
             <div class="flex items-start">
@@ -39,21 +38,21 @@
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                <span class="text-green-700">Mon-Sat: 8AM - 8PM</span>
+          <span class="text-green-700">{{ $t('footer.hours') }}</span>
             </div>
             </div>
         </div>
 
         <!-- Newsletter & Social Section -->
         <div>
-          <h3 class="text-green-900 dark:text-white text-lg font-semibold mb-4">Newsletter</h3>
-          <p class="text-sm mb-4 text-green-600 dark:text-gray-400">Subscribe to get offers & updates</p>
+          <h3 class="text-green-900 dark:text-white text-lg font-semibold mb-4">{{ $t('footer.newsletter') }}</h3>
+          <p class="text-sm mb-4 text-green-600 dark:text-gray-400">{{ $t('footer.newsletterSub') }}</p>
           <form @submit.prevent="handleSubscribe" class="mb-6">
             <div class="flex">
               <input 
                 v-model="email"
                 type="email" 
-                placeholder="Your email" 
+                :placeholder="$t('footer.emailPlaceholder')" 
                 required
                 class="flex-1 px-4 py-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-gray-600 text-green-900 dark:text-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
               />
@@ -61,12 +60,12 @@
                 type="submit"
                 class="px-4 py-2 bg-green-600 text-white rounded-r-md hover:bg-green-700 transition"
               >
-                Subscribe
+                {{ $t('footer.subscribe') }}
               </button>
             </div>
           </form>
 
-          <h3 class="text-green-900 dark:text-white text-lg font-semibold mb-4">Follow Us</h3>
+          <h3 class="text-green-900 dark:text-white text-lg font-semibold mb-4">{{ $t('footer.followUs') }}</h3>
             <div class="flex space-x-4 mb-6">
                 <a href="#" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition" aria-label="Facebook">
                     <img src="https://res.cloudinary.com/dck2vzccq/image/upload/v1752079081/facebookIcon_lhb9c5.jpg" alt="Facebook" class="w-6 h-6" />
@@ -98,7 +97,7 @@
           
           <!-- Payment Methods -->
           <div class="flex items-center space-x-4">
-            <span class="text-sm text-green-600 dark:text-gray-400">Payment Methods:</span>
+            <span class="text-sm text-green-600 dark:text-gray-400">{{ $t('footer.paymentMethods') }}</span>
             <div class="flex space-x-2">
               <span class="px-3 py-1 bg-green-100 dark:bg-gray-800 rounded text-xs">MTN Mobile</span>
               <span class="px-3 py-1 bg-green-100 dark:bg-gray-800 rounded text-xs">Airtel Money</span>
@@ -110,7 +109,7 @@
 
         <!-- Copyright -->
         <div class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-          {{ currentYear }} Thibella. All rights reserved.
+          {{ currentYear }} Thibella. {{ $t('footer.rights') }}
         </div>
       </div>
     </div>
