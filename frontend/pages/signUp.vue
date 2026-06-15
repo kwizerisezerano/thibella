@@ -201,6 +201,7 @@ import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const baseUrl = useRuntimeConfig().public.baseUrl
 
 // ─── Toast system ────────────────────────────────────────────────────────────
 const toasts = ref([])
@@ -267,7 +268,10 @@ const handleSubmit = async () => {
     errors.email = 'Please enter a valid email address'
     isValid = false
   }
-  if (formData.phone && !validatePhone(formData.phone)) {
+  if (!formData.phone) {
+    errors.phone = 'Please enter your phone number'
+    isValid = false
+  } else if (!validatePhone(formData.phone)) {
     errors.phone = 'Please enter a valid phone number'
     isValid = false
   }
@@ -289,19 +293,18 @@ const handleSubmit = async () => {
   isLoading.value = true
 
   try {
-    const response = await $fetch('https://api.thibella.com/public/auth/register.php', {
+    const response = await $fetch(`${baseUrl}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: {
         name: formData.fullName,
         email: formData.email,
-        ...(formData.phone && { phone: formData.phone }),
+        phone: formData.phone,
         password: formData.password
       }
     })
 
-    // API returns { success: 200, message: "User registered successfully" }
-    if (response.success === 200) {
+    if (response.success) {
       addToast('Account created successfully! Redirecting to login…', 'success', 3000)
 
       // Reset form
@@ -316,12 +319,13 @@ const handleSubmit = async () => {
       addToast(response.message || 'Registration failed. Please try again.', 'error')
     }
   } catch (error) {
+    console.error('Registration error:', error)
     const statusCode = error?.response?.status
     const serverMessage = error?.data?.message
 
     if (statusCode === 409 || serverMessage?.toLowerCase().includes('exist')) {
       addToast('An account with this email already exists.', 'error')
-    } else if (statusCode === 422) {
+    } else if (statusCode === 422 || statusCode === 400) {
       addToast(serverMessage || 'Invalid data submitted. Please check your inputs.', 'error')
     } else if (statusCode >= 500) {
       addToast('Server error. Please try again later.', 'error')

@@ -41,11 +41,12 @@
             @click="goToProduct(product.id)"
             class="group cursor-pointer rounded-2xl bg-white dark:bg-gray-800 overflow-hidden shadow hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700"
           >
-            <div class="relative aspect-square overflow-hidden">
+            <div class="relative aspect-square overflow-hidden" @click.stop="">
               <img
-                :src="product.imageUrl"
+                @click="goToProduct(product.id)"
+                :src="getProductCurrentImage(product.id)"
                 :alt="product.productName"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div class="absolute top-2 left-0 right-0 flex justify-center">
@@ -53,6 +54,26 @@
                   💬 {{ $t('products.negotiable') }}
                 </span>
               </div>
+
+              <!-- Left/Right Image Navigation -->
+              <button 
+                @click.stop="prevProductImage(product.id)"
+                v-if="getProductImages(product.id).length > 1"
+                class="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button 
+                @click.stop="nextProductImage(product.id)"
+                v-if="getProductImages(product.id).length > 1"
+                class="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
             <div class="p-3">
               <p class="text-sm font-bold text-green-900 dark:text-gray-200 text-center line-clamp-2">
@@ -140,6 +161,7 @@ import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const { locale, t } = useI18n()
+const baseUrl = useRuntimeConfig().public.baseUrl
 
 const loading = ref(true)
 const error = ref(null)
@@ -148,6 +170,7 @@ const categoryTitle = ref('')
 const categoryImage = ref('')
 const subcategories = ref([])
 const products = ref([])
+const productCurrentImageIndex = ref({})
 
 // Fetch category data by slug
 const fetchData = async () => {
@@ -156,21 +179,59 @@ const fetchData = async () => {
 
   try {
     const slug = route.params.slug
+    
+    // First check if this is a category slug
     const categoryRes = await $fetch(
-      `https://api.thibella.com/public/subcategories/get-subcategory-by-slug.php?slug=${slug}`,
-      { headers: { 'Content-Type': 'application/json', 'Accept-Language': locale.value } }
+      `${baseUrl}/categories`,
+      { 
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': locale.value },
+        params: { slug, with_subcategories: 1 }
+      }
     )
 
-    const categoryData = Array.isArray(categoryRes.data) ? categoryRes.data[0] : categoryRes.data
-    subcategories.value = categoryRes.data ?? []
-
-    if (categoryData) {
-      categoryTitle.value = categoryData.name || categoryData.title
+    if (categoryRes.success && categoryRes.data) {
+      // It's a category!
+      const categoryData = categoryRes.data
+      categoryTitle.value = categoryData.title
       categoryImage.value = categoryData.image
+      subcategories.value = categoryData.subcategories ?? []
+      
+      // If there are no subcategories, fetch products for this category
+      if (subcategories.value.length === 0) {
+        const productsRes = await $fetch(
+          `${baseUrl}/products`,
+          { 
+            headers: { 'Accept-Language': locale.value },
+            params: { category_id: categoryData.id }
+          }
+        )
+        if (productsRes.success) {
+          products.value = productsRes.products ?? []
+        }
+      }
     } else {
-      error.value = t('categories.notFound')
+      // Check if it's a subcategory slug
+      const subcategoryRes = await $fetch(
+        `${baseUrl}/subcategories`,
+        { 
+          headers: { 'Content-Type': 'application/json', 'Accept-Language': locale.value },
+          params: { slug, with_category: 1 }
+        }
+      )
+
+      if (subcategoryRes.success && subcategoryRes.data) {
+        // It's a subcategory - redirect to subcategory page
+        const sub = subcategoryRes.data
+        navigateTo({
+          path: `/category/subcategory/${sub.id}`,
+          query: { name: sub.name }
+        })
+      } else {
+        error.value = t('categories.notFound')
+      }
     }
   } catch (err) {
+    console.error('Fetch category error:', err)
     error.value = t('categories.failedLoad')
   } finally {
     loading.value = false
@@ -190,6 +251,50 @@ const goToSubcategory = (sub) => {
 const goToProduct = (id) => {
   if (id) navigateTo(`/products/${id}`)
 }
+
+// Product image navigation
+const getProductImages = (productId) => {
+  const product = products.value.find(p => p.id === productId);
+  if (!product) return [];
+  const images = [product.imageUrl];
+  if (product.possibleImagesUrls) {
+    if (typeof product.possibleImagesUrls === 'string') {
+      try {
+        const parsed = JSON.parse(product.possibleImagesUrls);
+        if (Array.isArray(parsed)) {
+          images.push(...parsed);
+        }
+      } catch {
+        // ignore
+      }
+    } else if (Array.isArray(product.possibleImagesUrls)) {
+      images.push(...product.possibleImagesUrls);
+    }
+  }
+  return images;
+};
+
+const getProductCurrentImage = (productId) => {
+  const images = getProductImages(productId);
+  const index = productCurrentImageIndex.value[productId] ?? 0;
+  return images[index] ?? images[0];
+};
+
+const prevProductImage = (productId) => {
+  const images = getProductImages(productId);
+  if (!images.length) return;
+  const currentIndex = productCurrentImageIndex.value[productId] ?? 0;
+  const newIndex = currentIndex <= 0 ? images.length - 1 : currentIndex - 1;
+  productCurrentImageIndex.value[productId] = newIndex;
+};
+
+const nextProductImage = (productId) => {
+  const images = getProductImages(productId);
+  if (!images.length) return;
+  const currentIndex = productCurrentImageIndex.value[productId] ?? 0;
+  const newIndex = currentIndex >= images.length - 1 ? 0 : currentIndex + 1;
+  productCurrentImageIndex.value[productId] = newIndex;
+};
 </script>
 
 <style scoped>

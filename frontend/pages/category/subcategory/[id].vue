@@ -7,11 +7,13 @@ const route = useRoute()
 const router = useRouter()
 const cartStore = useCartStore()
 const { locale } = useI18n()
+const baseUrl = useRuntimeConfig().public.baseUrl
 
 const error = ref(null)
 const parsedProducts = ref([])
 const subcategoryTitle = ref('')
 const subcategories = ref([])
+const productCurrentImageIndex = ref({}) // for image navigation
 
 function safeParseJson(str) {
   try {
@@ -23,8 +25,11 @@ function safeParseJson(str) {
 
 // Fetch products by subcategory ID
 const { data, error: fetchError } = await useFetch(
-  `https://api.thibella.com/public/products/get_by_subcategory.php?subcategory_id=${route.params.id}`,
-  { headers: { 'Accept-Language': locale.value } }
+  `${baseUrl}/products`,
+  { 
+    headers: { 'Accept-Language': locale.value },
+    params: { subcategory_id: route.params.id }
+  }
 )
 
 if (fetchError.value || !data.value || !data.value.success) {
@@ -58,21 +63,68 @@ if (data.value?.products?.[0]?.category_id) {
 // If we have a category_id, fetch sibling subcategories for the chip row
 if (categoryId.value) {
   const { data: subData } = await useFetch(
-    `https://api.thibella.com/public/subcategories/getSubcategoryiesByCategoryId.php?category_id=${categoryId.value}`,
-    { headers: { 'Accept-Language': locale.value } }
+    `${baseUrl}/subcategories`,
+    { 
+      headers: { 'Accept-Language': locale.value },
+      params: { category_id: categoryId.value }
+    }
   )
-  if (subData.value?.data) {
-    subcategories.value = subData.value.data
+  if (subData.value?.subcategories) {
+    subcategories.value = subData.value.subcategories
   }
 } else {
   const { data: subData } = await useFetch(
-    `https://api.thibella.com/public/subcategories/get.php`,
+    `${baseUrl}/subcategories`,
     { headers: { 'Accept-Language': locale.value } }
   )
   if (subData.value?.subcategories) {
     subcategories.value = subData.value.subcategories
   }
 }
+
+// Product image navigation
+const getProductImages = (productId) => {
+  const product = parsedProducts.value.find(p => p.id === productId);
+  if (!product) return [];
+  const images = [product.imageUrl];
+  if (product.possibleImagesUrls) {
+    if (typeof product.possibleImagesUrls === 'string') {
+      try {
+        const parsed = JSON.parse(product.possibleImagesUrls);
+        if (Array.isArray(parsed)) {
+          images.push(...parsed);
+        }
+      } catch {
+        // ignore
+      }
+    } else if (Array.isArray(product.possibleImagesUrls)) {
+      images.push(...product.possibleImagesUrls);
+    }
+  }
+  return images;
+};
+
+const getProductCurrentImage = (productId) => {
+  const images = getProductImages(productId);
+  const index = productCurrentImageIndex.value[productId] ?? 0;
+  return images[index] ?? images[0];
+};
+
+const prevProductImage = (productId) => {
+  const images = getProductImages(productId);
+  if (!images.length) return;
+  const currentIndex = productCurrentImageIndex.value[productId] ?? 0;
+  const newIndex = currentIndex <= 0 ? images.length - 1 : currentIndex - 1;
+  productCurrentImageIndex.value[productId] = newIndex;
+};
+
+const nextProductImage = (productId) => {
+  const images = getProductImages(productId);
+  if (!images.length) return;
+  const currentIndex = productCurrentImageIndex.value[productId] ?? 0;
+  const newIndex = currentIndex >= images.length - 1 ? 0 : currentIndex + 1;
+  productCurrentImageIndex.value[productId] = newIndex;
+};
 
 const goToSubcategory = (sub) => {
   router.push({
@@ -147,12 +199,13 @@ const goToProduct = (id) => {
       >
         <!-- Image -->
         <div
-          @click="goToProduct(product.id)"
-          class="relative overflow-hidden cursor-pointer h-40 sm:h-48 md:h-56 lg:h-48 xl:h-52"
+          @click.stop=""
+          class="relative overflow-hidden h-40 sm:h-48 md:h-56 lg:h-48 xl:h-52"
         >
           <img
-            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-            :src="product.imageUrl"
+            @click="goToProduct(product.id)"
+            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 cursor-pointer"
+            :src="getProductCurrentImage(product.id)"
             :alt="product.productName"
           />
 
@@ -162,6 +215,26 @@ const goToProduct = (id) => {
               💬 {{ $t('products.negotiable') }}
             </span>
           </div>
+
+          <!-- Left/Right Image Navigation -->
+          <button 
+            @click.stop="prevProductImage(product.id)"
+            v-if="getProductImages(product.id).length > 1"
+            class="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button 
+            @click.stop="nextProductImage(product.id)"
+            v-if="getProductImages(product.id).length > 1"
+            class="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
         <!-- Info -->

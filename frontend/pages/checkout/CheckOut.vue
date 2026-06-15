@@ -454,11 +454,9 @@ const handlePlaceOrder = async () => {
     const payload = {
       ...formData.value,
       orderItems: orderItems.value,
-      userId: userStore.userId,   // ✅ links the order to the logged-in user
-      userName: userStore.name,
     };
 
-    const res = await $fetch('https://api.thibella.com/public/orders/add-orders.php', {
+    const res = await $fetch(`${useRuntimeConfig().public.baseUrl}/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -474,6 +472,7 @@ const handlePlaceOrder = async () => {
       submitError.value = res.message || 'Something went wrong. Please try again.';
     }
   } catch (err) {
+    console.error('Order error:', err);
     submitError.value =
       err?.data?.message ||
       err?.message ||

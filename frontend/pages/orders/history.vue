@@ -178,24 +178,27 @@ onMounted(async () => {
 
   try {
     const res = await $fetch(
-      `https://api.thibella.com/public/orders/get-user-orders.php?userId=${userStore.userId}`,
+      `${useRuntimeConfig().public.baseUrl}/orders/user`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${userStore.token}`,
         },
+        params: {
+          user_id: userStore.userId
+        }
       }
     );
 
-    if (res.success && res.data.length > 0) {
-      orders.value = res.data;
+    if (res.success && res.orders.length > 0) {
+      orders.value = res.orders;
     } else {
       error.value = 'No orders found.';
     }
   } catch (err) {
+    console.error('Load orders error:', err);
     error.value = err?.data?.message || 'Failed to load orders.';
-    console.error(err);
   } finally {
     loading.value = false;
   }

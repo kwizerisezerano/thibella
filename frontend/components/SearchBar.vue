@@ -72,12 +72,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSearchStore } from '~/stores/search'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const baseUrl = useRuntimeConfig().public.baseUrl
 
 const router = useRouter()
 const searchStore = useSearchStore()
@@ -114,58 +115,33 @@ const onInput = async (e: Event) => {
   }, 300) // 300ms debounce
 }
 
-// const fetchSuggestions = async (query: string) => {
-//   try {
-//     const res = await $fetch<{ data: { productName: string }[] }>(
-//       'https://api.thibella.com/public/products/get-products.php',
-//       {
-//         method: 'GET',
-//         headers: { 'Content-Type': 'application/json', 'Accept-Language': 'en' },
-//         params: { page: 1, limit: 50 }
-//       }
-//     )
-
-//     const allNames = res.data.map((p) => p.productName)
-
-//     // Filter locally by query
-//     suggestions.value = allNames
-//       .filter((name) => name.toLowerCase().includes(query.toLowerCase()))
-//       .slice(0, 8) // Max 8 suggestions
-
-//     showDropdown.value = suggestions.value.length > 0
-//   } catch (err) {
-//     suggestions.value = []
-//     showDropdown.value = false
-//   }
-// }
-
 const fetchSuggestions = async (query: string) => {
   try {
     // Fetch both products AND categories in parallel
     const [productsRes, categoriesRes] = await Promise.all([
-      $fetch<{ data: { productName: string }[] }>(
-        'https://api.thibella.com/public/products/get-products.php',
+      $fetch<{ products: { productName: string }[] }>(
+        `${baseUrl}/products`,
         {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json', 'Accept-Language': 'en' },
-          params: { page: 1, limit: 50 }
+          headers: { 'Content-Type': 'application/json', 'Accept-Language': locale.value },
+          params: { page: 1, limit: 100 }
         }
       ),
-      $fetch<any[]>(
-        'https://api.thibella.com/public/categories/get-categories.php',
+      $fetch<{ categories: any[] }>(
+        `${baseUrl}/categories`,
         {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json', 'Accept-Language': 'en' }
+          headers: { 'Content-Type': 'application/json', 'Accept-Language': locale.value },
+          params: { page: 1, limit: 100 }
         }
       )
     ])
 
-    const productNames = productsRes.data.map((p) => p.productName)
-    const categoryNames = (Array.isArray(categoriesRes) ? categoriesRes : categoriesRes ?? [])
-      .map((c: any) => c.title)
+    const productNames = (productsRes.products ?? []).map((p) => p.productName)
+    const categoryNames = (categoriesRes.categories ?? []).map((c: any) => c.title)
 
     // Combine and deduplicate
-    const allNames = [...new Set([...productNames, ...categoryNames])]
+    const allNames = [...new Set([...productNames, ...categoryNames])].filter(Boolean)
 
     suggestions.value = allNames
       .filter((name) => name?.toLowerCase().includes(query.toLowerCase()))
@@ -173,6 +149,7 @@ const fetchSuggestions = async (query: string) => {
 
     showDropdown.value = suggestions.value.length > 0
   } catch (err) {
+    console.error('Fetch suggestions error:', err)
     suggestions.value = []
     showDropdown.value = false
   }
