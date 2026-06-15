@@ -54,7 +54,7 @@ class AuthController
         $d = jsonBody();
 
         if (empty($d['email']) || empty($d['password'])) {
-            Response::error('email and password are required', 400);
+            Response::error('login.emailRequired', 400);
         }
 
         $email     = strtolower(trim($d['email']));
@@ -65,7 +65,7 @@ class AuthController
         );
 
         if (!$user || !password_verify($d['password'], $user['password'])) {
-            Response::error('Invalid credentials', 401);
+            Response::error('login.invalidCredentials', 401);
         }
 
         $now   = time();
@@ -84,6 +84,6 @@ class AuthController
         $user['phone'] = decrypt($user['phone']);
         $user['token'] = $token;
 
-        Response::success($user, 'Login successful');
+        Response::success($user, 'login.success');
     }
 }

@@ -90,7 +90,12 @@
     "signingIn": "Signing in...",
     "signIn": "Sign In",
     "noAccount": "Don't have an account?",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "validationRequired": "Please enter both email and password",
+    "failed": "Login failed. Please try again.",
+    "invalidCredentials": "Invalid email or password",
+    "emailRequired": "Email and password are required",
+    "success": "Login successful"
   },
   "signup": {
     "title": "Create Account",

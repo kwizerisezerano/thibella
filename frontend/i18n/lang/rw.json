@@ -90,7 +90,12 @@
     "signingIn": "Kwinjira...",
     "signIn": "Injira",
     "noAccount": "Nta konti ufite?",
-    "signUp": "Iyandikishe"
+    "signUp": "Iyandikishe",
+    "validationRequired": "Nyamuneka injiza imeli n'ijambo ry'ibanga",
+    "failed": "Kwinjira byaranze. Ongera ugerageze.",
+    "invalidCredentials": "Imeli cyangwa ijambo ry'ibanga ntabwo ari byo",
+    "emailRequired": "Imeli n'ijambo ry'ibanga birakenewe",
+    "success": "Kwinjira byagenze neza"
   },
   "signup": {
     "title": "Fungura Konti",

@@ -23,6 +23,7 @@ $routes = [
     'products'      => __DIR__ . '/routes/products.php',
     'orders'        => __DIR__ . '/routes/orders.php',
     'users'         => __DIR__ . '/routes/users.php',
+    'stats'         => __DIR__ . '/routes/stats.php',
 ];
 
 if (isset($routes[$resource])) {

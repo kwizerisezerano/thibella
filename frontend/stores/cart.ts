@@ -1,21 +1,6 @@
 import { defineStore } from "pinia";
-import { apiFetch } from "~/utils/api";
-import { ref, onMounted } from "vue";
 import type { Product } from "~/stores/productStore";
 
-const products = ref<Product[]>([]);
-
-onMounted(async () => {
-  try {
-    const response = await apiFetch("api/products", {
-      method: "GET",
-      headers: { "Content-Type": "application/json", "Accept-Language": "en" },
-    });
-    products.value = response as Product[];
-  } catch (error) {
-    console.error("Error fetching products", error);
-  }
-});
 
 export const useCartStore = defineStore("cart", {
   state: () => ({

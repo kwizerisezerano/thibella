@@ -90,7 +90,12 @@
     "signingIn": "Connexion...",
     "signIn": "Se connecter",
     "noAccount": "Pas encore de compte ?",
-    "signUp": "S'inscrire"
+    "signUp": "S'inscrire",
+    "validationRequired": "Veuillez entrer l'email et le mot de passe",
+    "failed": "Échec de la connexion. Veuillez réessayer.",
+    "invalidCredentials": "Email ou mot de passe invalide",
+    "emailRequired": "L'email et le mot de passe sont requis",
+    "success": "Connexion réussie"
   },
   "signup": {
     "title": "Créer un compte",
