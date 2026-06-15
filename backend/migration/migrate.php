@@ -141,6 +141,7 @@ run_migration($conn, '004_create_products', function (mysqli $conn) {
                                  CHECK (json_valid(`possibleImagesUrls`)),
             `createdAt`          timestamp        NOT NULL DEFAULT current_timestamp(),
             PRIMARY KEY (`id`),
+            UNIQUE KEY `idx_product_name_category` (`productName`, `category_id`),
             KEY `fk_products_category` (`category_id`),
             KEY `fk_products_subcategory` (`subCategory_id`),
             CONSTRAINT `fk_products_category`

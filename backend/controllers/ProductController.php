@@ -83,7 +83,7 @@ class ProductController
     // ── POST /api/products  (admin) ──────────────────────────────────────────
     // multipart/form-data: productName*, category_id*, description, priceCents,
     //   subCategory_id, type, isOnSale, imageUrl, size(JSON), color(JSON),
-    //   possibleImagesUrls(JSON)
+    //   possibleImagesUrls(JSON), stock, brand
     public function store(): void
     {
         $d        = jsonBody();
@@ -96,6 +96,7 @@ class ProductController
         $isOnSale = (int) ($d['isOnSale']       ?? 0);
         $imageUrl = trim($d['imageUrl']         ?? '');
         $brand    = trim($d['brand']            ?? '');
+        $stock    = (int) ($d['stock']           ?? 0);
         $size     = $this->safeJson(is_array($d['size']               ?? null) ? json_encode($d['size'])               : ($d['size']               ?? '[]'));
         $color    = $this->safeJson(is_array($d['color']              ?? null) ? json_encode($d['color'])              : ($d['color']              ?? '[]'));
         $images   = $this->safeJson(is_array($d['possibleImagesUrls'] ?? null) ? json_encode($d['possibleImagesUrls']) : ($d['possibleImagesUrls'] ?? '[]'));
@@ -108,10 +109,10 @@ class ProductController
         $id = DB::insert(
             'INSERT INTO products
                 (productName, description, priceCents, size, color, type, isOnSale,
-                 imageUrl, possibleImagesUrls, brand, category_id, subCategory_id)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            'ssississssii',
-            [$name, $desc, $price, $size, $color, $type, $isOnSale, $imageUrl, $images, $brand, $catId, $subCatId]
+                 imageUrl, possibleImagesUrls, brand, stock, category_id, subCategory_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'ssississssiii',
+            [$name, $desc, $price, $size, $color, $type, $isOnSale, $imageUrl, $images, $brand, $stock, $catId, $subCatId]
         );
 
         Response::success(['id' => $id], 'Product created');
@@ -131,7 +132,7 @@ class ProductController
         foreach (['productName','description','type','imageUrl','brand'] as $f) {
             if (array_key_exists($f, $d) && (string)$d[$f] === (string)($current[$f] ?? '')) unset($d[$f]);
         }
-        foreach (['priceCents','isOnSale','category_id','subCategory_id'] as $f) {
+        foreach (['priceCents','isOnSale','category_id','subCategory_id','stock'] as $f) {
             if (array_key_exists($f, $d) && (int)$d[$f] === (int)($current[$f] ?? 0)) unset($d[$f]);
         }
         foreach (['size', 'color', 'possibleImagesUrls'] as $f) {
@@ -153,6 +154,7 @@ class ProductController
             'imageUrl'           => 's',
             'possibleImagesUrls' => 's',
             'brand'              => 's',
+            'stock'              => 'i',
             'category_id'        => 'i',
             'subCategory_id'     => 'i',
         ]);

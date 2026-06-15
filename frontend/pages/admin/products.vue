@@ -170,6 +170,12 @@
               <input v-model.number="form.priceCents" type="number" required min="0" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
             <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock</label>
+              <input v-model.number="form.stock" type="number" min="0" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
               <input v-model="form.type" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
@@ -194,9 +200,18 @@
             </div>
 
             <!-- Upload progress -->
-            <div v-if="uploading" class="mt-2 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
-              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
-              Uploading {{ uploadProgress.done }} / {{ uploadProgress.total }} images...
+            <div v-if="uploading" class="mt-2 space-y-2">
+              <div class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                Uploading {{ uploadProgress.done }} / {{ uploadProgress.total }} images...
+              </div>
+              <!-- Progress bar -->
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                <div 
+                  class="bg-green-600 h-2.5 rounded-full transition-all duration-300" 
+                  :style="{ width: (uploadProgress.done / uploadProgress.total * 100) + '%' }"
+                ></div>
+              </div>
             </div>
 
             <!-- Uploaded images preview -->
@@ -257,33 +272,65 @@ const fileInput = ref(null)
 
 const form = ref({
   productName: '', brand: '', description: '', category_id: '',
-  subCategory_id: '', priceCents: 0, type: '', isOnSale: false
+  subCategory_id: '', priceCents: 0, type: '', isOnSale: false, stock: 0
 })
 
 // Upload a single file to Cloudinary
 const uploadToCloudinary = async (file) => {
+  console.log('Starting upload for file:', file.name)
+  console.log('Cloudinary config:', {
+    cloudName: config.public.cloudinaryCloudName,
+    uploadPreset: config.public.cloudinaryUploadPreset
+  })
+  
   const fd = new FormData()
   fd.append('file', file)
   fd.append('upload_preset', config.public.cloudinaryUploadPreset)
   fd.append('cloud_name', config.public.cloudinaryCloudName)
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${config.public.cloudinaryCloudName}/image/upload`,
-    { method: 'POST', body: fd }
-  )
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error?.message || 'Upload failed')
-  return { url: data.secure_url, public_id: data.public_id }
+  
+  try {
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${config.public.cloudinaryCloudName}/image/upload`,
+      { method: 'POST', body: fd }
+    )
+    console.log('Cloudinary response status:', res.status)
+    const data = await res.json()
+    console.log('Cloudinary response data:', data)
+    
+    if (!res.ok) {
+      throw new Error(data.error?.message || `Upload failed with status ${res.status}`)
+    }
+    
+    console.log('Upload successful! URL:', data.secure_url)
+    return { url: data.secure_url, public_id: data.public_id }
+  } catch (err) {
+    console.error('Cloudinary upload error:', err)
+    throw err
+  }
 }
 
 const uploadFiles = async (files) => {
   uploading.value = true
   uploadProgress.value = { done: 0, total: files.length }
-  for (const file of files) {
-    const result = await uploadToCloudinary(file)
-    uploadedImages.value.push(result)
-    uploadProgress.value.done++
+  
+  try {
+    // Upload all files in parallel with proper progress tracking
+    const uploadPromises = files.map(async (file) => {
+      const result = await uploadToCloudinary(file)
+      uploadProgress.value.done++
+      return result
+    })
+    
+    uploadedImages.value = await Promise.all(uploadPromises)
+    console.log('All uploads completed! Uploaded images:', uploadedImages.value)
+  } catch (err) {
+    console.error('Upload failed:', err)
+    alert(`Failed to upload images: ${err.message}`)
+    uploadedImages.value = []
+    uploadProgress.value = { done: 0, total: 0 }
+  } finally {
+    uploading.value = false
   }
-  uploading.value = false
 }
 
 const onFileChange = (e) => uploadFiles(Array.from(e.target.files))
@@ -344,7 +391,8 @@ const openModal = (mode, product = null) => {
       subCategory_id: product.subCategory_id || '',
       priceCents: product.priceCents || 0,
       type: product.type || '',
-      isOnSale: product.isOnSale || false
+      isOnSale: product.isOnSale || false,
+      stock: product.stock || 0
     }
     // Populate existing images for preview
     const existing = Array.isArray(product.possibleImagesUrls)
@@ -356,7 +404,7 @@ const openModal = (mode, product = null) => {
       uploadedImages.value = [{ url: product.imageUrl, public_id: product.imageUrl }]
     }
   } else {
-    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', priceCents: 0, type: '', isOnSale: false }
+    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', priceCents: 0, type: '', isOnSale: false, stock: 0 }
   }
   showModal.value = true
 }
@@ -379,7 +427,9 @@ const submitProduct = async () => {
       imageUrl: urls[0],
       possibleImagesUrls: urls
     }
-    const headers = { Authorization: `Bearer ${userStore.user?.token}` }
+    
+    const headers = { Authorization: `Bearer ${userStore.token}` }
+    
     if (editMode.value) {
       await $fetch(`${config.public.baseUrl}/products?id=${form.value.id}`, { method: 'PUT', headers, body })
     } else {
@@ -388,6 +438,7 @@ const submitProduct = async () => {
     closeModal()
     fetchProducts()
   } catch (err) {
+    console.error('❌ Product submission error:', err)
     alert(err.data?.message || 'Error saving product')
   }
   submitting.value = false

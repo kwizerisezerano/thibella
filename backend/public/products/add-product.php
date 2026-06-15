@@ -6,8 +6,8 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+  http_response_code(200);
+  exit;
 }
 
 require_once "../../middleware/admin.php";
@@ -21,9 +21,10 @@ $priceCents         = intval($_POST['priceCents']  ?? 0);
 $type               = trim($_POST['type']          ?? '');
 $isOnSale           = intval($_POST['isOnSale']    ?? 0);   // 0 or 1
 $category_id        = intval($_POST['category_id'] ?? 0);
-$subCategory_id = intval($_POST['subCategory_id'] ?? 0);// ✅ FK integer
-//$subcategory		= trim($_POST['subCategory_id']   ?? '';
+$subCategory_id     = intval($_POST['subCategory_id'] ?? 0);// ✅ FK integer
 $imageUrl           = trim($_POST['imageUrl']      ?? '');
+$brand              = trim($_POST['brand']         ?? '');
+$stock              = intval($_POST['stock']       ?? 0);
 
 // These arrive as JSON strings from the frontend (JSON.stringify)
 $sizeRaw            = $_POST['size']               ?? '[]';
@@ -37,77 +38,86 @@ $possibleImagesUrls = json_decode($possibleImagesRaw)  !== null ? $possibleImage
 
 // Basic required-field check
 if (!$productName  || $category_id <= 0) {
-    http_response_code(400);
-    echo json_encode([
-        "success" => false,
-        "message" => "Missing required fields: productName, description, priceCents, and category_id are required."
-    ]);
-    exit;
+  http_response_code(400);
+  echo json_encode([
+    "success" => false,
+    "message" => "Missing required fields: productName, description, priceCents, and category_id are required."
+  ]);
+  exit;
 }
+
+// Check if product with same name already exists in same category
+$checkStmt = mysqli_prepare($conn, "SELECT id FROM products WHERE productName = ? AND category_id = ? LIMIT 1");
+mysqli_stmt_bind_param($checkStmt, "si", $productName, $category_id);
+mysqli_stmt_execute($checkStmt);
+mysqli_stmt_store_result($checkStmt);
+if (mysqli_stmt_num_rows($checkStmt) > 0) {
+  http_response_code(409);
+  echo json_encode([
+    "success" => false,
+    "message" => "Product with this name already exists in the same category"
+  ]);
+  mysqli_stmt_close($checkStmt);
+  mysqli_close($conn);
+  exit;
+}
+mysqli_stmt_close($checkStmt);
 
 // ─── Insert product ───────────────────────────────────────────────────────────
 // ✅ Column name matches DB schema: category_id (not categoryId)
 $sql = "
-    INSERT INTO products
-        (productName, description, priceCents, size, color, type, isOnSale, imageUrl, possibleImagesUrls, category_id, subCategory_id)
-    VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+  INSERT INTO products
+    (productName, description, priceCents, size, color, type, isOnSale, imageUrl, possibleImagesUrls, brand, stock, category_id, subCategory_id)
+  VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ";
 
 $stmt = mysqli_prepare($conn, $sql);
 
 if (!$stmt) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Failed to prepare statement: " . mysqli_error($conn)
-    ]);
-    exit;
+  http_response_code(500);
+  echo json_encode([
+    "success" => false,
+    "message" => "Failed to prepare statement: " . mysqli_error($conn)
+  ]);
+  exit;
 }
 
 // ✅ Bind types:
-//   s = productName      (string)
-//   s = description      (string)
-//   i = priceCents       (integer)
-//   s = size             (JSON string)
-//   s = color            (JSON string)
-//   s = type             (string)
-//   i = isOnSale         (integer / tinyint)
-//   s = imageUrl         (string)
-//   s = possibleImagesUrls (JSON string / longtext)
-//   i = category_id      (integer FK)
 mysqli_stmt_bind_param(
-    $stmt,
-    "ssississsii",
-    $productName,
-    $description,
-    $priceCents,
-    $size,
-    $color,
-    $type,
-    $isOnSale,
-    $imageUrl,
-    $possibleImagesUrls,
-    $category_id,
-    $subCategory_id
+  $stmt,
+  "ssississsiiii",
+  $productName,
+  $description,
+  $priceCents,
+  $size,
+  $color,
+  $type,
+  $isOnSale,
+  $imageUrl,
+  $possibleImagesUrls,
+  $brand,
+  $stock,
+  $category_id,
+  $subCategory_id
 );
 
 try {
-    mysqli_stmt_execute($stmt);
+  mysqli_stmt_execute($stmt);
 
-    echo json_encode([
-        "success"    => true,
-        "message"    => "Product added successfully",
-        "product_id" => mysqli_insert_id($conn)
-    ]);
+  echo json_encode([
+    "success"    => true,
+    "message"    => "Product added successfully",
+    "product_id" => mysqli_insert_id($conn)
+  ]);
 
 } catch (mysqli_sql_exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "error"   => "Failed to add product",
-        "message" => $e->getMessage()
-    ]);
+  http_response_code(500);
+  echo json_encode([
+    "success" => false,
+    "error"   => "Failed to add product",
+    "message" => $e->getMessage()
+  ]);
 }
 
 mysqli_stmt_close($stmt);
