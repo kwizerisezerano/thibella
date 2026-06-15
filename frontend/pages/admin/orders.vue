@@ -359,7 +359,7 @@ const validateField = (field) => {
   const req = t('admin.validation.required')
 
   switch (field) {
-    case 'fullName':        e.fullName = required(f.fullName) ? req : ''; break
+    case 'fullName':        e.fullName = required(f.fullName) ? req : (!isValidName(f.fullName) ? t('admin.validation.invalidName') : ''); break
     case 'phoneNumber':     e.phoneNumber = required(f.phoneNumber) ? req : (!isValidPhone(f.phoneNumber) ? t('admin.validation.invalidPhone') : ''); break
     case 'email':           e.email = f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email) ? t('admin.validation.invalidEmail') : ''; break
     case 'mobileMoneyNumber': e.mobileMoneyNumber = f.paymentMethod === 'mobile_money' && required(f.mobileMoneyNumber) ? req : ''; break
@@ -373,11 +373,20 @@ const validateField = (field) => {
 
 const touch = (field) => validateField(field)
 
+const isValidName = (name) => {
+  // Only letters and spaces allowed
+  return /^[a-zA-Z\s]+$/.test(name.trim())
+}
+
 const validateAll = () => {
   const fields = ['fullName', 'phoneNumber', 'email', 'mobileMoneyNumber', 'country', 'province', 'district', 'sector']
   fields.forEach(validateField)
 
+  // Additional validation for fullName - letters and spaces only
   const e = { ...err.value }
+  if (required(form.value.fullName) && !isValidName(form.value.fullName)) {
+    e.fullName = t('admin.validation.invalidName')
+  }
 
   if (form.value.orderItems.length === 0) {
     e.orderItems = t('admin.validation.atLeastOneItem')

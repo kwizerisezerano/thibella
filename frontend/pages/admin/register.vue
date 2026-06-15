@@ -202,12 +202,17 @@ const isValidPhone = (phone) => {
   return /^[\+]?[0-9\s\-]{9,15}$/.test(phone.replace(/\s/g, ''))
 }
 
+const isValidName = (name) => {
+  // Only letters and spaces allowed
+  return /^[a-zA-Z\s]+$/.test(name.trim())
+}
+
 const touch = (field) => {
   const f = form.value
   const e = { ...err.value }
   const req = t('admin.validation.required')
   switch (field) {
-    case 'name':     e.name = required(f.name) ? req : ''; break
+    case 'name':     e.name = required(f.name) ? req : (!isValidName(f.name) ? t('admin.validation.invalidName') : ''); break
     case 'email':    e.email = required(f.email) ? req : (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email) ? t('admin.validation.invalidEmail') : ''); break
     case 'phone':    e.phone = required(f.phone) ? req : (!isValidPhone(f.phone) ? t('admin.validation.invalidPhone') : ''); break
     case 'password': e.password = required(f.password) ? req : (f.password.length < 8 ? t('admin.validation.passwordMin') : ''); break

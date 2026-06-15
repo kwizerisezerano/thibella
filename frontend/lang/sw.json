@@ -182,7 +182,8 @@
       "atLeastOneItem": "Ongeza angalau kipengee kimoja",
       "selectProduct": "Tafadhali chagua bidhaa",
       "qtyMin": "Idadi lazima iwe angalau 1",
-      "qtyExceedsStock": "Idadi inazidi hisa iliyopo ({stock} zimebaki)"
+      "qtyExceedsStock": "Idadi isichozidi hisa iliyopo ({stock} zimebaki)",
+      "invalidName": "Jina linapaswa kuwa na herufi na nafasi tu"
     },
     "upload": {
       "optional": "(si lazima)",

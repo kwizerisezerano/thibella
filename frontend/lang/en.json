@@ -181,7 +181,8 @@
       "atLeastOneItem": "Add at least one order item",
       "selectProduct": "Please select a product",
       "qtyMin": "Quantity must be at least 1",
-      "qtyExceedsStock": "Quantity exceeds available stock ({stock} available)"
+      "qtyExceedsStock": "Quantity cannot exceed available stock ({stock} available)",
+      "invalidName": "Name can only contain letters and spaces"
     },
     "upload": {
       "optional": "(optional)",

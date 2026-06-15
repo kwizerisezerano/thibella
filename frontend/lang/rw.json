@@ -181,7 +181,8 @@
       "atLeastOneItem": "Ongeramo nibura igicuruzwa kimwe",
       "selectProduct": "Hitamo igicuruzwa",
       "qtyMin": "Ingano igomba kuba nibura 1",
-      "qtyExceedsStock": "Ingano irenga ububiko buhari ({stock} bubitse)"
+      "qtyExceedsStock": "Ingano ntishobora kurenga ububiko buhari ({stock} bubitse)",
+      "invalidName": "Izina rigomba kuba iryinyuguti n'imirongo gusa"
     },
     "upload": {
       "optional": "(si ngombwa)",
