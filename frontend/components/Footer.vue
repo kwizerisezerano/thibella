@@ -78,7 +78,7 @@
                 type="email"
                 :placeholder="$t('footer.emailPlaceholder')"
                 required
-                class="flex-1 min-w-0 px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                class="flex-1 min-w-0 px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-l-md outline-none ring-0 focus:outline-none focus:ring-0 placeholder-gray-400 dark:placeholder-gray-500"
               />
               <button
                 type="submit"

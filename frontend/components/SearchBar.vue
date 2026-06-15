@@ -11,9 +11,10 @@
         @keydown.arrow-down.prevent="highlightNext"
         @keydown.arrow-up.prevent="highlightPrev"
         :placeholder="t('searchBar.placeholder')"
-        class="w-full px-4 py-2 pl-10 pr-10 border border-green-300 dark:border-green-600 
-               rounded-xl bg-green-50 dark:bg-green-800 text-green-900 dark:text-green-100 
-               focus:outline-none focus:ring-2 focus:ring-green-500"
+        class="w-full px-4 py-2 pl-10 pr-10 border border-gray-300 dark:border-gray-600 
+               rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
+               placeholder-gray-400 dark:placeholder-gray-500
+               outline-none ring-0 focus:outline-none focus:ring-0"
       />
 
       <!-- Search Icon -->
