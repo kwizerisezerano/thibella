@@ -173,6 +173,16 @@
       "saveUser": "Erreur lors de l'enregistrement de l'utilisateur",
       "deleteUser": "Erreur lors de la suppression de l'utilisateur"
     },
+    "validation": {
+      "required": "Ce champ est obligatoire",
+      "invalidEmail": "Entrez une adresse e-mail valide",
+      "invalidPhone": "Entrez un numéro de téléphone valide (ex: +2507XXXXXXXX ou 07XXXXXXXX)",
+      "passwordMin": "Le mot de passe doit comporter au moins 8 caractères",
+      "atLeastOneItem": "Ajoutez au moins un article",
+      "selectProduct": "Veuillez sélectionner un produit",
+      "qtyMin": "La quantité doit être d'au moins 1",
+      "qtyExceedsStock": "La quantité dépasse le stock disponible ({stock} disponibles)"
+    },
     "upload": {
       "optional": "(optionnel)",
       "hintFirstMain": "(première image = principale, plusieurs autorisées)",
@@ -319,6 +329,8 @@
         "selectProduct": "— Sélectionner un produit —",
         "anyColor": "Toute couleur",
         "anySize": "Toute taille",
+        "color": "Couleur",
+        "size": "Taille",
         "updateStatusError": "Erreur lors de la mise à jour du statut"
       },
       "register": {

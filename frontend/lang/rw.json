@@ -173,6 +173,16 @@
       "saveUser": "Habaye ikibazo mu kubika umukoresha",
       "deleteUser": "Habaye ikibazo mu gusiba umukoresha"
     },
+    "validation": {
+      "required": "Iki gice kirakenewe",
+      "invalidEmail": "Injiza imeli yuzuye",
+      "invalidPhone": "Injiza numero ya telefone yemewe (urugero: +2507XXXXXXXX cyangwa 07XXXXXXXX)",
+      "passwordMin": "Ijambo ry'ibanga rigomba kuba nibura inyuguti 8",
+      "atLeastOneItem": "Ongeramo nibura igicuruzwa kimwe",
+      "selectProduct": "Hitamo igicuruzwa",
+      "qtyMin": "Ingano igomba kuba nibura 1",
+      "qtyExceedsStock": "Ingano irenga ububiko buhari ({stock} bubitse)"
+    },
     "upload": {
       "optional": "(si ngombwa)",
       "hintFirstMain": "(ifoto ya mbere = nyamukuru, ushobora kongeramo nyinshi)",
@@ -317,8 +327,10 @@
         "itemPrice": "Igiciro (RWF)",
         "itemQty": "Ingano",
         "selectProduct": "— Hitamo igicuruzwa —",
-        "anyColor": "Ibara iryo ariryo",
-        "anySize": "Ingano iyo ariyo",
+        "anyColor": "Ibara iryo ariro ryose",
+        "anySize": "Ingano iyo ariyo yose",
+        "color": "Ibara",
+        "size": "Ingano",
         "updateStatusError": "Habaye ikibazo mu guhindura uko komande ihagaze"
       },
       "register": {

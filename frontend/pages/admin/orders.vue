@@ -40,7 +40,7 @@
       </div>
     </aside>
 
-    <!-- Main area -->
+    <!-- Main -->
     <div class="flex-1 flex flex-col min-w-0">
       <header class="bg-white dark:bg-gray-800 shadow">
         <div class="px-6 py-4 flex justify-between items-center">
@@ -56,7 +56,6 @@
       </header>
 
       <main class="p-6">
-        <!-- Action Bar -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6 flex flex-wrap justify-between items-center gap-4">
           <select v-model="statusFilter" @change="currentPage = 1; fetchOrders()" class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             <option value="">{{ $t('admin.pages.orders.allStatuses') }}</option>
@@ -72,7 +71,6 @@
           </button>
         </div>
 
-        <!-- Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
           <div v-if="loading" class="p-8 text-center text-gray-500 dark:text-gray-400">{{ $t('admin.common.loadingOrders') }}</div>
           <div v-else-if="orders.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">{{ $t('admin.common.noOrders') }}</div>
@@ -116,7 +114,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2">
           <button v-for="page in totalPages" :key="page" @click="currentPage = page; fetchOrders()" :class="currentPage === page ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'" class="px-3 py-1 rounded hover:opacity-80">{{ page }}</button>
         </div>
@@ -133,32 +130,15 @@
           </button>
         </div>
 
-        <!-- Edit mode: only update status + view details -->
+        <!-- Edit: view details + update status -->
         <div v-if="editMode" class="p-6 space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.customer') }}</p>
-              <p class="font-medium text-gray-900 dark:text-white">{{ form.full_name }}</p>
-            </div>
-            <div>
-              <p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.phone') }}</p>
-              <p class="text-gray-900 dark:text-white">{{ form.phone_number }}</p>
-            </div>
-            <div>
-              <p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.email') }}</p>
-              <p class="text-gray-900 dark:text-white">{{ form.email }}</p>
-            </div>
-            <div>
-              <p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.payment') }}</p>
-              <p class="text-gray-900 dark:text-white capitalize">{{ form.payment_method }}</p>
-            </div>
-            <div class="md:col-span-2">
-              <p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.address') }}</p>
-              <p class="text-gray-900 dark:text-white">{{ form.sector }}, {{ form.district }}, {{ form.province }}, {{ form.country }}</p>
-            </div>
+            <div><p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.customer') }}</p><p class="font-medium text-gray-900 dark:text-white">{{ form.full_name }}</p></div>
+            <div><p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.phone') }}</p><p class="text-gray-900 dark:text-white">{{ form.phone_number }}</p></div>
+            <div><p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.email') }}</p><p class="text-gray-900 dark:text-white">{{ form.email }}</p></div>
+            <div><p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.payment') }}</p><p class="text-gray-900 dark:text-white capitalize">{{ form.payment_method }}</p></div>
+            <div class="md:col-span-2"><p class="text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.address') }}</p><p class="text-gray-900 dark:text-white">{{ form.sector }}, {{ form.district }}, {{ form.province }}, {{ form.country }}</p></div>
           </div>
-
-          <!-- Items -->
           <div v-if="form.items && form.items.length" class="border-t dark:border-gray-700 pt-4">
             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{{ $t('admin.pages.orders.items', { count: form.items.length }) }}</p>
             <div class="space-y-2">
@@ -172,8 +152,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Status update -->
           <div class="border-t dark:border-gray-700 pt-4">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.status') }}</label>
             <select v-model="form.status" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -184,96 +162,134 @@
               <option value="cancelled">{{ $t('admin.status.cancelled') }}</option>
             </select>
           </div>
-
           <div class="flex justify-end gap-4 pt-2">
             <button @click="closeModal" class="px-4 py-2 border rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">{{ $t('admin.common.cancel') }}</button>
             <button @click="submitOrder" :disabled="submitting" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">{{ submitting ? $t('admin.common.saving') : $t('admin.common.save') }}</button>
           </div>
         </div>
 
-        <!-- Add mode: full order form -->
-        <form v-else @submit.prevent="submitOrder" class="p-6 space-y-4">
+        <!-- Add: full form with validation -->
+        <form v-else @submit.prevent="submitOrder" novalidate class="p-6 space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('signup.fullName') }} *</label>
-              <input v-model="form.fullName" required class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="form.fullName" @blur="touch('fullName')" :class="err.fullName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.fullName" class="text-red-500 text-xs mt-1">{{ err.fullName }}</p>
             </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.phone') }} *</label>
-              <input v-model="form.phoneNumber" required class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="form.phoneNumber" @blur="touch('phoneNumber')" :class="err.phoneNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.phoneNumber" class="text-red-500 text-xs mt-1">{{ err.phoneNumber }}</p>
             </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.email') }}</label>
-              <input v-model="form.email" type="email" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="form.email" @blur="touch('email')" type="email" :class="err.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.email" class="text-red-500 text-xs mt-1">{{ err.email }}</p>
             </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.payment') }} *</label>
-              <select v-model="form.paymentMethod" required class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              <select v-model="form.paymentMethod" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
                 <option value="mobile_money">Mobile Money</option>
                 <option value="cash">Cash</option>
                 <option value="card">Card</option>
               </select>
             </div>
+
             <div v-if="form.paymentMethod === 'mobile_money'">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.mobileNumber') }}</label>
-              <input v-model="form.mobileMoneyNumber" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.mobileNumber') }} *</label>
+              <input v-model="form.mobileMoneyNumber" @blur="touch('mobileMoneyNumber')" :class="err.mobileMoneyNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.mobileMoneyNumber" class="text-red-500 text-xs mt-1">{{ err.mobileMoneyNumber }}</p>
             </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.country') }}</label>
-              <input v-model="form.country" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.country') }} *</label>
+              <input v-model="form.country" @blur="touch('country')" :class="err.country ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.country" class="text-red-500 text-xs mt-1">{{ err.country }}</p>
             </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.province') }}</label>
-              <input v-model="form.province" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.province') }} *</label>
+              <input v-model="form.province" @blur="touch('province')" :class="err.province ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.province" class="text-red-500 text-xs mt-1">{{ err.province }}</p>
             </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.district') }}</label>
-              <input v-model="form.district" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.district') }} *</label>
+              <input v-model="form.district" @blur="touch('district')" :class="err.district ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.district" class="text-red-500 text-xs mt-1">{{ err.district }}</p>
             </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.sector') }}</label>
-              <input v-model="form.sector" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.sector') }} *</label>
+              <input v-model="form.sector" @blur="touch('sector')" :class="err.sector ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+              <p v-if="err.sector" class="text-red-500 text-xs mt-1">{{ err.sector }}</p>
             </div>
+
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.orders.landmark') }}</label>
-              <input v-model="form.nearbyLandmark" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <input v-model="form.nearbyLandmark" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" />
             </div>
           </div>
 
           <!-- Order Items -->
           <div class="border-t dark:border-gray-700 pt-4">
-            <div class="flex justify-between items-center mb-3">
-              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('admin.pages.orders.orderItems') }}</p>
+            <div class="flex justify-between items-center mb-2">
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('admin.pages.orders.orderItems') }} *</p>
               <button type="button" @click="addItem" class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">+ {{ $t('admin.pages.orders.addItem') }}</button>
             </div>
+            <p v-if="err.orderItems" class="text-red-500 text-xs mb-2">{{ err.orderItems }}</p>
+
             <div v-for="(item, i) in form.orderItems" :key="i" class="mb-3 p-3 border dark:border-gray-600 rounded-lg">
-              <div class="flex gap-2 items-center">
-                <select
-                  v-model="item.productId"
-                  @change="onProductSelect(item)"
-                  class="flex-1 px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                >
-                  <option :value="null">{{ $t('admin.pages.orders.selectProduct') }}</option>
-                  <option v-for="p in products" :key="p.id" :value="p.id">{{ p.productName }}</option>
-                </select>
-                <input v-model.number="item.quantity" type="number" min="1" required class="w-20 px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                <button type="button" @click="form.orderItems.splice(i, 1)" class="px-2 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs flex-shrink-0">✕</button>
+              <div class="flex gap-2 items-start">
+                <div class="flex-1">
+                  <select
+                    v-model="item.productId"
+                    @change="onProductSelect(item)"
+                    :class="err['item_' + i] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                    class="w-full px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:text-white"
+                  >
+                    <option :value="null">{{ $t('admin.pages.orders.selectProduct') }}</option>
+                    <option v-for="p in products" :key="p.id" :value="p.id">{{ p.productName }}</option>
+                  </select>
+                  <p v-if="err['item_' + i]" class="text-red-500 text-xs mt-1">{{ err['item_' + i] }}</p>
+                </div>
+                <div>
+                  <input
+                    v-model.number="item.quantity"
+                    type="number" min="1"
+                    :class="err['qty_' + i] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'"
+                    class="w-20 px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:text-white"
+                  />
+                  <p v-if="err['qty_' + i]" class="text-red-500 text-xs mt-1">{{ err['qty_' + i] }}</p>
+                </div>
+                <button type="button" @click="form.orderItems.splice(i, 1)" class="px-2 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs flex-shrink-0 mt-0.5">✕</button>
               </div>
-              <!-- Extra options only after a product is selected -->
               <div v-if="item.colors.length || item.sizes.length" class="mt-2 flex gap-2 items-center flex-wrap">
                 <img v-if="item.imageUrl" :src="item.imageUrl" class="w-8 h-8 object-cover rounded flex-shrink-0" />
                 <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatPrice(item.priceCents) }}</span>
-                <select v-if="item.colors.length" v-model="item.selectedColor" class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                  <option value="">{{ $t('admin.pages.orders.anyColor') }}</option>
-                  <option v-for="c in item.colors" :key="c" :value="c">{{ c }}</option>
-                </select>
-                <select v-if="item.sizes.length" v-model="item.selectedSize" class="px-2 py-1 border rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                  <option value="">{{ $t('admin.pages.orders.anySize') }}</option>
-                  <option v-for="s in item.sizes" :key="s" :value="s">{{ s }}</option>
-                </select>
+                <div v-if="item.colors.length" class="flex items-center gap-1">
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.color') }}:</span>
+                  <label v-for="c in item.colors" :key="c" class="flex items-center gap-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs dark:bg-gray-700 dark:text-white cursor-pointer hover:bg-green-50 dark:hover:bg-gray-600">
+                    <input type="checkbox" :value="c" v-model="item.selectedColors" class="w-3 h-3 text-green-600" />
+                    {{ c }}
+                  </label>
+                </div>
+                <div v-if="item.sizes.length" class="flex items-center gap-1">
+                  <span class="text-xs text-gray-500 dark:text-gray-400">{{ $t('admin.pages.orders.size') }}:</span>
+                  <label v-for="s in item.sizes" :key="s" class="flex items-center gap-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs dark:bg-gray-700 dark:text-white cursor-pointer hover:bg-green-50 dark:hover:bg-gray-600">
+                    <input type="checkbox" :value="s" v-model="item.selectedSizes" class="w-3 h-3 text-green-600" />
+                    {{ s }}
+                  </label>
+                </div>
               </div>
             </div>
           </div>
+
+          <div v-if="formError" class="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg text-red-800 dark:text-red-200 text-sm">{{ formError }}</div>
 
           <div class="flex justify-end gap-4 pt-2">
             <button type="button" @click="closeModal" class="px-4 py-2 border rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">{{ $t('admin.common.cancel') }}</button>
@@ -316,31 +332,81 @@ const editMode = ref(false)
 const statusFilter = ref('')
 const currentPage = ref(1)
 const totalPages = ref(1)
+const formError = ref('')
+const err = ref({})
 
 const emptyForm = () => ({
   fullName: '', phoneNumber: '', email: '', country: '', province: '',
   district: '', sector: '', nearbyLandmark: '', paymentMethod: 'mobile_money',
-  mobileMoneyNumber: '', orderItems: [{ productName: '', priceCents: 0, quantity: 1, productId: null, selectedColor: '', selectedSize: '', imageUrl: '', colors: [], sizes: [] }]
+  mobileMoneyNumber: '',
+  orderItems: [{ productId: null, productName: '', priceCents: 0, quantity: 1, selectedColors: [], selectedSizes: [], imageUrl: '', colors: [], sizes: [], stock: 0 }]
 })
 
 const form = ref(emptyForm())
 
-const confirmDeleteOpen = ref(false)
-const deleting = ref(false)
-const orderToDelete = ref(null)
+// ── Validation ────────────────────────────────────────────────────────────────
+const required = (val) => !String(val ?? '').trim()
 
-const confirmDeleteMessage = computed(() => {
-  const id = orderToDelete.value?.id
-  return id ? t('admin.confirm.deleteMessageNamed', { name: `#${id}` }) : t('admin.confirm.deleteMessageGeneric')
-})
+const isValidPhone = (phone) => {
+  // Matches formats like: +2507XXXXXXXX, 07XXXXXXXX, +250XXXXXXXXX, etc.
+  // Allows optional + prefix, then 9-15 digits
+  return /^[\+]?[0-9\s\-]{9,15}$/.test(phone.replace(/\s/g, ''))
+}
 
+const validateField = (field) => {
+  const f = form.value
+  const e = { ...err.value }
+  const req = t('admin.validation.required')
+
+  switch (field) {
+    case 'fullName':        e.fullName = required(f.fullName) ? req : ''; break
+    case 'phoneNumber':     e.phoneNumber = required(f.phoneNumber) ? req : (!isValidPhone(f.phoneNumber) ? t('admin.validation.invalidPhone') : ''); break
+    case 'email':           e.email = f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email) ? t('admin.validation.invalidEmail') : ''; break
+    case 'mobileMoneyNumber': e.mobileMoneyNumber = f.paymentMethod === 'mobile_money' && required(f.mobileMoneyNumber) ? req : ''; break
+    case 'country':         e.country = required(f.country) ? req : ''; break
+    case 'province':        e.province = required(f.province) ? req : ''; break
+    case 'district':        e.district = required(f.district) ? req : ''; break
+    case 'sector':          e.sector = required(f.sector) ? req : ''; break
+  }
+  err.value = e
+}
+
+const touch = (field) => validateField(field)
+
+const validateAll = () => {
+  const fields = ['fullName', 'phoneNumber', 'email', 'mobileMoneyNumber', 'country', 'province', 'district', 'sector']
+  fields.forEach(validateField)
+
+  const e = { ...err.value }
+
+  if (form.value.orderItems.length === 0) {
+    e.orderItems = t('admin.validation.atLeastOneItem')
+  } else {
+    e.orderItems = ''
+    form.value.orderItems.forEach((item, i) => {
+      e['item_' + i] = !item.productId ? t('admin.validation.selectProduct') : ''
+      if (!item.quantity || item.quantity < 1) {
+        e['qty_' + i] = t('admin.validation.qtyMin')
+      } else if (item.stock !== undefined && item.stock !== null && item.quantity > item.stock) {
+        e['qty_' + i] = t('admin.validation.qtyExceedsStock', { stock: item.stock })
+      } else {
+        e['qty_' + i] = ''
+      }
+    })
+  }
+
+  err.value = e
+  return Object.values(e).every(v => !v)
+}
+
+// ── Products ──────────────────────────────────────────────────────────────────
 const fetchProducts = async () => {
   try {
     const res = await $fetch(`${config.public.baseUrl}/products?limit=100`, {
       headers: { Authorization: `Bearer ${userStore.token}` }
     })
     products.value = res.data || res.products || []
-  } catch (err) { console.error(err) }
+  } catch (e) { console.error(e) }
 }
 
 const getProduct = (id) => products.value.find(p => p.id === id)
@@ -354,16 +420,18 @@ const parseOptions = (val) => {
 
 const onProductSelect = (item) => {
   const p = getProduct(item.productId)
-  if (!p) { item.productName = ''; item.priceCents = 0; item.imageUrl = ''; item.colors = []; item.sizes = []; return }
+  if (!p) { item.productName = ''; item.priceCents = 0; item.imageUrl = ''; item.colors = []; item.sizes = []; item.stock = 0; item.selectedColors = []; item.selectedSizes = []; return }
   item.productName = p.productName
   item.priceCents = Math.round((parseFloat(p.price) || 0) * 100)
   item.imageUrl = p.imageUrl || ''
   item.colors = parseOptions(p.color)
   item.sizes = parseOptions(p.size)
-  item.selectedColor = ''
-  item.selectedSize = ''
+  item.stock = parseInt(p.stock) || 0
+  item.selectedColors = []
+  item.selectedSizes = []
 }
 
+// ── Orders ────────────────────────────────────────────────────────────────────
 const fetchOrders = async () => {
   loading.value = true
   try {
@@ -378,12 +446,14 @@ const fetchOrders = async () => {
       orders.value = res.orders || []
       totalPages.value = res.pagination ? Math.ceil(res.pagination.total / res.pagination.limit) : 1
     }
-  } catch (err) { console.error(err) }
+  } catch (e) { console.error(e) }
   loading.value = false
 }
 
 const openModal = (mode, order = null) => {
   editMode.value = mode === 'edit'
+  err.value = {}
+  formError.value = ''
   form.value = editMode.value && order ? { ...order } : emptyForm()
   showModal.value = true
 }
@@ -391,10 +461,13 @@ const openModal = (mode, order = null) => {
 const closeModal = () => { showModal.value = false }
 
 const addItem = () => {
-  form.value.orderItems.push({ productName: '', priceCents: 0, quantity: 1, productId: null, selectedColor: '', selectedSize: '', imageUrl: '', colors: [], sizes: [] })
+  form.value.orderItems.push({ productId: null, productName: '', priceCents: 0, quantity: 1, selectedColors: [], selectedSizes: [], imageUrl: '', colors: [], sizes: [], stock: 0 })
 }
 
 const submitOrder = async () => {
+  formError.value = ''
+  if (!editMode.value && !validateAll()) return
+
   submitting.value = true
   try {
     const headers = { Authorization: `Bearer ${userStore.token}` }
@@ -403,7 +476,6 @@ const submitOrder = async () => {
         method: 'PUT', headers, body: { status: form.value.status }
       })
     } else {
-      // userId is taken from the JWT token server-side — do not send in body
       await $fetch(`${config.public.baseUrl}/orders`, {
         method: 'POST',
         headers,
@@ -423,8 +495,8 @@ const submitOrder = async () => {
             productName: item.productName,
             priceCents: item.priceCents,
             quantity: item.quantity,
-            selectedColor: item.selectedColor ?? '',
-            selectedSize: item.selectedSize ?? '',
+            selectedColors: Array.isArray(item.selectedColors) ? item.selectedColors : [],
+            selectedSizes: Array.isArray(item.selectedSizes) ? item.selectedSizes : [],
             imageUrl: item.imageUrl ?? ''
           }))
         }
@@ -432,30 +504,37 @@ const submitOrder = async () => {
     }
     closeModal()
     fetchOrders()
-  } catch (err) { alert(err.data?.message || t('admin.errors.saveOrder')) }
+  } catch (e) { formError.value = e.data?.message || t('admin.errors.saveOrder') }
   submitting.value = false
 }
 
-const requestDelete = (order) => {
-  orderToDelete.value = order
-  confirmDeleteOpen.value = true
-}
+// ── Delete ────────────────────────────────────────────────────────────────────
+const confirmDeleteOpen = ref(false)
+const deleting = ref(false)
+const orderToDelete = ref(null)
+
+const confirmDeleteMessage = computed(() => {
+  const id = orderToDelete.value?.id
+  return id ? t('admin.confirm.deleteMessageNamed', { name: `#${id}` }) : t('admin.confirm.deleteMessageGeneric')
+})
+
+const requestDelete = (order) => { orderToDelete.value = order; confirmDeleteOpen.value = true }
 
 const confirmDelete = async () => {
   if (!orderToDelete.value?.id) return
   deleting.value = true
   try {
     await $fetch(`${config.public.baseUrl}/orders?id=${orderToDelete.value.id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${userStore.token}` }
+      method: 'DELETE', headers: { Authorization: `Bearer ${userStore.token}` }
     })
     confirmDeleteOpen.value = false
     orderToDelete.value = null
     fetchOrders()
-  } catch (err) { alert(err.data?.message || t('admin.errors.deleteOrder')) }
+  } catch (e) { alert(e.data?.message || t('admin.errors.deleteOrder')) }
   deleting.value = false
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const formatPrice = (cents) => {
   const localeMap = { en: 'en-RW', fr: 'fr-FR', rw: 'rw-RW' }
   return new Intl.NumberFormat(localeMap[locale.value] || 'en-RW', { style: 'currency', currency: 'RWF' }).format((cents || 0) / 100)
@@ -467,7 +546,6 @@ const formatDate = (d) => {
 }
 const statusClass = (s) => ({ pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', processing: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', shipped: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200', delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' }[s] || 'bg-gray-100 text-gray-800')
 const statusLabel = (s) => t(`admin.status.${s}`, s)
-
 const handleLogout = () => { userStore.logout(); router.push('/login') }
 
 onMounted(() => { fetchOrders(); fetchProducts() })

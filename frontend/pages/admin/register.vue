@@ -120,27 +120,31 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
-        <form @submit.prevent="submitUser" class="p-6 space-y-4">
+        <form @submit.prevent="submitUser" novalidate class="p-6 space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('signup.fullName') }} *</label>
-            <input v-model="form.name" required class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <input v-model="form.name" @blur="touch('name')" :class="err.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+            <p v-if="err.name" class="text-red-500 text-xs mt-1">{{ err.name }}</p>
           </div>
           <div v-if="!editMode">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('signup.email') }} *</label>
-            <input v-model="form.email" type="email" required class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <input v-model="form.email" @blur="touch('email')" type="email" :class="err.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+            <p v-if="err.email" class="text-red-500 text-xs mt-1">{{ err.email }}</p>
           </div>
           <div v-if="!editMode">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.register.phone') }} *</label>
-            <input v-model="form.phone" required class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <input v-model="form.phone" @blur="touch('phone')" :class="err.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+            <p v-if="err.phone" class="text-red-500 text-xs mt-1">{{ err.phone }}</p>
           </div>
           <div v-if="!editMode">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('signup.password') }} *</label>
-            <input v-model="form.password" type="password" required minlength="8" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $t('signup.passwordHint') }}</p>
+            <input v-model="form.password" @blur="touch('password')" type="password" :class="err.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-white" />
+            <p v-if="err.password" class="text-red-500 text-xs mt-1">{{ err.password }}</p>
+            <p v-else class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $t('signup.passwordHint') }}</p>
           </div>
           <div v-if="!editMode">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.register.role') }}</label>
-            <select v-model="form.role" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <select v-model="form.role" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
@@ -188,6 +192,33 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const totalUsers = ref(0)
 const errorMessage = ref('')
+const err = ref({})
+
+const required = (val) => !String(val ?? '').trim()
+
+const isValidPhone = (phone) => {
+  // Matches formats like: +2507XXXXXXXX, 07XXXXXXXX, +250XXXXXXXXX, etc.
+  // Allows optional + prefix, then 9-15 digits
+  return /^[\+]?[0-9\s\-]{9,15}$/.test(phone.replace(/\s/g, ''))
+}
+
+const touch = (field) => {
+  const f = form.value
+  const e = { ...err.value }
+  const req = t('admin.validation.required')
+  switch (field) {
+    case 'name':     e.name = required(f.name) ? req : ''; break
+    case 'email':    e.email = required(f.email) ? req : (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email) ? t('admin.validation.invalidEmail') : ''); break
+    case 'phone':    e.phone = required(f.phone) ? req : (!isValidPhone(f.phone) ? t('admin.validation.invalidPhone') : ''); break
+    case 'password': e.password = required(f.password) ? req : (f.password.length < 8 ? t('admin.validation.passwordMin') : ''); break
+  }
+  err.value = e
+}
+
+const validateAll = () => {
+  ['name', 'email', 'phone', 'password'].forEach(touch)
+  return Object.values(err.value).every(v => !v)
+}
 
 const form = ref({ name: '', email: '', phone: '', password: '', role: 'user' })
 
@@ -219,6 +250,7 @@ const fetchUsers = async () => {
 const openModal = (mode, user = null) => {
   editMode.value = mode === 'edit'
   errorMessage.value = ''
+  err.value = {}
   form.value = editMode.value && user
     ? { id: user.id, name: user.name, email: user.email, phone: user.phone || '', role: user.role }
     : { name: '', email: '', phone: '', password: '', role: 'user' }
@@ -228,8 +260,9 @@ const openModal = (mode, user = null) => {
 const closeModal = () => { showModal.value = false }
 
 const submitUser = async () => {
-  submitting.value = true
   errorMessage.value = ''
+  if (!editMode.value && !validateAll()) return
+  submitting.value = true
   try {
     const headers = { Authorization: `Bearer ${userStore.token}` }
     if (editMode.value) {
