@@ -1,93 +1,72 @@
 <template>
-  <div>    
-    <section class="bg-transparent py-8 antialiased md:py-12">
+  <div>
+    <section class="py-6 antialiased">
 
-      <!-- Results Banner — shows only when searching -->
-      <div 
-        v-if="query && !loading"
-        class="mx-auto max-w-screen-xl px-4 2xl:px-0 mb-4 flex items-center justify-between"
-      >
+      <!-- Search results banner -->
+      <div v-if="query && !loading" class="mb-4 flex items-center justify-between">
         <p class="text-sm text-green-600 dark:text-gray-400">
-          <span class="font-bold text-green-800 dark:text-white">
-            {{ displayedProducts.length }} {{ $t('search.results', displayedProducts.length) }}
-          </span>
+          <span class="font-bold text-green-800 dark:text-white">{{ displayedProducts.length }} {{ $t('search.results', displayedProducts.length) }}</span>
           {{ $t('search.for') }}
           <span class="text-green-700 dark:text-green-400 font-semibold">"{{ query }}"</span>
         </p>
-        <button
-          @click="clearSearch"
-          class="text-xs font-bold text-green-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 underline transition-colors"
-        >
+        <button @click="clearSearch" class="text-xs font-bold text-green-500 hover:text-red-500 underline transition-colors">
           {{ $t('search.clear') }}
         </button>
       </div>
 
-      <!-- Page Title -->
-      <div class="mx-auto max-w-screen-xl px-4 2xl:px-0 mb-6">
-        <h1 class="text-3xl font-extrabold tracking-tight text-green-800 dark:text-white sm:text-4xl text-center">
-          {{ $t('products.title') }}
-        </h1>
-        <p class="mt-2 text-sm text-green-500 dark:text-gray-400 text-center">
-          {{ $t('products.subtitle') }}
-        </p>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="loading && fetchedProducts.length === 0" class="mx-auto max-w-screen-xl px-4 2xl:px-0 text-center">
+      <!-- Loading -->
+      <div v-if="loading && fetchedProducts.length === 0" class="text-center py-8">
         <p class="text-green-600 dark:text-green-400">{{ $t('products.loading') }}</p>
       </div>
 
-      <!-- Error State -->
-      <div v-if="error" class="mx-auto max-w-screen-xl px-4 2xl:px-0 text-center">
-        <p class="text-red-600 dark:text-red-400">{{ $t('products.loadError') }}: {{ error }}</p>
+      <!-- Error -->
+      <div v-if="error" class="text-center py-8">
+        <p class="text-red-600 dark:text-red-400">{{ $t('products.loadError') }}</p>
       </div>
 
       <!-- Product Grid -->
-      <div class="mb-4 grid gap-4 grid-cols-2 sm:grid-cols-4 md:gap-6 md:mb-8 lg:grid-cols-4 xl:grid-cols-5">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         <div
           v-for="(product, index) in displayedProducts"
           :key="product.id || index"
-          class="group block rounded-lg border border-gray-200 bg-white overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 dark:border-gray-700 dark:bg-gray-700"
+          @click="goToProductDetails(product.id)"
+          class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer"
         >
-          <!-- Image Section -->
-          <div
-            @click="goToProductDetails(product.id)"
-            class="relative overflow-hidden cursor-pointer h-40 sm:h-48 md:h-56 lg:h-48 xl:h-52"
-          >
+          <!-- Image -->
+          <div class="relative overflow-hidden aspect-square">
             <img
-              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               :src="product.imageUrl"
               :alt="product.productName"
             />
-
-            <!-- Price Negotiable Badge -->
-            <div class="absolute top-2 left-0 right-0 flex justify-center">
-              <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md tracking-wide">
-                💬 {{ $t('products.negotiable') }}
-              </span>
+            <div v-if="product.isOnSale" class="absolute top-2 left-2">
+              <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">SALE</span>
             </div>
           </div>
 
-          <!-- Details Section -->
-          <div class="p-2 md:p-3">
-            <p class="mt-1 text-sm font-bold text-gray-900 sm:text-base dark:text-white">
-              <!-- {{ formatCurrency(cartStore.convertPrice(product.priceCents), cartStore.selectedCurrency) }} -->
+          <!-- Info -->
+          <div class="p-2.5">
+            <p class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white line-clamp-2 leading-snug">
+              {{ product.productName }}
             </p>
-            <strong>
-              <p class="text-lg text-center text-bold text-green-800 line-clamp-2 dark:text-gray-300">
-                {{ product.productName }}
-              </p>
-            </strong>
+            <p class="mt-1 text-xs text-green-600 dark:text-green-400 font-medium">
+              {{ $t('products.negotiable') }}
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Show More Button -->
-      <div v-if="hasMoreProducts" class="mx-auto max-w-screen-xl px-4 2xl:px-0 flex justify-center mt-4 mb-8">
+      <!-- No results -->
+      <div v-if="!loading && displayedProducts.length === 0 && query" class="text-center py-12">
+        <p class="text-gray-500 dark:text-gray-400">{{ $t('search.noResults') }} "{{ query }}"</p>
+      </div>
+
+      <!-- Load More -->
+      <div v-if="hasMoreProducts" class="flex justify-center mt-8 mb-4">
         <button
           @click="loadMore"
           :disabled="loadingMore"
-          class="px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200"
+          class="px-8 py-2.5 text-sm font-medium text-white bg-green-600 rounded-full hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           <span v-if="loadingMore">{{ $t('products.loading_more') }}</span>
           <span v-else>{{ $t('products.loadMore') }}</span>

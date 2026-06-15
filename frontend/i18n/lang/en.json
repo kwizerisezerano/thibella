@@ -2,7 +2,9 @@
   "nav": {
     "home": "Home",
     "products": "Products",
-    "categories": "Categories"
+    "categories": "Categories",
+    "cart": "Cart",
+    "orders": "My Orders"
   },
   "auth": {
     "signIn": "Sign in",
@@ -50,14 +52,21 @@
   "footer": {
     "aboutUs": "About Us",
     "aboutDesc": "We are your trusted online store, offering quality products with excellent customer service. Our mission is to provide you with the best shopping experience.",
+    "quickLinks": "Quick Links",
+    "help": "Help & Support",
+    "faq": "FAQ",
+    "shipping": "Shipping Info",
+    "returns": "Returns & Refunds",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
     "newsletter": "Newsletter",
     "newsletterSub": "Subscribe to get offers & updates",
     "emailPlaceholder": "Your email",
     "subscribe": "Subscribe",
     "followUs": "Follow Us",
-    "paymentMethods": "Payment Methods:",
+    "paymentMethods": "Payment",
     "rights": "All rights reserved.",
-    "hours": "Mon-Sat: 8AM - 8PM"
+    "hours": "Mon–Sat: 8AM – 8PM"
   },
   "profile": {
     "login": "Login",

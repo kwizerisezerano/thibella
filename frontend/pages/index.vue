@@ -1,14 +1,11 @@
-<!-- index.vue -->
 <script setup>
 import { watch } from 'vue'
 import { useSearchStore } from '~/stores/search'
 
 const searchStore = useSearchStore()
 
-// When search query is set, scroll down to products
 watch(() => searchStore.query, (newQuery) => {
   if (newQuery) {
-    // Small delay to let ProductsList re-render first
     setTimeout(() => {
       document.querySelector('#products-section')?.scrollIntoView({ behavior: 'smooth' })
     }, 100)
@@ -17,19 +14,35 @@ watch(() => searchStore.query, (newQuery) => {
 </script>
 
 <template>
-  <div class="relative bg-white dark:bg-gray-900">
-    <div class="relative w-full h-96 z-10">
+  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+
+    <!-- Hero Banner — full width intentional -->
+    <section class="w-full">
       <TopProduct />
-      <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white/100 ..."></div>
+    </section>
+
+    <!-- Categories -->
+    <section class="w-full bg-white dark:bg-gray-800 shadow-sm">
+      <div class="w-full px-3 sm:px-4">
+        <ProductsByCategories />
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="w-full px-3 sm:px-4 mt-8 mb-2 flex items-center gap-4">
+      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+      <span class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 whitespace-nowrap">
+        {{ $t('products.title') }}
+      </span>
+      <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
     </div>
 
-    <div class="relative z-30 mt-[-250px] ...">
-      <ProductsByCategories />
-    </div>
+    <!-- Products -->
+    <section id="products-section" class="w-full">
+      <div class="w-full px-3 sm:px-4">
+        <ProductsList />
+      </div>
+    </section>
 
-    <!-- Add id here so we can scroll to it -->
-    <div id="products-section" class="relative z-30 mt-[-80px] px-4 2xl:px-0 max-w-screen-xl mx-auto">
-      <ProductsList />
-    </div>
   </div>
 </template>

@@ -2,7 +2,9 @@
   "nav": {
     "home": "Ahabanza",
     "products": "Ibicuruzwa",
-    "categories": "Ibyiciro"
+    "categories": "Ibyiciro",
+    "cart": "Agashubiri",
+    "orders": "Ibyo Naguze"
   },
   "auth": {
     "signIn": "Injira",
@@ -49,15 +51,22 @@
   },
   "footer": {
     "aboutUs": "Abo Turi Bo",
-    "aboutDesc": "Turi isoko yawe y'icyizere ku murwa, itanga ibicuruzwa bya kalite hamwe n'serivisi nziza. Intego yacu ni ukuguteza imbere uburambe bwiza bw'ubucuruzi.",
+    "aboutDesc": "Turi isoko yawe y'icyizere ku murwa, itanga ibicuruzwa bya kalite hamwe n'serivisi nziza.",
+    "quickLinks": "Itumanaho Ryihuse",
+    "help": "Ubufasha",
+    "faq": "Ibibazo Bikunze Kubazwa",
+    "shipping": "Amakuru y'Ubutumwa",
+    "returns": "Gusubiza no Gusubizwa Amafaranga",
+    "privacy": "Politiki y'Ibanga",
+    "terms": "Amabwiriza y'Ikoreshwa",
     "newsletter": "Amakuru",
     "newsletterSub": "Iyandikishe kugira ngo ubone amakuru n'amatangaza",
     "emailPlaceholder": "Imeli yawe",
     "subscribe": "Iyandikishe",
     "followUs": "Dukurikire",
-    "paymentMethods": "Uburyo bwo kwishyura:",
+    "paymentMethods": "Kwishyura",
     "rights": "Uburenganzira bwose buhariwe.",
-    "hours": "Ku wa Mbere-Gatandatu: 8h - 20h"
+    "hours": "Ku wa Mbere–Gatandatu: 8h – 20h"
   },
   "profile": {
     "login": "Injira",

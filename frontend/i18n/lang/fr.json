@@ -2,7 +2,9 @@
   "nav": {
     "home": "Accueil",
     "products": "Produits",
-    "categories": "Catégories"
+    "categories": "Catégories",
+    "cart": "Panier",
+    "orders": "Mes Commandes"
   },
   "auth": {
     "signIn": "Se connecter",
@@ -49,15 +51,22 @@
   },
   "footer": {
     "aboutUs": "À propos",
-    "aboutDesc": "Nous sommes votre boutique en ligne de confiance, offrant des produits de qualité avec un excellent service client. Notre mission est de vous offrir la meilleure expérience d'achat.",
+    "aboutDesc": "Nous sommes votre boutique en ligne de confiance, offrant des produits de qualité avec un excellent service client.",
+    "quickLinks": "Liens Rapides",
+    "help": "Aide & Support",
+    "faq": "FAQ",
+    "shipping": "Livraison",
+    "returns": "Retours & Remboursements",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
     "newsletter": "Newsletter",
     "newsletterSub": "Abonnez-vous pour recevoir des offres et mises à jour",
     "emailPlaceholder": "Votre email",
     "subscribe": "S'abonner",
     "followUs": "Suivez-nous",
-    "paymentMethods": "Moyens de paiement :",
+    "paymentMethods": "Paiement",
     "rights": "Tous droits réservés.",
-    "hours": "Lun-Sam : 8h - 20h"
+    "hours": "Lun–Sam : 8h – 20h"
   },
   "profile": {
     "login": "Se connecter",

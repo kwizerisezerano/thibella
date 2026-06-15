@@ -1,5 +1,6 @@
 <template>
-  <div v-if="slides.length > 0" class="relative w-full h-96">
+  <div v-if="slides.length > 0" class="relative w-full h-[420px] sm:h-[500px] overflow-hidden">
+
     <!-- Background Image -->
     <img
       v-if="slides[currentSlide]"
@@ -9,61 +10,58 @@
       class="absolute inset-0 w-full h-full object-cover transition-all duration-700"
     />
 
-    <!-- Dark overlay -->
-    <div class="absolute inset-0 bg-black/50"></div>
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
 
-    <!-- Main Content Row -->
-    <div class="absolute inset-0 z-10 flex items-center justify-start -mt-64 gap-4 px-4">
-
-      <!-- Previous Button -->
-      <button
-        @click.prevent="previousSlide"
-        class="shrink-0 backdrop-blur-sm text-white p-3 sm:p-4 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-300"
-        aria-label="Previous slide"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <!-- Slide Content - Clickable Category Banner -->
-      <NuxtLink
-        :to="slides[currentSlide]?.route"
-        :key="currentSlide"
-        class="flex-1 flex flex-col items-center justify-center text-center group cursor-pointer"
-      >
-
-        <!-- Title -->
-        <h1
-          class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3 md:mb-4 drop-shadow-lg animate-fade-in leading-tight"
-        >
-          {{ slides[currentSlide]?.title }}
-        </h1>
-
-        <!-- Description -->
-        <p
-          class="text-xs sm:text-sm md:text-base text-white/80 max-w-xs sm:max-w-sm md:max-w-xl mx-auto animate-fade-in-delay"
-        >
-          {{ slides[currentSlide]?.description }}
-        </p>
-
+    <!-- Centered Content -->
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-3 sm:px-4">
+      <NuxtLink :to="slides[currentSlide]?.route" class="group w-full">
+        <div class="w-full px-3 sm:px-4">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg animate-fade-in leading-tight mb-3" style="font-family: Georgia, serif;">
+            {{ slides[currentSlide]?.title }}
+          </h1>
+          <p class="text-sm sm:text-base md:text-lg text-white/80 max-w-xl mx-auto animate-fade-in-delay mb-6" style="font-family: 'Segoe UI', sans-serif;">
+            {{ slides[currentSlide]?.description }}
+          </p>
+          <span class="inline-block px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition-colors shadow-lg" style="font-family: 'Segoe UI', sans-serif;">
+            Shop Now &rarr;
+          </span>
+        </div>
       </NuxtLink>
-
-      <!-- Next Button -->
-      <button
-        @click.prevent="nextSlide"
-        class="shrink-0 backdrop-blur-sm text-white p-3 sm:p-4 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-300"
-        aria-label="Next slide"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
     </div>
-  </div>
-  <!-- fall back -->
-  <div v-else class="w-full h-96 bg-gray-200 animate-pulse" />
 
+    <!-- Prev Button -->
+    <button
+      @click.prevent="previousSlide"
+      class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2.5 rounded-full transition-all backdrop-blur-sm"
+      aria-label="Previous slide"
+    >
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+    </button>
+
+    <!-- Next Button -->
+    <button
+      @click.prevent="nextSlide"
+      class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2.5 rounded-full transition-all backdrop-blur-sm"
+      aria-label="Next slide"
+    >
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </button>
+
+    <!-- Dot Indicators -->
+    <div class="absolute bottom-5 left-0 right-0 z-20 flex justify-center gap-2">
+      <button
+        v-for="(slide, i) in slides"
+        :key="i"
+        @click="goToSlide(i)"
+        class="w-2.5 h-2.5 rounded-full transition-all"
+        :class="i === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'"
+        :aria-label="`Go to slide ${i + 1}`"
+      />
+    </div>
+
+  </div>
+  <div v-else class="w-full h-[420px] sm:h-[500px] bg-gray-200 dark:bg-gray-700 animate-pulse" />
 </template>
 
 <script setup>
