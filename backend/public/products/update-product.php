@@ -29,8 +29,7 @@ if (!$productId) {
 
 // Required fields validation
 $requiredFields = [
-    'productName', 'description', 'priceCents',
-    'type', 'isOnSale', 'category_id','imageUrl'
+    'productName', 'category_id'
 ];
 
 foreach ($requiredFields as $field) {
@@ -44,38 +43,52 @@ foreach ($requiredFields as $field) {
     }
 }
 
-error_log(print_r($_POST, true));
-
 // Get POST data
-$productName = $_POST['productName'];
-$description = $_POST['description'];
-$priceCents = (int) $_POST['priceCents'];
-$type = $_POST['type'];
-$isOnSale =  (int) $_POST['isOnSale'];
-$category = $_POST['category'];
-$category_id = (int) $_POST['category_id'];
-$subCategory_id = (int) $_POST['subCategory_id'];
-$imageUrl = $_POST['imageUrl'];
+$productName    = trim((string)($_POST['productName'] ?? ''));
+$description    = trim((string)($_POST['description'] ?? ''));
+$price          = (float) ($_POST['price'] ?? 0);
+$isOnSale       = (int) ($_POST['isOnSale'] ?? 0);
+$category_id    = (int) ($_POST['category_id'] ?? 0);
+$subCategory_id = (int) ($_POST['subCategory_id'] ?? 0);
+$imageUrl       = trim((string)($_POST['imageUrl'] ?? ''));
+$brand          = trim((string)($_POST['brand'] ?? ''));
+$stock          = (int) ($_POST['stock'] ?? 0);
+$currency       = trim((string)($_POST['currency'] ?? 'RWF'));
 
-// Encode arrays safely
-$size = $_POST['size'] ?? [];
-$color = $_POST['color'] ?? [];
-$possibleImagesUrls = $_POST['possibleImagesUrls'] ?? [];
+if ($productName === '' || $category_id <= 0) {
+    http_response_code(400);
+    echo json_encode([
+        "success" => false,
+        "error" => "productName and category_id are required"
+    ]);
+    exit;
+}
+
+$subCategory_id = $subCategory_id > 0 ? $subCategory_id : null;
+
+$sizeRaw           = $_POST['size'] ?? '';
+$colorRaw          = $_POST['color'] ?? '';
+$possibleImagesRaw = $_POST['possibleImagesUrls'] ?? '[]';
+
+$size              = json_decode((string)$sizeRaw) !== null ? (string)$sizeRaw : trim((string)$sizeRaw);
+$color             = json_decode((string)$colorRaw) !== null ? (string)$colorRaw : trim((string)$colorRaw);
+$possibleImagesUrls = json_decode((string)$possibleImagesRaw) !== null ? (string)$possibleImagesRaw : '[]';
 
 $sql = "
 UPDATE products SET
   productName = ?,
   description = ?,
-  priceCents = ?,
+  price = ?,
   size = ?,
   color = ?,
-  type = ?,
   isOnSale = ?,
-  category = ?,
   category_id = ?, 
   subCategory_id = ?,
   imageUrl = ?,
-  possibleImagesUrls = ?
+  possibleImagesUrls = ?,
+  brand = ?,
+  stock = ?,
+  currency = ?
 WHERE id = ?
 ";
 
@@ -84,19 +97,20 @@ try {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ssisssisiissi",
+        "ssdssiiisssisi",
         $productName,
         $description,
-        $priceCents,
+        $price,
         $size,
         $color,
-        $type,
         $isOnSale,
-        $category,
-       	$category_id,
-      	$subCategory_id,
+        $category_id,
+        $subCategory_id,
         $imageUrl,
         $possibleImagesUrls,
+        $brand,
+        $stock,
+        $currency,
         $productId
     );
 

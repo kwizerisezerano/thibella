@@ -152,14 +152,16 @@ POST fields (multipart/form-data):
 | `productName`       | ✔        | string |
 | `category_id`       | ✔        | int    |
 | `description`       |          | string |
-| `priceCents`        |          | int    |
+| `price`             |          | decimal |
 | `subCategory_id`    |          | int    |
-| `type`              |          | string |
 | `isOnSale`          |          | 0 or 1 |
 | `imageUrl`          |          | string |
 | `size`              |          | JSON string e.g. `["S","M","L"]` |
 | `color`             |          | JSON string e.g. `["Red","Blue"]` |
 | `possibleImagesUrls`|          | JSON string e.g. `["url1","url2"]` |
+| `brand`             |          | string |
+| `stock`             |          | int    |
+| `currency`          |          | string |
 
 ---
 

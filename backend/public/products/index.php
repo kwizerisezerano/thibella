@@ -38,8 +38,8 @@ switch ($method) {
 // Combinable: ?category_id=1&sale=1&sort=price_asc&page=2&limit=8
 //
 // POST multipart/form-data:
-//   productName*  category_id*  description  priceCents  subCategory_id
-//   type  isOnSale  imageUrl  size(JSON)  color(JSON)  possibleImagesUrls(JSON)
+//   productName*  category_id*  description  price  subCategory_id
+//   isOnSale  imageUrl  size(JSON|string)  color(JSON|string)  possibleImagesUrls(JSON)  brand  stock  currency
 //
 // PUT  ?id=1  JSON body: any product fields
 // DELETE ?id=1

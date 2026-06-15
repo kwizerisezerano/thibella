@@ -17,14 +17,14 @@ require_once "../connection.php";
 
 $productName        = trim($_POST['productName']   ?? '');
 $description        = trim($_POST['description']   ?? '');
-$priceCents         = intval($_POST['priceCents']  ?? 0);
-$type               = trim($_POST['type']          ?? '');
+$price              = (float) ($_POST['price'] ?? 0);
 $isOnSale           = intval($_POST['isOnSale']    ?? 0);   // 0 or 1
 $category_id        = intval($_POST['category_id'] ?? 0);
-$subCategory_id     = intval($_POST['subCategory_id'] ?? 0);// ✅ FK integer
+$subCategory_id     = intval($_POST['subCategory_id'] ?? 0);// ✅ FK integer (0 means null)
 $imageUrl           = trim($_POST['imageUrl']      ?? '');
 $brand              = trim($_POST['brand']         ?? '');
 $stock              = intval($_POST['stock']       ?? 0);
+$currency           = trim($_POST['currency']      ?? 'RWF');
 
 // These arrive as JSON strings from the frontend (JSON.stringify)
 $sizeRaw            = $_POST['size']               ?? '[]';
@@ -32,8 +32,8 @@ $colorRaw           = $_POST['color']              ?? '[]';
 $possibleImagesRaw  = $_POST['possibleImagesUrls'] ?? '[]';
 
 // Validate that they are proper JSON before storing
-$size              = json_decode($sizeRaw)             !== null ? $sizeRaw             : '[]';
-$color             = json_decode($colorRaw)            !== null ? $colorRaw            : '[]';
+$size              = json_decode($sizeRaw)             !== null ? $sizeRaw             : trim((string)$sizeRaw);
+$color             = json_decode($colorRaw)            !== null ? $colorRaw            : trim((string)$colorRaw);
 $possibleImagesUrls = json_decode($possibleImagesRaw)  !== null ? $possibleImagesRaw   : '[]';
 
 // Basic required-field check
@@ -41,10 +41,12 @@ if (!$productName  || $category_id <= 0) {
   http_response_code(400);
   echo json_encode([
     "success" => false,
-    "message" => "Missing required fields: productName, description, priceCents, and category_id are required."
+    "message" => "Missing required fields: productName and category_id are required."
   ]);
   exit;
 }
+
+$subCategory_id = $subCategory_id > 0 ? $subCategory_id : null;
 
 // Check if product with same name already exists in same category
 $checkStmt = mysqli_prepare($conn, "SELECT id FROM products WHERE productName = ? AND category_id = ? LIMIT 1");
@@ -67,7 +69,7 @@ mysqli_stmt_close($checkStmt);
 // ✅ Column name matches DB schema: category_id (not categoryId)
 $sql = "
   INSERT INTO products
-    (productName, description, priceCents, size, color, type, isOnSale, imageUrl, possibleImagesUrls, brand, stock, category_id, subCategory_id)
+    (productName, description, price, size, color, isOnSale, imageUrl, possibleImagesUrls, brand, stock, category_id, subCategory_id, currency)
   VALUES
     (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ";
@@ -86,20 +88,20 @@ if (!$stmt) {
 // ✅ Bind types:
 mysqli_stmt_bind_param(
   $stmt,
-  "ssississsiiii",
+  "ssdssisssiiis",
   $productName,
   $description,
-  $priceCents,
+  $price,
   $size,
   $color,
-  $type,
   $isOnSale,
   $imageUrl,
   $possibleImagesUrls,
   $brand,
   $stock,
   $category_id,
-  $subCategory_id
+  $subCategory_id,
+  $currency
 );
 
 try {

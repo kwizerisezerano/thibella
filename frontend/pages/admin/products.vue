@@ -81,6 +81,8 @@
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Size</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Color</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
@@ -99,7 +101,9 @@
                     </div>
                   </td>
                   <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ getCategoryName(product.category_id) }}</td>
-                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ formatPrice(product.priceCents) }}</td>
+                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ product.size || 'N/A' }}</td>
+                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ product.color || 'N/A' }}</td>
+                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ formatPrice(product.price, product.currency) }}</td>
                   <td class="px-6 py-4">
                     <span v-if="product.isOnSale" class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs rounded-full">On Sale</span>
             <span v-else class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 text-xs rounded-full">Regular</span>
@@ -165,10 +169,32 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-3 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price (RWF) *</label>
-              <input v-model.number="form.priceCents" type="number" required min="0" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price *</label>
+              <input v-model.number="form.price" type="number" step="0.01" required min="0" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency</label>
+              <select v-model="form.currency" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="RWF">RWF - Rwandan Franc</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="CAD">CAD - Canadian Dollar</option>
+                <option value="AUD">AUD - Australian Dollar</option>
+                <option value="JPY">JPY - Japanese Yen</option>
+                <option value="CNY">CNY - Chinese Yuan</option>
+                <option value="INR">INR - Indian Rupee</option>
+                <option value="NGN">NGN - Nigerian Naira</option>
+                <option value="KES">KES - Kenyan Shilling</option>
+                <option value="UGX">UGX - Ugandan Shilling</option>
+                <option value="TZS">TZS - Tanzanian Shilling</option>
+                <option value="ZAR">ZAR - South African Rand</option>
+                <option value="GHS">GHS - Ghanaian Cedi</option>
+                <option value="XOF">XOF - West African CFA Franc</option>
+                <option value="XAF">XAF - Central African CFA Franc</option>
+              </select>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock</label>
@@ -177,8 +203,12 @@
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
-              <input v-model="form.type" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Size</label>
+              <input v-model="form.size" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color</label>
+              <input v-model="form.color" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
 
@@ -293,18 +323,22 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-6">
+          <div class="grid grid-cols-2 gap-6">
             <div>
               <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Price</h4>
-              <p class="text-xl font-bold text-green-600 dark:text-green-400">{{ formatPrice(selectedProduct.priceCents) }}</p>
+              <p class="text-xl font-bold text-green-600 dark:text-green-400">{{ formatPrice(selectedProduct.price, selectedProduct.currency) }}</p>
             </div>
             <div>
               <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock</h4>
               <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.stock || 0 }}</p>
             </div>
             <div>
-              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Type</h4>
-              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.type || 'N/A' }}</p>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Size</h4>
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.size || 'N/A' }}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Color</h4>
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.color || 'N/A' }}</p>
             </div>
           </div>
 
@@ -362,7 +396,8 @@ const fileInput = ref(null)
 
 const form = ref({
   productName: '', brand: '', description: '', category_id: '',
-  subCategory_id: '', priceCents: 0, type: '', isOnSale: false, stock: 0
+  subCategory_id: '', price: 0, isOnSale: false, 
+  stock: 0, size: '', color: '', currency: 'RWF'
 })
 
 // Upload a single file to Cloudinary
@@ -466,7 +501,7 @@ watch(() => form.value.category_id, (newCatId) => {
 })
 
 const getCategoryName = (id) => categories.value.find(c => c.id === id)?.title || 'N/A'
-const formatPrice = (cents) => new Intl.NumberFormat('en-RW', { style: 'currency', currency: 'RWF' }).format((cents || 0) / 100)
+const formatPrice = (price, currency = 'RWF') => new Intl.NumberFormat('en-RW', { style: 'currency', currency: currency }).format(price || 0)
 
 const openModal = (mode, product = null) => {
   editMode.value = mode === 'edit'
@@ -479,10 +514,12 @@ const openModal = (mode, product = null) => {
       description: product.description || '',
       category_id: product.category_id || '',
       subCategory_id: product.subCategory_id || '',
-      priceCents: product.priceCents || 0,
-      type: product.type || '',
+      price: product.price || 0,
       isOnSale: product.isOnSale || false,
-      stock: product.stock || 0
+      stock: product.stock || 0,
+      size: product.size || '',
+      color: product.color || '',
+      currency: product.currency || 'RWF'
     }
     // Populate existing images for preview
     const existing = Array.isArray(product.possibleImagesUrls)
@@ -494,7 +531,7 @@ const openModal = (mode, product = null) => {
       uploadedImages.value = [{ url: product.imageUrl, public_id: product.imageUrl }]
     }
   } else {
-    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', priceCents: 0, type: '', isOnSale: false, stock: 0 }
+    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', price: 0, isOnSale: false, stock: 0, size: '', color: '', currency: 'RWF' }
   }
   showModal.value = true
 }

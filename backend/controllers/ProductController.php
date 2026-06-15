@@ -6,13 +6,20 @@ require_once __DIR__ . '/../core/helpers.php';
 
 class ProductController
 {
-    // Decode JSON fields stored in DB as strings
+    // Decode JSON fields stored in DB as strings - if not valid JSON, return as string
     private function decode(array $row): array
     {
-        foreach (['size', 'color', 'possibleImagesUrls'] as $f) {
+        foreach (['possibleImagesUrls'] as $f) {
             if (!empty($row[$f]) && is_string($row[$f])) {
                 $decoded = json_decode($row[$f], true);
                 $row[$f] = is_array($decoded) ? $decoded : [];
+            }
+        }
+        // For size and color, if stored as JSON but we want to treat as string, just return as is
+        foreach (['size', 'color'] as $f) {
+            if (!empty($row[$f]) && is_string($row[$f])) {
+                $decoded = json_decode($row[$f], true);
+                $row[$f] = is_array($decoded) ? (implode(', ', $decoded)) : $row[$f];
             }
         }
         return $row;
@@ -56,8 +63,8 @@ class ProductController
 
         // ── Sort ─────────────────────────────────────────────────────────────
         $sortMap = [
-            'price_asc'  => 'priceCents ASC',
-            'price_desc' => 'priceCents DESC',
+            'price_asc'  => 'price ASC',
+            'price_desc' => 'price DESC',
             'oldest'     => 'id ASC',
             'newest'     => 'id DESC',
         ];
@@ -81,25 +88,25 @@ class ProductController
     }
 
     // ── POST /api/products  (admin) ──────────────────────────────────────────
-    // multipart/form-data: productName*, category_id*, description, priceCents,
-    //   subCategory_id, type, isOnSale, imageUrl, size(JSON), color(JSON),
-    //   possibleImagesUrls(JSON), stock, brand
+    // multipart/form-data: productName*, category_id*, description, price,
+    //   subCategory_id, isOnSale, imageUrl, size, color,
+    //   possibleImagesUrls(JSON), stock, brand, currency (default RWF)
     public function store(): void
     {
         $d        = jsonBody();
         $name     = trim($d['productName'] ?? '');
         $catId    = !empty($d['category_id']) ? (int) $d['category_id'] : null;
         $desc     = trim($d['description']      ?? '');
-        $price    = (int) ($d['priceCents']     ?? 0);
+        $price    = (float) ($d['price']     ?? 0);
         $subCatId = !empty($d['subCategory_id']) ? (int) $d['subCategory_id'] : null;
-        $type     = trim($d['type']             ?? '');
         $isOnSale = (int) ($d['isOnSale']       ?? 0);
         $imageUrl = trim($d['imageUrl']         ?? '');
         $brand    = trim($d['brand']            ?? '');
         $stock    = (int) ($d['stock']           ?? 0);
-        $size     = $this->safeJson(is_array($d['size']               ?? null) ? json_encode($d['size'])               : ($d['size']               ?? '[]'));
-        $color    = $this->safeJson(is_array($d['color']              ?? null) ? json_encode($d['color'])              : ($d['color']              ?? '[]'));
+        $size     = is_array($d['size'] ?? null) ? json_encode($d['size']) : (trim($d['size'] ?? ''));
+        $color    = is_array($d['color'] ?? null) ? json_encode($d['color']) : (trim($d['color'] ?? ''));
         $images   = $this->safeJson(is_array($d['possibleImagesUrls'] ?? null) ? json_encode($d['possibleImagesUrls']) : ($d['possibleImagesUrls'] ?? '[]'));
+        $currency = trim($d['currency'] ?? 'RWF');
 
         if (!$name || !$catId) Response::error('productName and category_id are required', 400);
 
@@ -108,11 +115,11 @@ class ProductController
 
         $id = DB::insert(
             'INSERT INTO products
-                (productName, description, priceCents, size, color, type, isOnSale,
-                 imageUrl, possibleImagesUrls, brand, stock, category_id, subCategory_id)
+                (productName, description, price, size, color, isOnSale,
+                 imageUrl, possibleImagesUrls, brand, stock, category_id, subCategory_id, currency)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            'ssississssiii',
-            [$name, $desc, $price, $size, $color, $type, $isOnSale, $imageUrl, $images, $brand, $stock, $catId, $subCatId]
+            'ssdssisssiiis',
+            [$name, $desc, $price, $size, $color, $isOnSale, $imageUrl, $images, $brand, $stock, $catId, $subCatId, $currency]
         );
 
         Response::success(['id' => $id], 'Product created');
@@ -129,12 +136,14 @@ class ProductController
         $current = DB::fetchOne('SELECT * FROM products WHERE id = ?', 'i', [$id]);
         if (!$current) Response::error('Product not found', 404);
 
-        foreach (['productName','description','type','imageUrl','brand'] as $f) {
+        foreach (['productName','description','imageUrl','brand','currency'] as $f) {
             if (array_key_exists($f, $d) && (string)$d[$f] === (string)($current[$f] ?? '')) unset($d[$f]);
         }
-        foreach (['priceCents','isOnSale','category_id','subCategory_id','stock'] as $f) {
+        foreach (['isOnSale','category_id','subCategory_id','stock'] as $f) {
             if (array_key_exists($f, $d) && (int)$d[$f] === (int)($current[$f] ?? 0)) unset($d[$f]);
         }
+        // Handle price as float
+        if (array_key_exists('price', $d) && (float)$d['price'] === (float)($current['price'] ?? 0)) unset($d['price']);
         foreach (['size', 'color', 'possibleImagesUrls'] as $f) {
             if (array_key_exists($f, $d)) {
                 $incoming = is_array($d[$f]) ? json_encode($d[$f]) : (string)$d[$f];
@@ -146,10 +155,9 @@ class ProductController
         [$fields, $types, $values] = buildUpdate($d, [
             'productName'        => 's',
             'description'        => 's',
-            'priceCents'         => 'i',
+            'price'              => 'd', // d for double/decimal
             'size'               => 's',
             'color'              => 's',
-            'type'               => 's',
             'isOnSale'           => 'i',
             'imageUrl'           => 's',
             'possibleImagesUrls' => 's',
@@ -157,6 +165,7 @@ class ProductController
             'stock'              => 'i',
             'category_id'        => 'i',
             'subCategory_id'     => 'i',
+            'currency'           => 's',
         ]);
 
         if (empty($fields)) Response::success(null, 'Nothing to update, values are the same');
