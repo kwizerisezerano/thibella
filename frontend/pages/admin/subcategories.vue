@@ -127,8 +127,37 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image URL (optional)</label>
-            <input v-model="form.image" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="https://..." />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Subcategory Image <span class="text-gray-400 text-xs">(optional)</span>
+            </label>
+
+            <div
+              class="border-2 border-dashed border-green-400 dark:border-green-600 rounded-lg p-6 text-center cursor-pointer hover:bg-green-50 dark:hover:bg-gray-700 transition-colors relative"
+              @click="$refs.fileInput.click()"
+              @dragover.prevent
+              @drop.prevent="onDrop"
+            >
+              <svg class="w-10 h-10 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Click or drag & drop an image here</p>
+              <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
+            </div>
+
+            <div v-if="uploading" class="mt-2 space-y-2">
+              <div class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                Uploading image...
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                <div class="bg-green-600 h-2.5 rounded-full transition-all duration-300" :style="{ width: (uploadProgress.done / uploadProgress.total * 100) + '%' }"></div>
+              </div>
+            </div>
+
+            <div v-if="uploadedImage" class="mt-3">
+              <div class="relative inline-block group">
+                <img :src="uploadedImage.url" class="w-full max-w-xs h-28 object-cover rounded-lg border-2 border-green-500" />
+                <button type="button" @click="removeImage" class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs items-center justify-center hidden group-hover:flex">×</button>
+              </div>
+            </div>
           </div>
           <div class="flex justify-end gap-4 pt-4">
             <button type="button" @click="closeModal" class="px-4 py-2 border rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</button>
@@ -173,6 +202,55 @@ const totalPages = ref(1)
 
 const form = ref({ name: '', slug: '', category_id: '', image: '' })
 
+const uploading = ref(false)
+const uploadProgress = ref({ done: 0, total: 0 })
+const uploadedImage = ref(null)
+const fileInput = ref(null)
+
+const uploadToCloudinary = async (file) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  fd.append('upload_preset', config.public.cloudinaryUploadPreset)
+  fd.append('cloud_name', config.public.cloudinaryCloudName)
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${config.public.cloudinaryCloudName}/image/upload`,
+    { method: 'POST', body: fd }
+  )
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error?.message || `Upload failed with status ${res.status}`)
+  return { url: data.secure_url, public_id: data.public_id }
+}
+
+const uploadFile = async (file) => {
+  uploading.value = true
+  uploadProgress.value = { done: 0, total: 1 }
+  try {
+    uploadedImage.value = await uploadToCloudinary(file)
+    uploadProgress.value = { done: 1, total: 1 }
+  } catch (err) {
+    alert(`Failed to upload image: ${err.message}`)
+    uploadedImage.value = null
+    uploadProgress.value = { done: 0, total: 0 }
+  } finally {
+    uploading.value = false
+  }
+}
+
+const onFileChange = (e) => {
+  const file = e.target.files?.[0]
+  if (file) uploadFile(file)
+}
+
+const onDrop = (e) => {
+  const file = e.dataTransfer.files?.[0]
+  if (file) uploadFile(file)
+}
+
+const removeImage = () => {
+  uploadedImage.value = null
+}
+
 const confirmDeleteOpen = ref(false)
 const deleting = ref(false)
 const subcategoryToDelete = ref(null)
@@ -215,6 +293,7 @@ const openModal = (mode, subcategory = null) => {
   form.value = editMode.value && subcategory
     ? { id: subcategory.id, name: subcategory.name || '', slug: subcategory.slug || '', category_id: subcategory.category_id || '', image: subcategory.image || '' }
     : { name: '', slug: '', category_id: '', image: '' }
+  uploadedImage.value = form.value.image ? { url: form.value.image, public_id: form.value.image } : null
   showModal.value = true
 }
 
@@ -223,7 +302,8 @@ const closeModal = () => { showModal.value = false }
 const submitSubcategory = async () => {
   submitting.value = true
   try {
-    const headers = { Authorization: `Bearer ${userStore.user?.token}` }
+    if (uploadedImage.value?.url) form.value.image = uploadedImage.value.url
+    const headers = { Authorization: `Bearer ${userStore.token}` }
     if (editMode.value) {
       await $fetch(`${config.public.baseUrl}/subcategories?id=${form.value.id}`, { method: 'PUT', headers, body: form.value })
     } else {

@@ -164,7 +164,7 @@ const stats = ref({
 const fetchStats = async () => {
   try {
     const res = await $fetch(`${config.public.baseUrl}/stats`, {
-      headers: { Authorization: `Bearer ${userStore.user?.token}` }
+      headers: { Authorization: `Bearer ${userStore.token}` }
     })
     if (res.success) stats.value = res.data
   } catch (err) { console.error(err) }

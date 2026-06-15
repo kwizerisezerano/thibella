@@ -161,7 +161,7 @@ const fetchOrders = async () => {
     params.append('page', currentPage.value)
     params.append('limit', 10)
     const res = await $fetch(`${config.public.baseUrl}/orders?${params}`, {
-      headers: { Authorization: `Bearer ${userStore.user?.token}` }
+      headers: { Authorization: `Bearer ${userStore.token}` }
     })
     if (res.success) {
       orders.value = res.orders || []
@@ -175,7 +175,7 @@ const updateOrderStatus = async (order) => {
   try {
     await $fetch(`${config.public.baseUrl}/orders?id=${order.id}`, {
       method: 'PUT',
-      headers: { Authorization: `Bearer ${userStore.user?.token}` },
+      headers: { Authorization: `Bearer ${userStore.token}` },
       body: { status: order.status }
     })
   } catch (err) {
