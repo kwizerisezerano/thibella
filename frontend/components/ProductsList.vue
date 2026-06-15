@@ -33,15 +33,33 @@
           class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer"
         >
           <!-- Image -->
-          <div class="relative overflow-hidden aspect-square">
+          <div class="relative overflow-hidden aspect-square" @click.stop="">
             <img
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              :src="product.imageUrl"
+              :src="getProductCurrentImage(product.id)"
               :alt="product.productName"
             />
             <div v-if="product.isOnSale" class="absolute top-2 left-2">
               <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">SALE</span>
             </div>
+            <button 
+              @click.stop="prevProductImage(product.id)"
+              v-if="getProductImages(product.id).length > 1"
+              class="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button 
+              @click.stop="nextProductImage(product.id)"
+              v-if="getProductImages(product.id).length > 1"
+              class="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
 
           <!-- Info -->
@@ -305,6 +323,52 @@ const displayedProducts = computed(() => {
 
 const goToProductDetails = (id) => {
   if (id) router.push(`products/${id}`);
+};
+
+// Product image navigation for product cards
+const productCurrentImageIndex = ref({}); // key: product.id, value: current index
+
+const getProductImages = (productId) => {
+  const product = displayedProducts.value.find(p => p.id === productId);
+  if (!product) return [];
+  const images = [product.imageUrl];
+  if (product.possibleImagesUrls) {
+    if (typeof product.possibleImagesUrls === 'string') {
+      try {
+        const parsed = JSON.parse(product.possibleImagesUrls);
+        if (Array.isArray(parsed)) {
+          images.push(...parsed);
+        }
+      } catch {
+        // ignore
+      }
+    } else if (Array.isArray(product.possibleImagesUrls)) {
+      images.push(...product.possibleImagesUrls);
+    }
+  }
+  return images;
+};
+
+const getProductCurrentImage = (productId) => {
+  const images = getProductImages(productId);
+  const index = productCurrentImageIndex.value[productId] ?? 0;
+  return images[index] ?? images[0];
+};
+
+const prevProductImage = (productId) => {
+  const images = getProductImages(productId);
+  if (!images.length) return;
+  const currentIndex = productCurrentImageIndex.value[productId] ?? 0;
+  const newIndex = currentIndex <= 0 ? images.length - 1 : currentIndex - 1;
+  productCurrentImageIndex.value[productId] = newIndex;
+};
+
+const nextProductImage = (productId) => {
+  const images = getProductImages(productId);
+  if (!images.length) return;
+  const currentIndex = productCurrentImageIndex.value[productId] ?? 0;
+  const newIndex = currentIndex >= images.length - 1 ? 0 : currentIndex + 1;
+  productCurrentImageIndex.value[productId] = newIndex;
 };
 </script>
 <style scoped>

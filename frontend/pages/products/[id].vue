@@ -15,6 +15,7 @@ const loading = ref(true);
 const selectedImage = ref(null);
 const selectedColor = ref('');
 const selectedSize = ref('');
+const thumbnailsContainer = ref(null);
 
 const confirmDuplicateOpen = ref(false)
 const pendingDuplicateOptions = ref(null)
@@ -198,6 +199,59 @@ const colorClasses = {
 
 const defaultColorClass = "bg-gray-400";
 
+const getColorClass = (color) => {
+  if (!color) return defaultColorClass;
+  const normalizedColor = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+  return colorClasses[normalizedColor] || defaultColorClass;
+};
+
+const shouldUseDarkCheckmark = (color) => {
+  if (!color) return false;
+  const normalizedColor = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
+  const lightColors = ['White', 'Yellow', 'Beige', 'Gray'];
+  return lightColors.includes(normalizedColor);
+};
+
+const scrollThumbnails = (direction) => {
+  if (!thumbnailsContainer.value) return;
+  const scrollAmount = 80; // Amount to scroll each time
+  if (direction === 'up') {
+    thumbnailsContainer.value.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+  } else {
+    thumbnailsContainer.value.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+  }
+};
+
+const getAllImages = () => {
+  if (!product.value) return [];
+  const images = [product.value.imageUrl];
+  if (product.value.possibleImagesUrls) {
+    images.push(...product.value.possibleImagesUrls);
+  }
+  return images;
+};
+
+const getCurrentImageIndex = () => {
+  const images = getAllImages();
+  return images.indexOf(selectedImage.value || product.value?.imageUrl);
+};
+
+const prevImage = () => {
+  const images = getAllImages();
+  if (!images.length) return;
+  const currentIndex = getCurrentImageIndex();
+  const newIndex = currentIndex <= 0 ? images.length - 1 : currentIndex - 1;
+  selectImage(images[newIndex]);
+};
+
+const nextImage = () => {
+  const images = getAllImages();
+  if (!images.length) return;
+  const currentIndex = getCurrentImageIndex();
+  const newIndex = currentIndex >= images.length - 1 ? 0 : currentIndex + 1;
+  selectImage(images[newIndex]);
+};
+
 
 
 
@@ -233,36 +287,70 @@ const defaultColorClass = "bg-gray-400";
       <div class="self-start">
         <div class="flex gap-4 max-h-96">
           <!-- Main Product Image -->
-          <div class="flex-1">
+          <div class="flex-1 relative">
             <img 
               :src="selectedImage || product.imageUrl" 
               alt="Product" 
               class="w-full h-96 object-contain rounded-lg shadow-lg bg-gray-50 dark:bg-gray-800 transition-all duration-300"
             />
+            <button 
+              @click="prevImage"
+              class="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button 
+              @click="nextImage"
+              class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
           
           <!-- Thumbnail Images on the Right Side -->
-          <div class="flex flex-col gap-2 w-20 overflow-y-auto">
-            <!-- Main image thumbnail -->
-            <img
-              :src="product.imageUrl"
-              alt="Main product"
-              class="w-16 h-16 object-contain rounded-lg cursor-pointer border-2 transition-all duration-200 flex-shrink-0"
-              :class="selectedImage === product.imageUrl || (!selectedImage) ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300 hover:border-blue-400'"
-              @click="selectImage(product.imageUrl)"
-            />
-            <!-- Additional product images thumbnails -->
-            <img
-              v-for="(image, index) in product.possibleImagesUrls"
-              :key="index"
-              :src="image"
-              alt="Product variation"
-              class="w-16 h-16 object-contain rounded-lg cursor-pointer border-2 transition-all duration-200 flex-shrink-0"
-              :class="selectedImage === image ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300 hover:border-blue-400'"
-              @mouseenter="hoverImage(image)"
-              @mouseleave="resetImage"
-              @click="selectImage(image)"
-            /> 
+          <div class="flex flex-col gap-2 w-20 relative">
+            <button 
+              @click="scrollThumbnails('up')"
+              class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3 z-10 w-6 h-6 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <div ref="thumbnailsContainer" class="flex flex-col gap-2 overflow-y-auto max-h-96">
+              <!-- Main image thumbnail -->
+              <img
+                :src="product.imageUrl"
+                alt="Main product"
+                class="w-16 h-16 object-contain rounded-lg cursor-pointer border-2 transition-all duration-200 flex-shrink-0"
+                :class="selectedImage === product.imageUrl || (!selectedImage) ? 'border-green-500 ring-2 ring-green-200' : 'border-gray-300 hover:border-green-400'"
+                @click="selectImage(product.imageUrl)"
+              />
+              <!-- Additional product images thumbnails -->
+              <img
+                v-for="(image, index) in product.possibleImagesUrls"
+                :key="index"
+                :src="image"
+                alt="Product variation"
+                class="w-16 h-16 object-contain rounded-lg cursor-pointer border-2 transition-all duration-200 flex-shrink-0"
+                :class="selectedImage === image ? 'border-green-500 ring-2 ring-green-200' : 'border-gray-300 hover:border-green-400'"
+                @mouseenter="hoverImage(image)"
+                @mouseleave="resetImage"
+                @click="selectImage(image)"
+              /> 
+            </div>
+            <button 
+              @click="scrollThumbnails('down')"
+              class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-3 z-10 w-6 h-6 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -310,7 +398,7 @@ const defaultColorClass = "bg-gray-400";
               :title="color"
               class="relative w-10 h-10 rounded-full transition-all duration-200 focus:outline-none border-2 border-gray-200"
               :class="[
-                colorClasses[color] || defaultColorClass,
+                getColorClass(color),
                 selectedColor === color
                   ? 'ring-4 ring-offset-2 ring-blue-500 scale-110 shadow-lg'
                   : 'hover:scale-105 hover:shadow-md'
@@ -319,7 +407,8 @@ const defaultColorClass = "bg-gray-400";
               <!-- Checkmark for selected -->
               <span
                 v-if="selectedColor === color"
-                class="absolute inset-0 flex items-center justify-center text-white text-sm font-bold"
+                class="absolute inset-0 flex items-center justify-center text-sm font-bold"
+                :class="shouldUseDarkCheckmark(color) ? 'text-gray-800' : 'text-white'"
               >
                 ✓
               </span>

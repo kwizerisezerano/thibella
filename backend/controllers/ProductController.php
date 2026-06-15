@@ -111,6 +111,7 @@ class ProductController
     public function store(): void
     {
         $d        = jsonBody();
+        error_log("STORE: Incoming data: " . json_encode($d));
         $name     = trim($d['productName'] ?? '');
         $catId    = !empty($d['category_id']) ? (int) $d['category_id'] : null;
         $desc     = trim($d['description']      ?? '');
@@ -124,6 +125,8 @@ class ProductController
         $color    = is_array($d['color'] ?? null) ? json_encode($d['color']) : (trim($d['color'] ?? ''));
         $images   = $this->safeJson(is_array($d['possibleImagesUrls'] ?? null) ? json_encode($d['possibleImagesUrls']) : ($d['possibleImagesUrls'] ?? '[]'));
         $currency = trim($d['currency'] ?? 'RWF');
+        
+        error_log("STORE: Processed data - size: $size, color: $color, images: $images");
 
         if (!$name || !$catId) Response::error('productName and category_id are required', 400);
 
@@ -138,6 +141,8 @@ class ProductController
             'ssdssisssiiis',
             [$name, $desc, $price, $size, $color, $isOnSale, $imageUrl, $images, $brand, $stock, $catId, $subCatId, $currency]
         );
+        
+        error_log("STORE: Product created with ID: $id");
 
         Response::success(['id' => $id], 'Product created');
     }
@@ -150,8 +155,10 @@ class ProductController
         if (!$id) Response::error('id is required', 400);
 
         $d       = jsonBody();
+        error_log("UPDATE: Incoming data: " . json_encode($d));
         $current = DB::fetchOne('SELECT * FROM products WHERE id = ?', 'i', [$id]);
         if (!$current) Response::error('Product not found', 404);
+        error_log("UPDATE: Current product from DB: " . json_encode($current));
 
         foreach (['productName','description','imageUrl','brand','currency'] as $f) {
             if (array_key_exists($f, $d) && (string)$d[$f] === (string)($current[$f] ?? '')) unset($d[$f]);
@@ -163,11 +170,12 @@ class ProductController
         if (array_key_exists('price', $d) && (float)$d['price'] === (float)($current['price'] ?? 0)) unset($d['price']);
         foreach (['size', 'color', 'possibleImagesUrls'] as $f) {
             if (array_key_exists($f, $d)) {
-                $incoming = is_array($d[$f]) ? json_encode($d[$f]) : (string)$d[$f];
-                if ($incoming === (string)($current[$f] ?? '')) unset($d[$f]);
-                else $d[$f] = $incoming;
+                $d[$f] = is_array($d[$f]) ? json_encode($d[$f]) : (string)$d[$f];
+                error_log("UPDATE: Setting $f to: " . $d[$f]);
             }
         }
+        
+        error_log("UPDATE: Final data to save: " . json_encode($d));
 
         [$fields, $types, $values] = buildUpdate($d, [
             'productName'        => 's',
@@ -184,6 +192,8 @@ class ProductController
             'subCategory_id'     => 'i',
             'currency'           => 's',
         ]);
+        
+        error_log("UPDATE: Fields to update: " . json_encode($fields) . ", types: $types");
 
         if (empty($fields)) Response::success(null, 'Nothing to update, values are the same');
 

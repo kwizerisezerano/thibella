@@ -101,8 +101,12 @@
                     </div>
                   </td>
                   <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ getCategoryName(product.category_id) }}</td>
-                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ product.size || $t('admin.common.na') }}</td>
-                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ product.color || $t('admin.common.na') }}</td>
+                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
+                    {{ (Array.isArray(product.size) ? product.size.join(', ') : product.size) || $t('admin.common.na') }}
+                  </td>
+                  <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
+                    {{ (Array.isArray(product.color) ? product.color.join(', ') : product.color) || $t('admin.common.na') }}
+                  </td>
                   <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ formatPrice(product.price, product.currency) }}</td>
                   <td class="px-6 py-4">
                     <span v-if="product.isOnSale" class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs rounded-full">{{ $t('admin.pages.products.onSale') }}</span>
@@ -204,11 +208,39 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.products.size') }}</label>
-              <input v-model="form.size" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <div class="border rounded-lg dark:bg-gray-700 dark:border-gray-600 px-3 py-2">
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span v-for="(size, index) in form.size" :key="index" class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
+                    {{ size }}
+                    <button type="button" @click="removeTag('size', index)" class="hover:text-red-600">×</button>
+                  </span>
+                </div>
+                <input 
+                  v-model="tempSizeInput" 
+                  @keydown="handleKeyDown($event, 'size', tempSizeInput)"
+                  @blur="addTag('size', tempSizeInput)"
+                  placeholder="Enter size, comma separate (e.g., S, M, L)" 
+                  class="w-full bg-transparent text-gray-900 dark:text-white outline-none" 
+                />
+              </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('admin.pages.products.color') }}</label>
-              <input v-model="form.color" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+              <div class="border rounded-lg dark:bg-gray-700 dark:border-gray-600 px-3 py-2">
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span v-for="(color, index) in form.color" :key="index" class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
+                    {{ color }}
+                    <button type="button" @click="removeTag('color', index)" class="hover:text-red-600">×</button>
+                  </span>
+                </div>
+                <input 
+                  v-model="tempColorInput" 
+                  @keydown="handleKeyDown($event, 'color', tempColorInput)"
+                  @blur="addTag('color', tempColorInput)"
+                  placeholder="Enter color, comma separate (e.g., Red, Blue)" 
+                  class="w-full bg-transparent text-gray-900 dark:text-white outline-none" 
+                />
+              </div>
             </div>
           </div>
 
@@ -334,11 +366,15 @@
             </div>
             <div>
               <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('admin.pages.products.tableSize') }}</h4>
-              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.size || $t('admin.common.na') }}</p>
+              <p class="text-xl font-bold text-gray-900 dark:text-white">
+                {{ (Array.isArray(selectedProduct.size) ? selectedProduct.size.join(', ') : selectedProduct.size) || $t('admin.common.na') }}
+              </p>
             </div>
             <div>
               <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $t('admin.pages.products.tableColor') }}</h4>
-              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.color || $t('admin.common.na') }}</p>
+              <p class="text-xl font-bold text-gray-900 dark:text-white">
+                {{ (Array.isArray(selectedProduct.color) ? selectedProduct.color.join(', ') : selectedProduct.color) || $t('admin.common.na') }}
+              </p>
             </div>
           </div>
 
@@ -422,8 +458,36 @@ const confirmDeleteMessage = computed(() => {
 const form = ref({
   productName: '', brand: '', description: '', category_id: '',
   subCategory_id: '', price: 0, isOnSale: false, 
-  stock: 0, size: '', color: '', currency: 'RWF'
+  stock: 0, size: [], color: [], currency: 'RWF'
 })
+
+const tempSizeInput = ref('')
+const tempColorInput = ref('')
+
+const addTag = (type, value) => {
+  if (!value.trim()) return
+  const trimmed = value.trim()
+  // Split by comma and add all non-empty values
+  const values = trimmed.split(',').map(s => s.trim()).filter(s => s)
+  values.forEach(v => {
+    if (!form.value[type].includes(v)) {
+      form.value[type].push(v)
+    }
+  })
+  if (type === 'size') tempSizeInput.value = ''
+  if (type === 'color') tempColorInput.value = ''
+}
+
+const removeTag = (type, index) => {
+  form.value[type].splice(index, 1)
+}
+
+const handleKeyDown = (e, type, tempValue) => {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault()
+    addTag(type, tempValue)
+  }
+}
 
 // Upload a single file to Cloudinary
 const uploadToCloudinary = async (file) => {
@@ -535,9 +599,23 @@ const formatPrice = (price, currency = 'RWF') => {
   return new Intl.NumberFormat(localeMap[locale.value] || 'en-RW', { style: 'currency', currency }).format(price || 0)
 }
 
+const parseTags = (value) => {
+  if (!value) return []
+  if (Array.isArray(value)) return value
+  // Try JSON parse first (if it's a JSON array string)
+  try {
+    const parsed = JSON.parse(value)
+    if (Array.isArray(parsed)) return parsed
+  } catch (e) { /* ignore */ }
+  // Otherwise, split by comma
+  return value.split(',').map(s => s.trim()).filter(s => s)
+}
+
 const openModal = (mode, product = null) => {
   editMode.value = mode === 'edit'
   uploadedImages.value = []
+  tempSizeInput.value = ''
+  tempColorInput.value = ''
   if (editMode.value && product) {
     form.value = {
       id: product.id,
@@ -549,8 +627,8 @@ const openModal = (mode, product = null) => {
       price: product.price || 0,
       isOnSale: product.isOnSale || false,
       stock: product.stock || 0,
-      size: product.size || '',
-      color: product.color || '',
+      size: parseTags(product.size),
+      color: parseTags(product.color),
       currency: product.currency || 'RWF'
     }
     // Populate existing images for preview
@@ -563,7 +641,7 @@ const openModal = (mode, product = null) => {
       uploadedImages.value = [{ url: product.imageUrl, public_id: product.imageUrl }]
     }
   } else {
-    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', price: 0, isOnSale: false, stock: 0, size: '', color: '', currency: 'RWF' }
+    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', price: 0, isOnSale: false, stock: 0, size: [], color: [], currency: 'RWF' }
   }
   showModal.value = true
 }
