@@ -7,19 +7,36 @@ require_once __DIR__ . '/../core/helpers.php';
 class ProductController
 {
     // Decode JSON fields stored in DB as strings - if not valid JSON, return as string
-    private function decode(array $row): array
+    private function decode(array $row, bool $isSingle = false): array
     {
-        foreach (['possibleImagesUrls'] as $f) {
-            if (!empty($row[$f]) && is_string($row[$f])) {
-                $decoded = json_decode($row[$f], true);
-                $row[$f] = is_array($decoded) ? $decoded : [];
-            }
+        // Decode possibleImagesUrls as array always
+        if (!empty($row['possibleImagesUrls']) && is_string($row['possibleImagesUrls'])) {
+            $decoded = json_decode($row['possibleImagesUrls'], true);
+            $row['possibleImagesUrls'] = is_array($decoded) ? $decoded : [];
+        } elseif (empty($row['possibleImagesUrls'])) {
+            $row['possibleImagesUrls'] = [];
         }
-        // For size and color, if stored as JSON but we want to treat as string, just return as is
+        
+        // Decode size and color
         foreach (['size', 'color'] as $f) {
             if (!empty($row[$f]) && is_string($row[$f])) {
                 $decoded = json_decode($row[$f], true);
-                $row[$f] = is_array($decoded) ? (implode(', ', $decoded)) : $row[$f];
+                if (is_array($decoded)) {
+                    $row[$f] = $isSingle ? $decoded : implode(', ', $decoded);
+                } else {
+                    // Check if it's a comma-separated string
+                    if (str_contains($row[$f], ',')) {
+                        $splitArray = array_map('trim', explode(',', $row[$f]));
+                        $row[$f] = $isSingle ? $splitArray : $row[$f];
+                    } else {
+                        // If it's just a single string, wrap it in array for single product
+                        if ($isSingle) {
+                            $row[$f] = [$row[$f]];
+                        }
+                    }
+                }
+            } elseif ($isSingle && empty($row[$f])) {
+                $row[$f] = [];
             }
         }
         return $row;
@@ -38,7 +55,7 @@ class ProductController
         if ($id = qInt('id')) {
             $row = DB::fetchOne('SELECT * FROM products WHERE id = ?', 'i', [$id]);
             if (!$row) Response::error('Product not found', 404);
-            Response::success($this->decode($row));
+            Response::success($this->decode($row, true));
         }
 
         // ── Filters ──────────────────────────────────────────────────────────

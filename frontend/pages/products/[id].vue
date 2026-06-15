@@ -80,13 +80,29 @@ const selectSize = (size) => {
 cartStore.loadCart();
 
 
+const baseUrl = useRuntimeConfig().public.baseUrl;
 const productId = route.params.id
 
-const { data,pendings, error } = await useFetch(
-  `https://api.thibella.com/public/products/get-product.php?id=${productId}`
+const { data, pending: pendings, error } = await useFetch(
+  `${baseUrl}/products`,
+  {
+    params: { id: productId }
+  }
 )
 
-const product = computed(() => data.value?.data || null)
+const product = computed(() => {
+  const p = data.value?.data || null;
+  if (p) {
+    // Safety check: ensure color and size are arrays
+    if (!Array.isArray(p.color)) {
+      p.color = p.color ? [p.color] : [];
+    }
+    if (!Array.isArray(p.size)) {
+      p.size = p.size ? [p.size] : [];
+    }
+  }
+  return p;
+})
 
 console.log(product.value, "product");
 
@@ -94,8 +110,8 @@ console.log(product.value, "product");
 watch(product, (newProduct) => {
   if (newProduct) {
     // Set initial image as the main product image
-    selectedImage.value = newProduct.image;
-    permanentlySelectedImage.value = newProduct.image; // Set as permanently selected
+    selectedImage.value = newProduct.imageUrl;
+    permanentlySelectedImage.value = newProduct.imageUrl; // Set as permanently selected
   }
 });
 
@@ -115,7 +131,7 @@ const resetImage = () => {
   if (permanentlySelectedImage.value) {
     selectedImage.value = permanentlySelectedImage.value;
   } else if (product.value) {
-    selectedImage.value = product.value.image;
+    selectedImage.value = product.value.imageUrl;
   }
 };
 
@@ -189,16 +205,16 @@ const defaultColorClass = "bg-gray-400";
 
 <template>
     <!-- Add dark mode background to the main wrapper -->
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <div class="bg-gray-100 dark:bg-gray-900">
 
   <!-- Loading State -->
-  <div v-if="pendings" class="container mx-auto p-4 text-center">
+  <div v-if="pendings" class="container mx-auto px-4 pt-4 text-center">
     <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 dark:border-blue-400 mx-auto"></div>
     <p class="mt-4 text-green-600 dark:text-green-300">{{ $t('product.loading') }}</p>
   </div>
 
   <!-- Error State -->
-  <div v-else-if="error" class="container mx-auto p-4 text-center">
+  <div v-else-if="error" class="container mx-auto px-4 pt-4 text-center">
     <div class="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg shadow">
       <p class="font-medium">{{ error }}</p>
       <button 
@@ -211,7 +227,7 @@ const defaultColorClass = "bg-gray-400";
   </div>
 
   <!-- Product Details -->
-  <div v-else-if="product" class="container mx-auto p-4">
+  <div v-else-if="product" class="container mx-auto px-4 pt-4 pb-0">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start bg-white dark:bg-gray-900 p-6 rounded-lg shadow dark:shadow-gray-800">
       <!-- Image Gallery (Top-Left) - Modified Layout -->
       <div class="self-start">
@@ -227,7 +243,14 @@ const defaultColorClass = "bg-gray-400";
           
           <!-- Thumbnail Images on the Right Side -->
           <div class="flex flex-col gap-2 w-20 overflow-y-auto">
-            
+            <!-- Main image thumbnail -->
+            <img
+              :src="product.imageUrl"
+              alt="Main product"
+              class="w-16 h-16 object-contain rounded-lg cursor-pointer border-2 transition-all duration-200 flex-shrink-0"
+              :class="selectedImage === product.imageUrl || (!selectedImage) ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300 hover:border-blue-400'"
+              @click="selectImage(product.imageUrl)"
+            />
             <!-- Additional product images thumbnails -->
             <img
               v-for="(image, index) in product.possibleImagesUrls"
@@ -246,37 +269,57 @@ const defaultColorClass = "bg-gray-400";
 
       <!-- Product Details (Right) -->
       <div class="text-gray-900 dark:text-white">
-        <h1 class="text-2xl font-bold dark:text-white">{{ product.productName }}</h1>
-        <p class="text-gray-500 dark:text-gray-300">{{ product.description }}</p>
-        <!-- <p class="text-3xl text-green-600 dark:text-green-400 font-bold my-4">
-          {{ formatCurrency(cartStore.convertPrice(product.priceCents), cartStore.selectedCurrency) }}
-        </p> -->
+        <div class="flex items-center gap-2 mb-2">
+          <h1 class="text-2xl font-bold dark:text-white">{{ product.productName }}</h1>
+          <span v-if="product.isOnSale" class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">SALE</span>
+        </div>
+        
+        <!-- Brand -->
+        <p v-if="product.brand" class="text-gray-600 dark:text-gray-400 text-sm mb-2">
+          <span class="font-semibold">Brand:</span> {{ product.brand }}
+        </p>
+
+        <!-- Price -->
+        <p class="text-3xl font-bold my-2" :class="product.isOnSale ? 'text-red-500' : 'text-green-600 dark:text-green-400'">
+          {{ product.price }} {{ product.currency }}
+        </p>
+
+        <!-- Stock -->
+        <p v-if="product.stock !== null && product.stock !== undefined" class="text-gray-600 dark:text-gray-400 mb-4">
+          <span class="font-semibold">Stock:</span> 
+          <span :class="product.stock > 0 ? 'text-green-600' : 'text-red-500'">
+            {{ product.stock > 0 ? `${product.stock} available` : 'Out of stock' }}
+          </span>
+        </p>
+
+        <!-- Description -->
+        <p class="text-gray-700 dark:text-gray-300 mb-4">{{ product.description }}</p>
 
         <!-- loop in product.color and display buttons of Colors -->
 
         <!-- loop in product.color and display color dot selectors -->
                 
-        <div v-if="product.color?.length" class="mt-4">
+        <div v-if="Array.isArray(product.color) && product.color.length" class="mt-4">
           <p class="font-semibold mb-2 dark:text-white">{{ $t('product.colors') }}</p>
 
-          <div class="flex space-x-3">
+          <div class="flex flex-wrap gap-3">
             <button
               v-for="color in product.color"
               :key="color"
               @click="selectColor(color)"
               :title="color"
-              class="relative w-9 h-9 rounded-full transition-all duration-200 focus:outline-none"
+              class="relative w-10 h-10 rounded-full transition-all duration-200 focus:outline-none border-2 border-gray-200"
               :class="[
                 colorClasses[color] || defaultColorClass,
                 selectedColor === color
-                  ? 'ring-2 ring-offset-2 ring-gray-500 dark:ring-offset-gray-900 scale-110 shadow-lg'
+                  ? 'ring-4 ring-offset-2 ring-blue-500 scale-110 shadow-lg'
                   : 'hover:scale-105 hover:shadow-md'
               ]"
             >
               <!-- Checkmark for selected -->
               <span
                 v-if="selectedColor === color"
-                class="absolute inset-0 flex items-center justify-center text-sm font-bold"
+                class="absolute inset-0 flex items-center justify-center text-white text-sm font-bold"
               >
                 ✓
               </span>
@@ -293,27 +336,30 @@ const defaultColorClass = "bg-gray-400";
         </div>
 
         <!-- loop in product.size and Display Sizes-->
-        <div v-if="product.size && product.size.length > 0" class="mt-4">
-          <p class="font-semibold">{{ $t('product.sizes') }}</p>
-          <div class="flex space-x-2 flex-wrap">
-            <button>
-              <span class="px-3 py-1 m-1 bg-gray-400 dark:bg-gray-700 rounded-lg text-sm hover:bg-gray-100" v-for="size in product.size" 
+        <div v-if="Array.isArray(product.size) && product.size.length > 0" class="mt-6">
+          <p class="font-semibold mb-2">{{ $t('product.sizes') }}</p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="size in product.size" 
               :key="size"
-              @click="selectSize(size)">
-                {{ size }}
-              </span>
+              @click="selectSize(size)"
+              class="px-4 py-2 rounded-lg border-2 transition-all duration-200"
+              :class="[
+                selectedSize === size
+                  ? 'border-green-500 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 font-semibold'
+                  : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-green-400'
+              ]"
+            >
+              {{ size }}
             </button>
           </div>
         </div>
 
          <!-- Display selected size of clothing -->
            <div v-if="selectedSize" class="mt-2">
-              <p class="font-semibold">
-                {{ $t('product.selectedSize') }} <span 
-                class="' text-black-500 w-24 px-2 py-1 rounded hover:bg-black-600 font-medium '"
-              >
-              {{ selectedSize }}
-            </span>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ $t('product.selectedSize') }}: 
+                <span class="font-semibold dark:text-white">{{ selectedSize }}</span>
               </p>
            </div>
 
@@ -366,7 +412,7 @@ const defaultColorClass = "bg-gray-400";
   </div>
 
   <!-- Product Not Found -->
-  <div v-else class="container mx-auto p-4 text-center">
+  <div v-else class="container mx-auto px-4 pt-4 text-center">
     <p class="text-gray-500 dark:text-gray-300">{{ $t('product.notFound') }}</p>
     <button 
       @click="$router.go(-1)" 
