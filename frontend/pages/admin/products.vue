@@ -112,7 +112,7 @@
                     <div class="flex gap-2">
                       <button @click="openViewModal(product)" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">View</button>
                       <button @click="openModal('edit', product)" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">Edit</button>
-                      <button @click="deleteProduct(product.id)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Delete</button>
+                      <button @click="requestDelete(product)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -362,6 +362,18 @@
         </div>
       </div>
     </div>
+
+    <ConfirmModal
+      v-model="confirmDeleteOpen"
+      tone="danger"
+      title="Delete product?"
+      :message="confirmDeleteMessage"
+      confirm-text="Yes, delete"
+      cancel-text="Cancel"
+      :loading="deleting"
+      @confirm="confirmDelete"
+      @cancel="clearDeleteTarget"
+    />
   </div>
 </template>
 
@@ -393,6 +405,17 @@ const uploading = ref(false)
 const uploadProgress = ref({ done: 0, total: 0 })
 const uploadedImages = ref([]) // [{ url, public_id }]
 const fileInput = ref(null)
+
+const confirmDeleteOpen = ref(false)
+const deleting = ref(false)
+const productToDelete = ref(null)
+
+const confirmDeleteMessage = computed(() => {
+  const name = productToDelete.value?.productName
+  return name
+    ? `Are you sure you want to delete “${name}”? This action cannot be undone.`
+    : 'Are you sure you want to delete this product? This action cannot be undone.'
+})
 
 const form = ref({
   productName: '', brand: '', description: '', category_id: '',
@@ -581,12 +604,31 @@ const submitProduct = async () => {
   submitting.value = false
 }
 
-const deleteProduct = async (id) => {
-  if (!confirm('Delete this product?')) return
+const requestDelete = (product) => {
+  productToDelete.value = product
+  confirmDeleteOpen.value = true
+}
+
+const clearDeleteTarget = () => {
+  productToDelete.value = null
+}
+
+const confirmDelete = async () => {
+  if (!productToDelete.value?.id) return
+  deleting.value = true
   try {
-    await $fetch(`${config.public.baseUrl}/products?id=${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${userStore.user?.token}` } })
+    await $fetch(`${config.public.baseUrl}/products?id=${productToDelete.value.id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${userStore.token}` },
+    })
+    confirmDeleteOpen.value = false
+    clearDeleteTarget()
     fetchProducts()
-  } catch (err) { alert(err.data?.message || 'Error deleting product') }
+  } catch (err) {
+    alert(err.data?.message || 'Error deleting product')
+  } finally {
+    deleting.value = false
+  }
 }
 
 const handleLogout = () => { userStore.logout(); router.push('/login') }

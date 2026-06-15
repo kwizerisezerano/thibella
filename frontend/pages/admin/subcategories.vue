@@ -91,7 +91,7 @@
                 <td class="px-6 py-4">
                   <div class="flex gap-2">
                     <button @click="openModal('edit', sub)" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">Edit</button>
-                    <button @click="deleteSubcategory(sub.id)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Delete</button>
+                    <button @click="requestDelete(sub)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -137,6 +137,18 @@
         </form>
       </div>
     </div>
+
+    <ConfirmModal
+      v-model="confirmDeleteOpen"
+      tone="danger"
+      title="Delete subcategory?"
+      :message="confirmDeleteMessage"
+      confirm-text="Yes, delete"
+      cancel-text="Cancel"
+      :loading="deleting"
+      @confirm="confirmDelete"
+      @cancel="clearDeleteTarget"
+    />
   </div>
 </template>
 
@@ -160,6 +172,17 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 
 const form = ref({ name: '', slug: '', category_id: '', image: '' })
+
+const confirmDeleteOpen = ref(false)
+const deleting = ref(false)
+const subcategoryToDelete = ref(null)
+
+const confirmDeleteMessage = computed(() => {
+  const name = subcategoryToDelete.value?.name
+  return name
+    ? `Are you sure you want to delete “${name}”? This action cannot be undone.`
+    : 'Are you sure you want to delete this subcategory? This action cannot be undone.'
+})
 
 const fetchSubcategories = async () => {
   loading.value = true
@@ -212,12 +235,31 @@ const submitSubcategory = async () => {
   submitting.value = false
 }
 
-const deleteSubcategory = async (id) => {
-  if (!confirm('Delete this subcategory?')) return
+const requestDelete = (subcategory) => {
+  subcategoryToDelete.value = subcategory
+  confirmDeleteOpen.value = true
+}
+
+const clearDeleteTarget = () => {
+  subcategoryToDelete.value = null
+}
+
+const confirmDelete = async () => {
+  if (!subcategoryToDelete.value?.id) return
+  deleting.value = true
   try {
-    await $fetch(`${config.public.baseUrl}/subcategories?id=${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${userStore.user?.token}` } })
+    await $fetch(`${config.public.baseUrl}/subcategories?id=${subcategoryToDelete.value.id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${userStore.token}` },
+    })
+    confirmDeleteOpen.value = false
+    clearDeleteTarget()
     fetchSubcategories()
-  } catch (err) { alert(err.data?.message || 'Error deleting subcategory') }
+  } catch (err) {
+    alert(err.data?.message || 'Error deleting subcategory')
+  } finally {
+    deleting.value = false
+  }
 }
 
 const handleLogout = () => { userStore.logout(); router.push('/login') }

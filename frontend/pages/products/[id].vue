@@ -16,6 +16,18 @@ const selectedImage = ref(null);
 const selectedColor = ref('');
 const selectedSize = ref('');
 
+const confirmDuplicateOpen = ref(false)
+const pendingDuplicateOptions = ref(null)
+
+const duplicateConfirmMessage = computed(() => {
+  if (!product.value) return ''
+  const parts = []
+  if (selectedColor.value) parts.push(`Color: ${selectedColor.value}`)
+  if (selectedSize.value) parts.push(`Size: ${selectedSize.value}`)
+  const suffix = parts.length ? ` (${parts.join(', ')})` : ''
+  return `Are you sure you want to add “${product.value.productName}”${suffix} again into your cart?`
+})
+
 
 const whatsappMessage = computed(() => {
   if (!product.value) return 'Hello, I am interested in one of your products.';
@@ -118,19 +130,8 @@ const handleBuyNow = () => {
 
   // Check if product with these exact options is already in cart
   if (cartStore.isProductInCart(product.value.id, currentOptions)) {
-    // Show confirmation dialog for adding duplicate item
-    const userConfirmed = confirm(`Do you want to add ${product.value.productName} again into your cart?`);
-    
-    if (userConfirmed) {
-      // Add product to cart again
-      cartStore.addToCart(product.value, currentOptions);
-      
-      const optionsText = [];
-      if (selectedColor.value) optionsText.push(`Color: ${selectedColor.value}`);
-      if (selectedSize.value) optionsText.push(`Size: ${selectedSize.value}`);
-
-      alert(`${product.value.productName}${optionsText.length ? ` (${optionsText.join(', ')})` : ''} is added to cart again`);
-    }
+    pendingDuplicateOptions.value = currentOptions
+    confirmDuplicateOpen.value = true
   } else {
     // Add product to cart for the first time
     cartStore.addToCart(product.value, currentOptions);
@@ -145,6 +146,22 @@ const handleBuyNow = () => {
   // console.log("Product added to cart:", product.value);
   // console.log("Selected options:", currentOptions);
 };
+
+const confirmDuplicateAdd = () => {
+  if (!product.value || !pendingDuplicateOptions.value) return
+  cartStore.addToCart(product.value, pendingDuplicateOptions.value)
+  const optionsText = []
+  if (selectedColor.value) optionsText.push(`Color: ${selectedColor.value}`)
+  if (selectedSize.value) optionsText.push(`Size: ${selectedSize.value}`)
+  alert(`${product.value.productName}${optionsText.length ? ` (${optionsText.join(', ')})` : ''} is added to cart again`)
+  confirmDuplicateOpen.value = false
+  pendingDuplicateOptions.value = null
+}
+
+const cancelDuplicateAdd = () => {
+  confirmDuplicateOpen.value = false
+  pendingDuplicateOptions.value = null
+}
 
 
 const colorClasses = {
@@ -358,5 +375,16 @@ const defaultColorClass = "bg-gray-400";
       {{ $t('product.goBack') }}
     </button>
   </div>
+
+  <ConfirmModal
+    v-model="confirmDuplicateOpen"
+    tone="primary"
+    title="Add to cart again?"
+    :message="duplicateConfirmMessage"
+    confirm-text="Yes, add"
+    cancel-text="Cancel"
+    @confirm="confirmDuplicateAdd"
+    @cancel="cancelDuplicateAdd"
+  />
   </div>
 </template>
