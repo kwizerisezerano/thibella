@@ -1,10 +1,8 @@
 export default defineNuxtConfig({  
 
   ssr: false,
-  loading: false,
-  loadingIndicator: false,
   nitro: {
-    preset: process.env.NODE_ENV === 'production' ? 'static' : undefined,
+    preset: process.env.NODE_ENV === 'production' ? 'static' : undefined,       
     prerender: { failOnError: false }
   },  
     runtimeConfig: {
@@ -61,14 +59,15 @@ export default defineNuxtConfig({
         optimizeTranslationDirective: false,
       },
       locales: [
-        { code: 'en', file: 'en.json' },
-        { code: 'rw', file: 'rw.json' },
-        { code: 'fr', file: 'fr.json' }
+        { code: 'en', name: 'English' },
+        { code: 'rw', name: 'Kinyarwanda' },
+        { code: 'fr', name: 'French' },
+        { code: 'sw', name: 'Swahili' }
       ],
-      lazy: true,
-      langDir: 'lang',
+      lazy: false,
       defaultLocale: 'rw',
-      strategy: 'no_prefix'
+      strategy: 'no_prefix',
+      vueI18n: './i18n.config.ts'
     },
 
     compatibilityDate: '2025-02-09',

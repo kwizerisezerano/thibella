@@ -20,7 +20,7 @@ class SubcategoryController
             $row = DB::fetchOne('SELECT * FROM subcategories WHERE id = ?', 'i', [$id]);
             if (!$row) Response::error('Subcategory not found', 404);
             $row = $this->applyLocale($row, $locale);
-            if ($withCat) $row['category'] = $this->getCategory($row['category_id']);
+            if ($withCat) $row['category'] = $this->getCategory($row['category_id'], $locale);
             Response::success($row);
         }
 
@@ -28,7 +28,7 @@ class SubcategoryController
             $row = DB::fetchOne('SELECT * FROM subcategories WHERE slug = ?', 's', [$slug]);
             if (!$row) Response::error('Subcategory not found', 404);
             $row = $this->applyLocale($row, $locale);
-            if ($withCat) $row['category'] = $this->getCategory($row['category_id']);
+            if ($withCat) $row['category'] = $this->getCategory($row['category_id'], $locale);
             Response::success($row);
         }
 
@@ -41,7 +41,7 @@ class SubcategoryController
             );
             $rows = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
             if ($withCat) {
-                $cat = $this->getCategory($catId);
+                $cat = $this->getCategory($catId, $locale);
                 foreach ($rows as &$row) $row['category'] = $cat;
             }
             Response::paginated($rows, $total, $page, $limit, 'subcategories');
@@ -144,12 +144,20 @@ class SubcategoryController
         if ($locale !== 'en') {
             $row['name'] = $row["name_{$locale}"] ?: $row['name'];
         }
-        unset($row['name_rw'], $row['name_fr']);
+        unset($row['name_rw'], $row['name_fr'], $row['name_sw']);
         return $row;
     }
 
-    private function getCategory(int $id): ?array
+    private function getCategory(int $id, string $locale = 'en'): ?array
     {
-        return DB::fetchOne('SELECT * FROM categories WHERE id = ?', 'i', [$id]);
+        $row = DB::fetchOne('SELECT * FROM categories WHERE id = ?', 'i', [$id]);
+        if ($row) {
+            if ($locale !== 'en') {
+                $row['title']       = $row["title_{$locale}"] ?: $row['title'];
+                $row['description'] = $row["description_{$locale}"] ?: $row['description'];
+            }
+            unset($row['title_rw'], $row['title_fr'], $row['title_sw'], $row['description_rw'], $row['description_fr'], $row['description_sw']);
+        }
+        return $row;
     }
 }

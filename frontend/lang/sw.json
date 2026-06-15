@@ -1,0 +1,299 @@
+{
+  "nav": {
+    "home": "Nyumbani",
+    "products": "Bidhaa",
+    "categories": "Jamii",
+    "cart": "Gari la Manunuzi",
+    "orders": "Maombiangu"
+  },
+  "auth": {
+    "signIn": "Ingia",
+    "createAccount": "Unda Akaunti",
+    "logout": "Toka"
+  },
+  "search": {
+    "placeholder": "Tafuta bidhaa...",
+    "results": "result | matokeo",
+    "for": "kwa",
+    "clear": "Futa tafuta",
+    "noResults": "Hakuna bidhaa zilizopatikana kwa"
+  },
+  "products": {
+    "title": "Bidhaa Zetu",
+    "subtitle": "Chunguza mkusanyiko wa Thibella na udiscover bidhaa utazozipenda",
+    "loading": "Inapakia bidhaa...",
+    "loadMore": "Ona Zaidi",
+    "loading_more": "Inapakia...",
+    "negotiable": "Bei Inayeweza Kubadilika",
+    "loadError": "Hitilafu katika kupakia bidhaa"
+  },
+  "categories": {
+    "loading": "Inapakia jamii...",
+    "error": "Imeshindwa kupakia jamii",
+    "allProducts": "Bidhaa Zote",
+    "subcategories": "{count} Jamii Ndogo",
+    "notFound": "Jamii haijapatikana",
+    "failedLoad": "Imeshindwa kupakia jamii",
+    "noItems": "Hakuna vitu vilivyopatikana katika jamii hii",
+    "goBack": "Rudi nyuma",
+    "tryAgain": "Jaribu tena",
+    "back": "Rudi",
+    "noProducts": "Hakuna bidhaa zilizopatikana katika jamii ndogo hii"
+  },
+  "language": {
+    "select": "Chagua Lugha",
+    "en": "Kiingereza",
+    "rw": "Kinyarwanda",
+    "fr": "Kifaransa",
+    "sw": "Kiswahili"
+  },
+  "darkMode": {
+    "toggle": "Badilika muundo wa giza"
+  },
+  "footer": {
+    "aboutUs": "Kuhusu Sisi",
+    "aboutDesc": "Sisi ni duka lako la mtandaoni lililokuwa na uthabiti, kutoa bidhaa za ubora na huduma bora kwa wateja. Jukumu letu ni kukupatia uzoefu bora zaidi wa kununua.",
+    "quickLinks": "Viungo vya Haraka",
+    "help": "Usaidizi & Usaidizi",
+    "faq": "Maswali Yanayoulizwa Mara Kwa Mara",
+    "shipping": "Maelezo ya Usafirishaji",
+    "returns": "Ukuruzaji & Marejesho",
+    "privacy": "Sera ya Faragha",
+    "terms": "Sheria ya Huduma",
+    "newsletter": "Taarifa",
+    "newsletterSub": "Jisajili ili kupata ofa & masasisho",
+    "emailPlaceholder": "Email yako",
+    "subscribe": "Jisajili",
+    "followUs": "Tufuate",
+    "paymentMethods": "Malipo",
+    "rights": "Haki zote zilizohifadhiwa.",
+    "hours": "Jumatatu–Jumamosi: 8AM – 8PM"
+  },
+  "profile": {
+    "login": "Ingia",
+    "logout": "Toka",
+    "logoutConfirm": "Una uhakika unataka kutoka?",
+    "cancel": "Ghairi",
+    "confirm": "Thibitisha",
+    "loggingOut": "Kutoka..."
+  },
+  "login": {
+    "welcome": "Karibu Tena",
+    "subtitle": "Ingia kwenye akaunti yako",
+    "continueGoogle": "Endelea na Google",
+    "continueFacebook": "Endelea na Facebook",
+    "orWith": "Au endelea na",
+    "emailLabel": "Email au Jina la Mtumiaji",
+    "passwordLabel": "Nenosiri",
+    "passwordPlaceholder": "Ingiza nenosiri lako",
+    "rememberMe": "Nilikumbuke",
+    "forgotPassword": "Umesahau nenosiri?",
+    "signingIn": "Kuingia...",
+    "signIn": "Ingia",
+    "noAccount": "Huna akaunti?",
+    "signUp": "Jisajili",
+    "validationRequired": "Tafadhali ingiza email na nenosiri",
+    "failed": "Kuingia kumeshindwa. Tafadhali jaribu tena.",
+    "invalidCredentials": "Email au nenosiri sio sahihi",
+    "emailRequired": "Email na nenosiri zinahitajika",
+    "success": "Kuingia kumefanikiwa"
+  },
+  "signup": {
+    "title": "Unda Akaunti",
+    "subtitle": "Jiunge nasi leo na uanze",
+    "fullName": "Jina Kamili",
+    "email": "Anwani ya Email",
+    "phone": "Nambari ya Simu (Si Lazima)",
+    "password": "Nenosiri",
+    "passwordHint": "Angalau herufi 8 na herufi na nambari",
+    "confirmPassword": "Thibitisha Nenosiri",
+    "terms": "Nakubali",
+    "termsLink": "Sheria & Masharti",
+    "and": "na",
+    "privacyLink": "Sera ya Faragha",
+    "creating": "Inaunda Akaunti...",
+    "create": "Unda Akaunti",
+    "orWith": "Au endelea na",
+    "hasAccount": "Unayo akaunti tayari?",
+    "loginLink": "Ingia"
+  },
+  "product": {
+    "loading": "Inapakia maelezo ya bidhaa...",
+    "notFound": "Bidhaa haijapatikana",
+    "goBack": "Rudi Nyuma",
+    "colors": "Rangi Zilizopatikana:",
+    "selected": "Imechagwa:",
+    "sizes": "Sai Zilizopatikana:",
+    "selectedSize": "Sai iliyochagwa:",
+    "callSeller": "Piga Simu Muuzaji"
+  },
+  "searchBar": {
+    "placeholder": "Tafuta thibella..."
+  },
+  "hero": {
+    "shopNow": "Nunua Sasa"
+  },
+  "admin": {
+    "brand": "Thibella Admin",
+    "dashboardTitle": "Dashibodi ya Mwenyewe",
+    "common": {
+      "na": "Hakuna",
+      "id": "Kitambulisho",
+      "close": "Funga",
+      "cancel": "Ghairi",
+      "save": "Hifadhi",
+      "saving": "Inahifadhi...",
+      "edit": "Hariri",
+      "delete": "Futa",
+      "view": "Ona",
+      "applyFilters": "Tumia Vichunguzi",
+      "searchProducts": "Tafuta bidhaa...",
+      "searchCategories": "Tafuta jamii...",
+      "loadingProducts": "Inapakia bidhaa...",
+      "noProducts": "Hakuna bidhaa zilizopatikana.",
+      "loadingCategories": "Inapakia jamii...",
+      "noCategories": "Hakuna jamii zilizopatikana.",
+      "loadingSubcategories": "Inapakia jamii ndogo...",
+      "noSubcategories": "Hakuna jamii ndogo zilizopatikana.",
+      "loadingOrders": "Inapakia maombi...",
+      "noOrders": "Hakuna maombi zilizopatikana.",
+      "noData": "Hakuna data",
+      "more": "+{count} zaidi"
+    },
+    "errors": {
+      "saveProduct": "Hitilafu katika kuhifadhi bidhaa",
+      "deleteProduct": "Hitilafu katika kufuta bidhaa",
+      "saveCategory": "Hitilafu katika kuhifadhi jamii",
+      "deleteCategory": "Hitilafu katika kufuta jamii",
+      "saveSubcategory": "Hitilafu katika kuhifadhi jamii ndogo",
+      "deleteSubcategory": "Hitilafu katika kufuta jamii ndogo",
+      "updateOrderStatus": "Hitilafu katika kubadili hali ya maombi"
+    },
+    "upload": {
+      "optional": "(si lazima)",
+      "hintFirstMain": "(picha ya kwanza = kuu, mbalimbali zinaruhusiwa)",
+      "dropOne": "Bofya au kushuka & kushusha picha hapa",
+      "dropMany": "Bofya au kushuka & kushusha picha hapa",
+      "uploadingImage": "Inapakia picha...",
+      "uploadingImages": "Inapakia {done} / {total} picha...",
+      "uploadRequiredProduct": "Tafadhali paki picha ya bidhaa angalau moja."
+    },
+    "confirm": {
+      "deleteProductTitle": "Futa bidhaa?",
+      "deleteCategoryTitle": "Futa jamii?",
+      "deleteSubcategoryTitle": "Futa jamii ndogo?",
+      "deleteMessageNamed": "Una uhakika unataka kufuta “{name}”? Hatua hii hauwezi kubadilika.",
+      "deleteMessageGeneric": "Una uhakika unataka kufuta hii kitu? Hatua hii hauwezi kubadilika.",
+      "yesDelete": "Ndio, futa"
+    },
+    "nav": {
+      "dashboard": "Dashibodi",
+      "products": "Bidhaa",
+      "categories": "Jamii",
+      "subcategories": "Jamii Ndogo",
+      "orders": "Maombi"
+    },
+    "stats": {
+      "totalProducts": "Bidhaa Zote",
+      "totalCategories": "Jamii",
+      "totalOrders": "Maombi Yote",
+      "totalUsers": "Watumiaji"
+    },
+    "charts": {
+      "ordersLast7Days": "Maombi — Siku 7 Zilizopita",
+      "ordersByStatus": "Maombi Kwa Hali",
+      "productsByCategory": "Bidhaa Kwa Jamii"
+    },
+    "status": {
+      "pending": "Inasubiri",
+      "processing": "Inachambwa",
+      "shipped": "Imewasiliwa",
+      "delivered": "Imefikishwa",
+      "cancelled": "Imekataliwa"
+    },
+    "pages": {
+      "products": {
+        "title": "Usimamizi wa Bidhaa",
+        "allCategories": "Jamii Zote",
+        "sortNewest": "Za Mpya Kwanza",
+        "sortOldest": "Za Kale Kwanza",
+        "sortPriceAsc": "Bei: Chini hadi Juu",
+        "sortPriceDesc": "Bei: Juu hadi Chini",
+        "addProduct": "Ongeza Bidhaa",
+        "tableProduct": "Bidhaa",
+        "tableCategory": "Jamii",
+        "tableSize": "Sai",
+        "tableColor": "Rangi",
+        "tablePrice": "Bei",
+        "tableStatus": "Hali",
+        "tableActions": "Vitendo",
+        "noImage": "Hakuna img",
+        "onSale": "Kwa Bei Punguzwa",
+        "regular": "Kawaida",
+        "modalAddTitle": "Ongeza Bidhaa Mpya",
+        "modalEditTitle": "Hariri Bidhaa",
+        "saveProduct": "Hifadhi Bidhaa",
+        "productName": "Jina la Bidhaa *",
+        "brand": "Brand",
+        "description": "Maelezo",
+        "category": "Jamii *",
+        "selectCategory": "Chagua Jamii",
+        "subcategory": "Jamii Ndogo",
+        "selectSubcategory": "Chagua Jamii Ndogo",
+        "selectCategoryFirst": "Chagua jamii kwanza",
+        "price": "Bei *",
+        "currency": "Sarafu",
+        "stock": "Hisa",
+        "size": "Sai",
+        "color": "Rangi",
+        "onSaleToggle": "Kwa Bei Punguzwa",
+        "detailsTitle": "Maelezo ya Bidhaa",
+        "imagesTitle": "Picha za Bidhaa",
+        "main": "Kuu",
+        "noDescription": "Hakuna maelezo"
+      },
+      "categories": {
+        "title": "Usimamizi wa Jamii",
+        "addCategory": "Ongeza Jamii",
+        "modalAddTitle": "Ongeza Jamii Mpya",
+        "modalEditTitle": "Hariri Jamii",
+        "titleLabel": "Jina *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "mf, electronics",
+        "descriptionLabel": "Maelezo",
+        "imageLabel": "Picha ya Jamii"
+      },
+      "subcategories": {
+        "title": "Usimamizi wa Jamii Ndogo",
+        "allCategories": "Jamii Zote",
+        "addSubcategory": "Ongeza Jamii Ndogo",
+        "modalAddTitle": "Ongeza Jamii Ndogo Mpya",
+        "modalEditTitle": "Hariri Jamii Ndogo",
+        "nameLabel": "Jina *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "mf, sneakers",
+        "parentCategory": "Jamii ya Mzazi *",
+        "selectCategory": "Chagua Jamii",
+        "imageLabel": "Picha ya Jamii Ndogo",
+        "tableSubcategory": "Jamii Ndogo",
+        "tableParent": "Jamii ya Mzazi",
+        "tableSlug": "Slug",
+        "tableActions": "Vitendo"
+      },
+      "orders": {
+        "title": "Usimamizi wa Maombi",
+        "allStatuses": "Hali Zote",
+        "orderLabel": "Maombi #{id}",
+        "phone": "Simu",
+        "email": "Email",
+        "date": "Tarehe",
+        "address": "Anwani",
+        "near": "Karibu na",
+        "payment": "Malipo",
+        "items": "Vitu ({count})",
+        "qtyEach": "Idadi: {qty} | {price} kila",
+        "updateStatusError": "Hitilafu katika kubadili hali ya maombi"
+      }
+    }
+  }
+}

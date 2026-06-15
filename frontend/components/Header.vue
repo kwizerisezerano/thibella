@@ -168,6 +168,7 @@ const languages = [
   { value: 'en', label: 'EN', flag: 'us' },
   { value: 'rw', label: 'RW', flag: 'rw' },
   { value: 'fr', label: 'FR', flag: 'fr' },
+  { value: 'sw', label: 'SW', flag: 'tz' },
 ]
 
 const currentLanguage = computed(() => locale.value)
@@ -178,6 +179,7 @@ function switchLanguage(lang) {
     case 'en': cartStore.setCurrency('USD'); break
     case 'rw': cartStore.setCurrency('RWF'); break
     case 'fr': cartStore.setCurrency('EUR'); break
+    case 'sw': cartStore.setCurrency('TZS'); break
   }
   isOpen.value = false
   mobileMenuOpen.value = false

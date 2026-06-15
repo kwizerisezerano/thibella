@@ -10,6 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
 }
 
 include("../connection.php");
+require_once "../core/helpers.php";
+
+function applyLocaleToSubcategory(array $row, string $locale): array {
+    if ($locale !== 'en') {
+        $row['name'] = isset($row["name_{$locale}"]) && $row["name_{$locale}"] !== null ? $row["name_{$locale}"] : $row['name'];
+    }
+    unset($row['name_rw'], $row['name_fr'], $row['name_sw']);
+    return $row;
+}
+
+$locale = getLocale();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
@@ -33,7 +44,7 @@ try {
 
     $subcategories = [];
     while($row = mysqli_fetch_assoc($result)){
-        $subcategories[] = $row;
+        $subcategories[] = applyLocaleToSubcategory($row, $locale);
     }
 
     if(empty($subcategories)){

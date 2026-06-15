@@ -21,6 +21,7 @@ foreach ($statusRows as $r) $ordersByStatus[$r['status']] = (int)$r['count'];
 $titleExpr = 'c.title';
 if ($locale === 'rw') $titleExpr = 'COALESCE(NULLIF(c.title_rw, \'\'), c.title)';
 if ($locale === 'fr') $titleExpr = 'COALESCE(NULLIF(c.title_fr, \'\'), c.title)';
+if ($locale === 'sw') $titleExpr = 'COALESCE(NULLIF(c.title_sw, \'\'), c.title)';
 
 $catRows = DB::fetchAll(
     "SELECT $titleExpr as title, COUNT(p.id) as count

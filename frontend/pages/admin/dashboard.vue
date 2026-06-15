@@ -186,7 +186,7 @@ const statusLabel = (s) => t(`admin.status.${s}`, s)
 
 // Fill missing days in last 7 days
 const last7DaysFilled = computed(() => {
-  const localeMap = { en: 'en-US', fr: 'fr-FR', rw: 'rw-RW' }
+  const localeMap = { en: 'en-US', fr: 'fr-FR', rw: 'rw-RW', sw: 'sw-KE' }
   const fmt = new Intl.DateTimeFormat(localeMap[locale.value] || 'en-US', { weekday: 'short' })
   const days = []
   for (let i = 6; i >= 0; i--) {

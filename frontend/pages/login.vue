@@ -110,7 +110,7 @@
 
         <!-- Sign Up Link -->
         <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don't have an account?
+          {{ $t('login.noAccount') }}
           <NuxtLink to="/signUp" class="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium">
             {{ $t('login.signUp') }}
           </NuxtLink>

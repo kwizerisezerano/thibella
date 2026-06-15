@@ -130,7 +130,7 @@ class CategoryController
             $row['title']       = $row["title_{$locale}"]       ?: $row['title'];
             $row['description'] = $row["description_{$locale}"] ?: $row['description'];
         }
-        unset($row['title_rw'], $row['title_fr'], $row['description_rw'], $row['description_fr']);
+        unset($row['title_rw'], $row['title_fr'], $row['title_sw'], $row['description_rw'], $row['description_fr'], $row['description_sw']);
         return $row;
     }
 
@@ -144,7 +144,7 @@ class CategoryController
             if ($locale !== 'en') {
                 $r['name'] = $r["name_{$locale}"] ?: $r['name'];
             }
-            unset($r['name_rw'], $r['name_fr']);
+            unset($r['name_rw'], $r['name_fr'], $r['name_sw']);
             return $r;
         }, $rows);
     }

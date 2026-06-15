@@ -106,7 +106,7 @@ function emailHash(string $email): string
  */
 function getLocale(): string
 {
-    $supported = ['en', 'rw', 'fr'];
+    $supported = ['en', 'rw', 'fr', 'sw'];
     $header    = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'en';
     $lang      = strtolower(substr(trim(explode(',', $header)[0]), 0, 2));
     return in_array($lang, $supported) ? $lang : 'en';
