@@ -131,5 +131,35 @@
   },
   "hero": {
     "shopNow": "Gura Ubu"
+  },
+  "admin": {
+    "brand": "Admin Thibella",
+    "dashboardTitle": "Dashboard y'Admin",
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Ibicuruzwa",
+      "categories": "Ibyiciro",
+      "subcategories": "Ibyiciro-bito",
+      "orders": "Komande"
+    },
+    "stats": {
+      "totalProducts": "Umubare w'ibicuruzwa",
+      "totalCategories": "Ibyiciro",
+      "totalOrders": "Umubare wa komande",
+      "totalUsers": "Abakoresha"
+    },
+    "charts": {
+      "ordersLast7Days": "Komande — iminsi 7 ishize",
+      "ordersByStatus": "Komande uko zihagaze",
+      "productsByCategory": "Ibicuruzwa kuri buri cyiciro",
+      "noData": "Nta makuru"
+    },
+    "status": {
+      "pending": "Bitegereje",
+      "processing": "Birimo gukorwa",
+      "shipped": "Byoherejwe",
+      "delivered": "Byagejejwe",
+      "cancelled": "Byahagaritswe"
+    }
   }
 }

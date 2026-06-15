@@ -2,7 +2,10 @@
 
 require_once __DIR__ . '/../core/DB.php';
 require_once __DIR__ . '/../core/Response.php';
+require_once __DIR__ . '/../core/helpers.php';
 require_once __DIR__ . '/../middleware/admin.php';
+
+$locale = getLocale();
 
 $totalProducts   = DB::count('products');
 $totalCategories = DB::count('categories');
@@ -15,8 +18,17 @@ $ordersByStatus = [];
 foreach ($statusRows as $r) $ordersByStatus[$r['status']] = (int)$r['count'];
 
 // Products per category
+$titleExpr = 'c.title';
+if ($locale === 'rw') $titleExpr = 'COALESCE(NULLIF(c.title_rw, \'\'), c.title)';
+if ($locale === 'fr') $titleExpr = 'COALESCE(NULLIF(c.title_fr, \'\'), c.title)';
+
 $catRows = DB::fetchAll(
-    'SELECT c.title, COUNT(p.id) as count FROM categories c LEFT JOIN products p ON p.category_id = c.id GROUP BY c.id, c.title ORDER BY count DESC LIMIT 8',
+    "SELECT $titleExpr as title, COUNT(p.id) as count
+     FROM categories c
+     LEFT JOIN products p ON p.category_id = c.id
+     GROUP BY c.id, title
+     ORDER BY count DESC
+     LIMIT 8",
     '', []
 );
 

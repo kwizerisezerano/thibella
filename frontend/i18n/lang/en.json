@@ -131,5 +131,35 @@
   },
   "hero": {
     "shopNow": "Shop Now"
+  },
+  "admin": {
+    "brand": "Thibella Admin",
+    "dashboardTitle": "Admin Dashboard",
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "categories": "Categories",
+      "subcategories": "Subcategories",
+      "orders": "Orders"
+    },
+    "stats": {
+      "totalProducts": "Total Products",
+      "totalCategories": "Categories",
+      "totalOrders": "Total Orders",
+      "totalUsers": "Users"
+    },
+    "charts": {
+      "ordersLast7Days": "Orders — Last 7 Days",
+      "ordersByStatus": "Orders by Status",
+      "productsByCategory": "Products by Category",
+      "noData": "No data"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
   }
 }

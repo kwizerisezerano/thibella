@@ -131,5 +131,35 @@
   },
   "hero": {
     "shopNow": "Acheter Maintenant"
+  },
+  "admin": {
+    "brand": "Admin Thibella",
+    "dashboardTitle": "Tableau de bord Admin",
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "products": "Produits",
+      "categories": "Catégories",
+      "subcategories": "Sous-catégories",
+      "orders": "Commandes"
+    },
+    "stats": {
+      "totalProducts": "Total des produits",
+      "totalCategories": "Catégories",
+      "totalOrders": "Total des commandes",
+      "totalUsers": "Utilisateurs"
+    },
+    "charts": {
+      "ordersLast7Days": "Commandes — 7 derniers jours",
+      "ordersByStatus": "Commandes par statut",
+      "productsByCategory": "Produits par catégorie",
+      "noData": "Aucune donnée"
+    },
+    "status": {
+      "pending": "En attente",
+      "processing": "En traitement",
+      "shipped": "Expédiée",
+      "delivered": "Livrée",
+      "cancelled": "Annulée"
+    }
   }
 }
