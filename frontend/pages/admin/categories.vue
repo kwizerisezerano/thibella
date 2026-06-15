@@ -69,14 +69,14 @@
             <div v-if="category.image" class="h-32 bg-gray-200 dark:bg-gray-700">
               <img :src="category.image" :alt="category.title" class="w-full h-full object-cover" />
             </div>
-            <div v-else class="h-32 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+            <div v-else class="h-32 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
               <span class="text-white text-4xl font-bold">{{ category.title?.charAt(0).toUpperCase() }}</span>
             </div>
             <div class="p-4">
               <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ category.title }}</h3>
               <p v-if="category.description" class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{{ category.description }}</p>
               <div class="mt-3 flex gap-2">
-                <button @click="openModal('edit', category)" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm flex-1">Edit</button>
+                <button @click="openModal('edit', category)" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm flex-1">Edit</button>
                 <button @click="deleteCategory(category.id)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm flex-1">Delete</button>
               </div>
             </div>

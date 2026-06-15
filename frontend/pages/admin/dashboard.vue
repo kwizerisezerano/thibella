@@ -176,7 +176,7 @@ const maxStatus = computed(() => Math.max(1, ...Object.values(stats.value.orders
 const maxCat = computed(() => Math.max(1, ...stats.value.productsByCategory.map(c => c.count)))
 
 const statusBarColor = (s) => ({
-  pending: 'bg-yellow-400', processing: 'bg-blue-400',
+  pending: 'bg-yellow-400', processing: 'bg-green-400',
   shipped: 'bg-purple-400', delivered: 'bg-green-500', cancelled: 'bg-red-400'
 }[s] || 'bg-gray-400')
 

@@ -67,9 +67,9 @@
             </select>
           </div>
           <button @click="openModal('create')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            Add Product
-          </button>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Add Product
+    </button>
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
@@ -102,11 +102,12 @@
                   <td class="px-6 py-4 text-gray-700 dark:text-gray-300">{{ formatPrice(product.priceCents) }}</td>
                   <td class="px-6 py-4">
                     <span v-if="product.isOnSale" class="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs rounded-full">On Sale</span>
-                    <span v-else class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 text-xs rounded-full">Regular</span>
+            <span v-else class="px-2 py-1 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 text-xs rounded-full">Regular</span>
                   </td>
                   <td class="px-6 py-4">
                     <div class="flex gap-2">
-                      <button @click="openModal('edit', product)" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">Edit</button>
+                      <button @click="openViewModal(product)" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">View</button>
+                      <button @click="openModal('edit', product)" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">Edit</button>
                       <button @click="deleteProduct(product.id)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Delete</button>
                     </div>
                   </td>
@@ -222,6 +223,7 @@
                 <button type="button" @click="removeImage(i)" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs items-center justify-center hidden group-hover:flex">×</button>
               </div>
             </div>
+
           </div>
 
           <div class="flex items-center gap-4">
@@ -238,6 +240,92 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Product Details View Modal -->
+    <div v-if="showViewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white">Product Details</h2>
+          <button @click="closeViewModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div v-if="selectedProduct" class="p-6 space-y-6">
+          <!-- Product Images -->
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Product Images</h3>
+            <div class="grid grid-cols-4 gap-3">
+              <div v-for="(img, i) in (selectedProduct.possibleImagesUrls ? (Array.isArray(selectedProduct.possibleImagesUrls) ? selectedProduct.possibleImagesUrls : JSON.parse(selectedProduct.possibleImagesUrls)) : [selectedProduct.imageUrl])" :key="i" class="relative">
+                <img :src="img" class="w-full h-24 object-cover rounded-lg border-2" :class="i === 0 ? 'border-green-500' : 'border-gray-200 dark:border-gray-600'" />
+                <span v-if="i === 0" class="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 rounded">Main</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Info -->
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Product Name</h4>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedProduct.productName }}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Brand</h4>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedProduct.brand || 'N/A' }}</p>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Description</h4>
+            <p class="text-gray-700 dark:text-gray-300">{{ selectedProduct.description || 'No description' }}</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Category</h4>
+              <p class="text-gray-900 dark:text-white">{{ getCategoryName(selectedProduct.category_id) }}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Subcategory</h4>
+              <p class="text-gray-900 dark:text-white">{{ subcategories.find(s => s.id === selectedProduct.subCategory_id)?.name || 'N/A' }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Price</h4>
+              <p class="text-xl font-bold text-green-600 dark:text-green-400">{{ formatPrice(selectedProduct.priceCents) }}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Stock</h4>
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.stock || 0 }}</p>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Type</h4>
+              <p class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedProduct.type || 'N/A' }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</h4>
+              <span v-if="selectedProduct.isOnSale" class="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm rounded-full">On Sale</span>
+              <span v-else class="px-3 py-1 bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 text-sm rounded-full">Regular</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Product ID</h4>
+              <p class="text-gray-900 dark:text-white">{{ selectedProduct.id }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 border-t dark:border-gray-700 flex justify-end">
+          <button @click="closeViewModal" class="px-4 py-2 border rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -258,6 +346,8 @@ const loading = ref(false)
 const submitting = ref(false)
 const showModal = ref(false)
 const editMode = ref(false)
+const showViewModal = ref(false)
+const selectedProduct = ref(null)
 const searchQuery = ref('')
 const categoryFilter = ref('')
 const sortBy = ref('newest')
@@ -412,6 +502,16 @@ const openModal = (mode, product = null) => {
 const closeModal = () => {
   showModal.value = false
   uploadedImages.value = []
+}
+
+const openViewModal = (product) => {
+  selectedProduct.value = product
+  showViewModal.value = true
+}
+
+const closeViewModal = () => {
+  showViewModal.value = false
+  selectedProduct.value = null
 }
 
 const submitProduct = async () => {

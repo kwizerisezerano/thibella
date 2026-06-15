@@ -90,7 +90,7 @@
                 <td class="px-6 py-4 text-gray-500 dark:text-gray-400 font-mono text-sm">{{ sub.slug }}</td>
                 <td class="px-6 py-4">
                   <div class="flex gap-2">
-                    <button @click="openModal('edit', sub)" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">Edit</button>
+                    <button @click="openModal('edit', sub)" class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">Edit</button>
                     <button @click="deleteSubcategory(sub.id)" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Delete</button>
                   </div>
                 </td>

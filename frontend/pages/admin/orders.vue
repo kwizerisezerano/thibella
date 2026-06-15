@@ -186,7 +186,7 @@ const updateOrderStatus = async (order) => {
 
 const formatPrice = (cents) => new Intl.NumberFormat('en-RW', { style: 'currency', currency: 'RWF' }).format((cents || 0) / 100)
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'
-const statusClass = (s) => ({ pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', processing: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', shipped: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200', delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' }[s] || 'bg-gray-100 text-gray-800')
+const statusClass = (s) => ({ pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', processing: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', shipped: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200', delivered: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' }[s] || 'bg-gray-100 text-gray-800')
 
 const handleLogout = () => { userStore.logout(); router.push('/login') }
 
