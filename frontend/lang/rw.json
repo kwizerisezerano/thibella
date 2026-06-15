@@ -91,6 +91,7 @@
     "signIn": "Injira",
     "noAccount": "Nta konti ufite?",
     "signUp": "Iyandikishe",
+    "contactAdmin": "Vugana na Admin",
     "validationRequired": "Nyamuneka injiza imeli n'ijambo ry'ibanga",
     "failed": "Kwinjira byaranze. Ongera ugerageze.",
     "invalidCredentials": "Imeli cyangwa ijambo ry'ibanga ntabwo ari byo",
@@ -190,7 +191,8 @@
       "products": "Ibicuruzwa",
       "categories": "Ibyiciro",
       "subcategories": "Ibyiciro-bito",
-      "orders": "Komande"
+      "orders": "Komande",
+      "register": "Iyandikishe Umukoresha"
     },
     "stats": {
       "totalProducts": "Umubare w'ibicuruzwa",

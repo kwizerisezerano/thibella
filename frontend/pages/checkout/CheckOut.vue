@@ -288,13 +288,19 @@ const cartStore = useCartStore();
 const userStore = useUserStore();
 const router = useRouter();
 
-// ─── Guard: redirect if not authenticated ────────────────────────────────────
+// ─── Guard: redirect if not authenticated or not admin ───────────────────────
 onMounted(() => {
   cartStore.loadCart();
   userStore.hydrate(); // ✅ restore name/role/token from localStorage first
 
   if (!userStore.token) {
     router.push('/login');
+    return;
+  }
+
+  // Only admins can place orders
+  if (userStore.role !== 'admin') {
+    router.push('/');
   }
 });
 

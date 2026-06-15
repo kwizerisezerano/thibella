@@ -176,6 +176,12 @@ onMounted(async () => {
     return;
   }
 
+  // Only admins can view order pages
+  if (userStore.role !== 'admin') {
+    router.push('/');
+    return;
+  }
+
   try {
     const res = await $fetch(
       `${useRuntimeConfig().public.baseUrl}/orders/user`,

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { watch, computed, onMounted } from 'vue';
 import { useCartStore } from "@/stores/cart"; 
 import { formatCurrency } from "@/stores/currencyFormatter";
+import { useUserStore } from '~/stores/user';
 
 interface Product {
   id: string; 
@@ -18,6 +19,15 @@ interface Product {
 }
 
 const cartStore = useCartStore();
+const userStore = useUserStore();
+const router = useRouter();
+
+// Check if user is admin (only admins can place orders)
+const isAdmin = computed(() => userStore.role === 'admin');
+
+onMounted(() => {
+  userStore.hydrate();
+});
 
 watch(() => cartStore.cart, (cartAfterUpdate) => {
   console.log("Cart after updated: ", cartAfterUpdate);
@@ -188,11 +198,19 @@ definePageMeta({
                 </div>
               </div>
 
-              <NuxtLink to="/checkout/CheckOut">
-                <button class="mt-5 w-full rounded-md bg-black text-white py-3 text-sm sm:text-base font-semibold hover:bg-gray-800 transition-colors">
-                  Proceed to Checkout
-                </button>
-              </NuxtLink>
+              <!-- Only show checkout button for admins -->
+              <template v-if="isAdmin">
+                <NuxtLink to="/checkout/CheckOut">
+                  <button class="mt-5 w-full rounded-md bg-black text-white py-3 text-sm sm:text-base font-semibold hover:bg-gray-800 transition-colors">
+                    Proceed to Checkout
+                  </button>
+                </NuxtLink>
+              </template>
+              <div v-else class="mt-5 p-4 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-md text-center">
+                <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                  ⚠️ Order placement is restricted to administrators only.
+                </p>
+              </div>
 
               <NuxtLink to="/" class="mt-3 block text-center text-xs sm:text-sm text-green-500 dark:text-gray-400 hover:underline">
                 ← Continue Shopping

@@ -12,6 +12,10 @@ if ($method !== 'POST') {
 
 match ($action) {
     'login'    => $ctrl->login(),
-    'register' => $ctrl->register(),
+    'register' => function () use ($ctrl) {
+        // Registration is now admin-only
+        require_once __DIR__ . '/../middleware/admin.php';
+        $ctrl->register();
+    },
     default    => Response::error("Auth action '{$action}' not found", 404),
 };

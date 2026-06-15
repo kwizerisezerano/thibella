@@ -1,11 +1,23 @@
 <script setup>
-import { useRoute } from 'vue-router';
+import { onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useOrderStore } from '@/stores/order';
+import { useUserStore } from '~/stores/user';
 
 const route = useRoute();
+const router = useRouter();
 const orderStore = useOrderStore();
+const userStore = useUserStore();
 const orderId = route.params.id; // Get order ID from the URL
 const orderDetails = orderStore.getOrderById(orderId);
+
+onMounted(() => {
+  userStore.hydrate();
+  // Only admins can view order pages
+  if (userStore.role !== 'admin') {
+    router.push('/');
+  }
+});
 </script>
 
 <template>

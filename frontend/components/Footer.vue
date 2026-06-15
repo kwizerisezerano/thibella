@@ -51,7 +51,6 @@
             <li><NuxtLink to="/products" class="text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">{{ $t('nav.products') }}</NuxtLink></li>
             <li><NuxtLink to="/categories" class="text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">{{ $t('nav.categories') }}</NuxtLink></li>
             <li><NuxtLink to="/cart" class="text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">{{ $t('nav.cart') }}</NuxtLink></li>
-            <li><NuxtLink to="/orders/history" class="text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">{{ $t('nav.orders') }}</NuxtLink></li>
           </ul>
         </div>
 

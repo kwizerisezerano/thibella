@@ -1,7 +1,20 @@
 <script setup>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useOrderStore } from '@/stores/order';
+import { useUserStore } from '~/stores/user';
 
 const orderStore = useOrderStore();
+const userStore = useUserStore();
+const router = useRouter();
+
+onMounted(() => {
+  userStore.hydrate();
+  // Only admins can view order pages
+  if (userStore.role !== 'admin') {
+    router.push('/');
+  }
+});
 </script>
 
 <template>

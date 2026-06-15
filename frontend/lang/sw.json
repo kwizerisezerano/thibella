@@ -92,6 +92,7 @@
     "signIn": "Ingia",
     "noAccount": "Huna akaunti?",
     "signUp": "Jisajili",
+    "contactAdmin": "Wasiliana na Msimamizi",
     "validationRequired": "Tafadhali ingiza email na nenosiri",
     "failed": "Kuingia kumeshindwa. Tafadhali jaribu tena.",
     "invalidCredentials": "Email au nenosiri sio sahihi",
@@ -191,7 +192,8 @@
       "products": "Bidhaa",
       "categories": "Jamii",
       "subcategories": "Jamii Ndogo",
-      "orders": "Maombi"
+      "orders": "Maombi",
+      "register": "Sajili Mtumiaji"
     },
     "stats": {
       "totalProducts": "Bidhaa Zote",

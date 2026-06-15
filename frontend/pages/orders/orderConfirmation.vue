@@ -190,6 +190,12 @@ onMounted(async () => {
     return;
   }
 
+  // Only admins can view order pages
+  if (userStore.role !== 'admin') {
+    router.push('/');
+    return;
+  }
+
   try {
     const res = await $fetch(
       `https://api.thibella.com/public/orders/get-user-orders.php?userId=${userStore.userId}`,

@@ -1,10 +1,22 @@
-<script setup>
-import { ref } from 'vue';
+  <script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useOrderStore } from '@/stores/order';
+import { useUserStore } from '~/stores/user';
 
 const orderStore = useOrderStore();
+const userStore = useUserStore();
+const router = useRouter();
 const orderId = ref('');
 const orderDetails = ref(null);
+
+onMounted(() => {
+  userStore.hydrate();
+  // Only admins can view order pages
+  if (userStore.role !== 'admin') {
+    router.push('/');
+  }
+});
 
 const trackOrder = () => {
   orderDetails.value = orderStore.getOrderById(orderId.value);

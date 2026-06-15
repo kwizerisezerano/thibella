@@ -91,6 +91,7 @@
     "signIn": "Se connecter",
     "noAccount": "Pas encore de compte ?",
     "signUp": "S'inscrire",
+    "contactAdmin": "Contacter l'administrateur",
     "validationRequired": "Veuillez entrer l'email et le mot de passe",
     "failed": "Échec de la connexion. Veuillez réessayer.",
     "invalidCredentials": "Email ou mot de passe invalide",
@@ -190,7 +191,8 @@
       "products": "Produits",
       "categories": "Catégories",
       "subcategories": "Sous-catégories",
-      "orders": "Commandes"
+      "orders": "Commandes",
+      "register": "Inscrire un utilisateur"
     },
     "stats": {
       "totalProducts": "Total des produits",

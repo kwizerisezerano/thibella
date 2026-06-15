@@ -20,7 +20,8 @@ switch ($method) {
         $ctrl->index();
         break;
     case 'POST':
-        require_once __DIR__ . '/../middleware/auth.php';
+        // Order creation is now admin-only
+        require_once __DIR__ . '/../middleware/admin.php';
         $ctrl->store($authUser);
         break;
     case 'PUT':
