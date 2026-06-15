@@ -3,6 +3,16 @@
 <head {{ HEAD_ATTRS }}>
   {{ HEAD }}
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #ffffff;
+    }
+    #__nuxt {
+      visibility: hidden;
+    }
+    #__nuxt.ready {
+      visibility: visible;
+    }
     #thibella-splash {
       position: fixed;
       inset: 0;
@@ -12,7 +22,7 @@
       align-items: center;
       justify-content: center;
       background: #ffffff;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.2s ease;
     }
     #thibella-splash.done {
       opacity: 0;

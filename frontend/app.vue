@@ -17,7 +17,10 @@ const route = useRoute();
 const cartStore = useCartStore();
 
 onMounted(() => {
-  // Remove the HTML splash screen now that Vue has hydrated
+  // Reveal app and remove splash simultaneously
+  const nuxtEl = document.getElementById('__nuxt');
+  if (nuxtEl) nuxtEl.classList.add('ready');
+
   if (typeof window !== 'undefined' && window.__removeSplash) {
     window.__removeSplash()
   }

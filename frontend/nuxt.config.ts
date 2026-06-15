@@ -2,6 +2,7 @@ export default defineNuxtConfig({
 
   ssr: false,
   loading: false,
+  loadingIndicator: false,
   nitro: {
     preset: process.env.NODE_ENV === 'production' ? 'static' : undefined,
     prerender: { failOnError: false }
@@ -20,6 +21,13 @@ export default defineNuxtConfig({
         postcss: {
           plugins: [require('tailwindcss'), require('autoprefixer')],
         },
+      },
+    },
+
+    postcss: {
+      plugins: {
+        tailwindcss: {},
+        autoprefixer: {},
       },
     },
 
@@ -48,6 +56,9 @@ export default defineNuxtConfig({
     },
 
     i18n: {
+      bundle: {
+        optimizeTranslationDirective: false,
+      },
       locales: [
         { code: 'en', file: 'en.json' },
         { code: 'rw', file: 'rw.json' },

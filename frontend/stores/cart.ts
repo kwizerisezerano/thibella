@@ -1,42 +1,7 @@
 import { defineStore } from "pinia";
 import { apiFetch } from "~/utils/api";
 import { ref, onMounted } from "vue";
-
-export type Product = {
-  id: string;
-  imageUrl: string;
-  imageOfColors: {
-    imageA: string;
-    imageB: string;
-    imageC: string;
-    imageD: string;
-  };
-  name: string;
-  description: string;
-  rating: {
-    stars: number;
-    count: number;
-  };
-  priceCents: number;
-  keywords: string[];
-  quantity: number;
-  type: string;
-  color: {
-    color1: string;
-    color2: string;
-    color3: string;
-    color4: string;
-  };
-  size: {
-    small: string;
-    medium: string;
-    large: string;
-    xlarge: string;
-  };
-  selectedColor?: string;
-  selectedSize?: string;
-  cartItemId?: string;
-};
+import type { Product } from "~/stores/productStore";
 
 const products = ref<Product[]>([]);
 
