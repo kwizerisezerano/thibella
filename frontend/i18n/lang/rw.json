@@ -135,6 +135,56 @@
   "admin": {
     "brand": "Admin Thibella",
     "dashboardTitle": "Dashboard y'Admin",
+    "common": {
+      "na": "N/A",
+      "id": "ID",
+      "close": "Funga",
+      "cancel": "Hagarika",
+      "save": "Bika",
+      "saving": "Birimo kubikwa...",
+      "edit": "Hindura",
+      "delete": "Siba",
+      "view": "Reba",
+      "applyFilters": "Shyiramo muyunguruzi",
+      "searchProducts": "Shakisha ibicuruzwa...",
+      "searchCategories": "Shakisha ibyiciro...",
+      "loadingProducts": "Birimo gutegura ibicuruzwa...",
+      "noProducts": "Nta bicuruzwa byabonetse.",
+      "loadingCategories": "Birimo gutegura ibyiciro...",
+      "noCategories": "Nta byiciro byabonetse.",
+      "loadingSubcategories": "Birimo gutegura ibyiciro-bito...",
+      "noSubcategories": "Nta byiciro-bito byabonetse.",
+      "loadingOrders": "Birimo gutegura komande...",
+      "noOrders": "Nta komande zabonetse.",
+      "noData": "Nta makuru",
+      "more": "+{count} ibindi"
+    },
+    "errors": {
+      "saveProduct": "Habaye ikibazo mu kubika igicuruzwa",
+      "deleteProduct": "Habaye ikibazo mu gusiba igicuruzwa",
+      "saveCategory": "Habaye ikibazo mu kubika icyiciro",
+      "deleteCategory": "Habaye ikibazo mu gusiba icyiciro",
+      "saveSubcategory": "Habaye ikibazo mu kubika icyiciro-gito",
+      "deleteSubcategory": "Habaye ikibazo mu gusiba icyiciro-gito",
+      "updateOrderStatus": "Habaye ikibazo mu guhindura uko komande ihagaze"
+    },
+    "upload": {
+      "optional": "(si ngombwa)",
+      "hintFirstMain": "(ifoto ya mbere = nyamukuru, ushobora kongeramo nyinshi)",
+      "dropOne": "Kanda cyangwa ukurure ushyiremo ifoto hano",
+      "dropMany": "Kanda cyangwa ukurure ushyiremo amafoto hano",
+      "uploadingImage": "Ifoto irimo koherezwa...",
+      "uploadingImages": "Kohereza {done} / {total} amafoto...",
+      "uploadRequiredProduct": "Shyiramo nibura ifoto imwe y'igicuruzwa."
+    },
+    "confirm": {
+      "deleteProductTitle": "Gusiba igicuruzwa?",
+      "deleteCategoryTitle": "Gusiba icyiciro?",
+      "deleteSubcategoryTitle": "Gusiba icyiciro-gito?",
+      "deleteMessageNamed": "Uremeza ko ushaka gusiba “{name}”? Ibi ntibisubizwa inyuma.",
+      "deleteMessageGeneric": "Uremeza ko ushaka gusiba? Ibi ntibisubizwa inyuma.",
+      "yesDelete": "Yego, siba"
+    },
     "nav": {
       "dashboard": "Dashboard",
       "products": "Ibicuruzwa",
@@ -151,8 +201,7 @@
     "charts": {
       "ordersLast7Days": "Komande — iminsi 7 ishize",
       "ordersByStatus": "Komande uko zihagaze",
-      "productsByCategory": "Ibicuruzwa kuri buri cyiciro",
-      "noData": "Nta makuru"
+      "productsByCategory": "Ibicuruzwa kuri buri cyiciro"
     },
     "status": {
       "pending": "Bitegereje",
@@ -160,6 +209,90 @@
       "shipped": "Byoherejwe",
       "delivered": "Byagejejwe",
       "cancelled": "Byahagaritswe"
+    },
+    "pages": {
+      "products": {
+        "title": "Gucunga ibicuruzwa",
+        "allCategories": "Ibyiciro byose",
+        "sortNewest": "Ibishya imbere",
+        "sortOldest": "Ibisaza imbere",
+        "sortPriceAsc": "Igiciro: gito → kinini",
+        "sortPriceDesc": "Igiciro: kinini → gito",
+        "addProduct": "Ongeramo igicuruzwa",
+        "tableProduct": "Igicuruzwa",
+        "tableCategory": "Icyiciro",
+        "tableSize": "Ingano",
+        "tableColor": "Ibara",
+        "tablePrice": "Igiciro",
+        "tableStatus": "Uko gihagaze",
+        "tableActions": "Ibikorwa",
+        "noImage": "Nta foto",
+        "onSale": "Kugabanyirizwa",
+        "regular": "Bisanzwe",
+        "modalAddTitle": "Ongeramo igicuruzwa",
+        "modalEditTitle": "Hindura igicuruzwa",
+        "saveProduct": "Bika igicuruzwa",
+        "productName": "Izina ry'igicuruzwa *",
+        "brand": "Ikirango",
+        "description": "Ibisobanuro",
+        "category": "Icyiciro *",
+        "selectCategory": "Hitamo icyiciro",
+        "subcategory": "Icyiciro-gito",
+        "selectSubcategory": "Hitamo icyiciro-gito",
+        "selectCategoryFirst": "Banza uhitemo icyiciro",
+        "price": "Igiciro *",
+        "currency": "Ifaranga",
+        "stock": "Umubare",
+        "size": "Ingano",
+        "color": "Ibara",
+        "onSaleToggle": "Kugabanyirizwa",
+        "detailsTitle": "Ibisobanuro by'igicuruzwa",
+        "imagesTitle": "Amafoto y'igicuruzwa",
+        "main": "Nyamukuru",
+        "noDescription": "Nta bisobanuro"
+      },
+      "categories": {
+        "title": "Gucunga ibyiciro",
+        "addCategory": "Ongeramo icyiciro",
+        "modalAddTitle": "Ongeramo icyiciro",
+        "modalEditTitle": "Hindura icyiciro",
+        "titleLabel": "Umutwe *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "urugero: electronics",
+        "descriptionLabel": "Ibisobanuro",
+        "imageLabel": "Ifoto y'icyiciro"
+      },
+      "subcategories": {
+        "title": "Gucunga ibyiciro-bito",
+        "allCategories": "Ibyiciro byose",
+        "addSubcategory": "Ongeramo icyiciro-gito",
+        "modalAddTitle": "Ongeramo icyiciro-gito",
+        "modalEditTitle": "Hindura icyiciro-gito",
+        "nameLabel": "Izina *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "urugero: sneakers",
+        "parentCategory": "Icyiciro cy'ibanze *",
+        "selectCategory": "Hitamo icyiciro",
+        "imageLabel": "Ifoto y'icyiciro-gito",
+        "tableSubcategory": "Icyiciro-gito",
+        "tableParent": "Icyiciro cy'ibanze",
+        "tableSlug": "Slug",
+        "tableActions": "Ibikorwa"
+      },
+      "orders": {
+        "title": "Gucunga komande",
+        "allStatuses": "Imiterere yose",
+        "orderLabel": "Komande #{id}",
+        "phone": "Telefone",
+        "email": "Email",
+        "date": "Itariki",
+        "address": "Aderesi",
+        "near": "Hafi ya",
+        "payment": "Uburyo bwo kwishyura",
+        "items": "Ibintu ({count})",
+        "qtyEach": "Ingano: {qty} | {price} buri kimwe",
+        "updateStatusError": "Habaye ikibazo mu guhindura uko komande ihagaze"
+      }
     }
   }
 }

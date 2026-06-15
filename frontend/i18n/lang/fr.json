@@ -135,6 +135,56 @@
   "admin": {
     "brand": "Admin Thibella",
     "dashboardTitle": "Tableau de bord Admin",
+    "common": {
+      "na": "N/A",
+      "id": "ID",
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "view": "Voir",
+      "applyFilters": "Appliquer les filtres",
+      "searchProducts": "Rechercher des produits...",
+      "searchCategories": "Rechercher des catégories...",
+      "loadingProducts": "Chargement des produits...",
+      "noProducts": "Aucun produit trouvé.",
+      "loadingCategories": "Chargement des catégories...",
+      "noCategories": "Aucune catégorie trouvée.",
+      "loadingSubcategories": "Chargement des sous-catégories...",
+      "noSubcategories": "Aucune sous-catégorie trouvée.",
+      "loadingOrders": "Chargement des commandes...",
+      "noOrders": "Aucune commande trouvée.",
+      "noData": "Aucune donnée",
+      "more": "+{count} de plus"
+    },
+    "errors": {
+      "saveProduct": "Erreur lors de l'enregistrement du produit",
+      "deleteProduct": "Erreur lors de la suppression du produit",
+      "saveCategory": "Erreur lors de l'enregistrement de la catégorie",
+      "deleteCategory": "Erreur lors de la suppression de la catégorie",
+      "saveSubcategory": "Erreur lors de l'enregistrement de la sous-catégorie",
+      "deleteSubcategory": "Erreur lors de la suppression de la sous-catégorie",
+      "updateOrderStatus": "Erreur lors de la mise à jour du statut"
+    },
+    "upload": {
+      "optional": "(optionnel)",
+      "hintFirstMain": "(première image = principale, plusieurs autorisées)",
+      "dropOne": "Cliquez ou glissez-déposez une image ici",
+      "dropMany": "Cliquez ou glissez-déposez des images ici",
+      "uploadingImage": "Téléchargement de l'image...",
+      "uploadingImages": "Téléchargement {done} / {total} images...",
+      "uploadRequiredProduct": "Veuillez télécharger au moins une image du produit."
+    },
+    "confirm": {
+      "deleteProductTitle": "Supprimer le produit ?",
+      "deleteCategoryTitle": "Supprimer la catégorie ?",
+      "deleteSubcategoryTitle": "Supprimer la sous-catégorie ?",
+      "deleteMessageNamed": "Voulez-vous vraiment supprimer « {name} » ? Cette action est irréversible.",
+      "deleteMessageGeneric": "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible.",
+      "yesDelete": "Oui, supprimer"
+    },
     "nav": {
       "dashboard": "Tableau de bord",
       "products": "Produits",
@@ -151,8 +201,7 @@
     "charts": {
       "ordersLast7Days": "Commandes — 7 derniers jours",
       "ordersByStatus": "Commandes par statut",
-      "productsByCategory": "Produits par catégorie",
-      "noData": "Aucune donnée"
+      "productsByCategory": "Produits par catégorie"
     },
     "status": {
       "pending": "En attente",
@@ -160,6 +209,90 @@
       "shipped": "Expédiée",
       "delivered": "Livrée",
       "cancelled": "Annulée"
+    },
+    "pages": {
+      "products": {
+        "title": "Gérer les produits",
+        "allCategories": "Toutes les catégories",
+        "sortNewest": "Les plus récents",
+        "sortOldest": "Les plus anciens",
+        "sortPriceAsc": "Prix : croissant",
+        "sortPriceDesc": "Prix : décroissant",
+        "addProduct": "Ajouter un produit",
+        "tableProduct": "Produit",
+        "tableCategory": "Catégorie",
+        "tableSize": "Taille",
+        "tableColor": "Couleur",
+        "tablePrice": "Prix",
+        "tableStatus": "Statut",
+        "tableActions": "Actions",
+        "noImage": "Pas d'image",
+        "onSale": "En promo",
+        "regular": "Normal",
+        "modalAddTitle": "Ajouter un produit",
+        "modalEditTitle": "Modifier le produit",
+        "saveProduct": "Enregistrer le produit",
+        "productName": "Nom du produit *",
+        "brand": "Marque",
+        "description": "Description",
+        "category": "Catégorie *",
+        "selectCategory": "Choisir une catégorie",
+        "subcategory": "Sous-catégorie",
+        "selectSubcategory": "Choisir une sous-catégorie",
+        "selectCategoryFirst": "Choisissez d'abord une catégorie",
+        "price": "Prix *",
+        "currency": "Devise",
+        "stock": "Stock",
+        "size": "Taille",
+        "color": "Couleur",
+        "onSaleToggle": "En promo",
+        "detailsTitle": "Détails du produit",
+        "imagesTitle": "Images du produit",
+        "main": "Principale",
+        "noDescription": "Aucune description"
+      },
+      "categories": {
+        "title": "Gérer les catégories",
+        "addCategory": "Ajouter une catégorie",
+        "modalAddTitle": "Ajouter une catégorie",
+        "modalEditTitle": "Modifier la catégorie",
+        "titleLabel": "Titre *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "ex. electronics",
+        "descriptionLabel": "Description",
+        "imageLabel": "Image de la catégorie"
+      },
+      "subcategories": {
+        "title": "Gérer les sous-catégories",
+        "allCategories": "Toutes les catégories",
+        "addSubcategory": "Ajouter une sous-catégorie",
+        "modalAddTitle": "Ajouter une sous-catégorie",
+        "modalEditTitle": "Modifier la sous-catégorie",
+        "nameLabel": "Nom *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "ex. sneakers",
+        "parentCategory": "Catégorie parente *",
+        "selectCategory": "Choisir une catégorie",
+        "imageLabel": "Image de la sous-catégorie",
+        "tableSubcategory": "Sous-catégorie",
+        "tableParent": "Catégorie parente",
+        "tableSlug": "Slug",
+        "tableActions": "Actions"
+      },
+      "orders": {
+        "title": "Gérer les commandes",
+        "allStatuses": "Tous les statuts",
+        "orderLabel": "Commande n°{id}",
+        "phone": "Téléphone",
+        "email": "Email",
+        "date": "Date",
+        "address": "Adresse",
+        "near": "Près de",
+        "payment": "Paiement",
+        "items": "Articles ({count})",
+        "qtyEach": "Qté : {qty} | {price} chacun",
+        "updateStatusError": "Erreur lors de la mise à jour du statut"
+      }
     }
   }
 }

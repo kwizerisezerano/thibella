@@ -135,6 +135,56 @@
   "admin": {
     "brand": "Thibella Admin",
     "dashboardTitle": "Admin Dashboard",
+    "common": {
+      "na": "N/A",
+      "id": "ID",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View",
+      "applyFilters": "Apply Filters",
+      "searchProducts": "Search products...",
+      "searchCategories": "Search categories...",
+      "loadingProducts": "Loading products...",
+      "noProducts": "No products found.",
+      "loadingCategories": "Loading categories...",
+      "noCategories": "No categories found.",
+      "loadingSubcategories": "Loading subcategories...",
+      "noSubcategories": "No subcategories found.",
+      "loadingOrders": "Loading orders...",
+      "noOrders": "No orders found.",
+      "noData": "No data",
+      "more": "+{count} more"
+    },
+    "errors": {
+      "saveProduct": "Error saving product",
+      "deleteProduct": "Error deleting product",
+      "saveCategory": "Error saving category",
+      "deleteCategory": "Error deleting category",
+      "saveSubcategory": "Error saving subcategory",
+      "deleteSubcategory": "Error deleting subcategory",
+      "updateOrderStatus": "Error updating order status"
+    },
+    "upload": {
+      "optional": "(optional)",
+      "hintFirstMain": "(first image = main, multiple allowed)",
+      "dropOne": "Click or drag & drop an image here",
+      "dropMany": "Click or drag & drop images here",
+      "uploadingImage": "Uploading image...",
+      "uploadingImages": "Uploading {done} / {total} images...",
+      "uploadRequiredProduct": "Please upload at least one product image."
+    },
+    "confirm": {
+      "deleteProductTitle": "Delete product?",
+      "deleteCategoryTitle": "Delete category?",
+      "deleteSubcategoryTitle": "Delete subcategory?",
+      "deleteMessageNamed": "Are you sure you want to delete “{name}”? This action cannot be undone.",
+      "deleteMessageGeneric": "Are you sure you want to delete this item? This action cannot be undone.",
+      "yesDelete": "Yes, delete"
+    },
     "nav": {
       "dashboard": "Dashboard",
       "products": "Products",
@@ -151,8 +201,7 @@
     "charts": {
       "ordersLast7Days": "Orders — Last 7 Days",
       "ordersByStatus": "Orders by Status",
-      "productsByCategory": "Products by Category",
-      "noData": "No data"
+      "productsByCategory": "Products by Category"
     },
     "status": {
       "pending": "Pending",
@@ -160,6 +209,90 @@
       "shipped": "Shipped",
       "delivered": "Delivered",
       "cancelled": "Cancelled"
+    },
+    "pages": {
+      "products": {
+        "title": "Manage Products",
+        "allCategories": "All Categories",
+        "sortNewest": "Newest First",
+        "sortOldest": "Oldest First",
+        "sortPriceAsc": "Price: Low to High",
+        "sortPriceDesc": "Price: High to Low",
+        "addProduct": "Add Product",
+        "tableProduct": "Product",
+        "tableCategory": "Category",
+        "tableSize": "Size",
+        "tableColor": "Color",
+        "tablePrice": "Price",
+        "tableStatus": "Status",
+        "tableActions": "Actions",
+        "noImage": "No img",
+        "onSale": "On Sale",
+        "regular": "Regular",
+        "modalAddTitle": "Add New Product",
+        "modalEditTitle": "Edit Product",
+        "saveProduct": "Save Product",
+        "productName": "Product Name *",
+        "brand": "Brand",
+        "description": "Description",
+        "category": "Category *",
+        "selectCategory": "Select Category",
+        "subcategory": "Subcategory",
+        "selectSubcategory": "Select Subcategory",
+        "selectCategoryFirst": "Select category first",
+        "price": "Price *",
+        "currency": "Currency",
+        "stock": "Stock",
+        "size": "Size",
+        "color": "Color",
+        "onSaleToggle": "On Sale",
+        "detailsTitle": "Product Details",
+        "imagesTitle": "Product Images",
+        "main": "Main",
+        "noDescription": "No description"
+      },
+      "categories": {
+        "title": "Manage Categories",
+        "addCategory": "Add Category",
+        "modalAddTitle": "Add New Category",
+        "modalEditTitle": "Edit Category",
+        "titleLabel": "Title *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "e.g., electronics",
+        "descriptionLabel": "Description",
+        "imageLabel": "Category Image"
+      },
+      "subcategories": {
+        "title": "Manage Subcategories",
+        "allCategories": "All Categories",
+        "addSubcategory": "Add Subcategory",
+        "modalAddTitle": "Add New Subcategory",
+        "modalEditTitle": "Edit Subcategory",
+        "nameLabel": "Name *",
+        "slugLabel": "Slug *",
+        "slugPlaceholder": "e.g., sneakers",
+        "parentCategory": "Parent Category *",
+        "selectCategory": "Select Category",
+        "imageLabel": "Subcategory Image",
+        "tableSubcategory": "Subcategory",
+        "tableParent": "Parent Category",
+        "tableSlug": "Slug",
+        "tableActions": "Actions"
+      },
+      "orders": {
+        "title": "Manage Orders",
+        "allStatuses": "All Statuses",
+        "orderLabel": "Order #{id}",
+        "phone": "Phone",
+        "email": "Email",
+        "date": "Date",
+        "address": "Address",
+        "near": "Near",
+        "payment": "Payment",
+        "items": "Items ({count})",
+        "qtyEach": "Qty: {qty} | {price} each",
+        "updateStatusError": "Error updating order status"
+      }
     }
   }
 }
