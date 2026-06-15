@@ -32,7 +32,8 @@ class AuthController
         $phone     = encrypt(trim($d['phone']));
         $emailHash = emailHash($emailPlain);
         $password  = password_hash($d['password'], PASSWORD_DEFAULT);
-        $role      = 'user';
+        $allowed   = ['admin', 'user'];
+        $role      = in_array($d['role'] ?? '', $allowed) ? $d['role'] : 'user';
 
         if (DB::fetchOne('SELECT id FROM users WHERE email_hash = ?', 's', [$emailHash])) {
             Response::error('Email already registered', 409);

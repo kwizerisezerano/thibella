@@ -167,7 +167,11 @@
       "deleteCategory": "Error deleting category",
       "saveSubcategory": "Error saving subcategory",
       "deleteSubcategory": "Error deleting subcategory",
-      "updateOrderStatus": "Error updating order status"
+      "updateOrderStatus": "Error updating order status",
+      "saveOrder": "Error saving order",
+      "deleteOrder": "Error deleting order",
+      "saveUser": "Error saving user",
+      "deleteUser": "Error deleting user"
     },
     "upload": {
       "optional": "(optional)",
@@ -182,6 +186,8 @@
       "deleteProductTitle": "Delete product?",
       "deleteCategoryTitle": "Delete category?",
       "deleteSubcategoryTitle": "Delete subcategory?",
+      "deleteOrderTitle": "Delete order?",
+      "deleteUserTitle": "Delete user?",
       "deleteMessageNamed": "Are you sure you want to delete “{name}”? This action cannot be undone.",
       "deleteMessageGeneric": "Are you sure you want to delete this item? This action cannot be undone.",
       "yesDelete": "Yes, delete"
@@ -285,15 +291,46 @@
         "title": "Manage Orders",
         "allStatuses": "All Statuses",
         "orderLabel": "Order #{id}",
+        "customer": "Customer",
         "phone": "Phone",
         "email": "Email",
         "date": "Date",
         "address": "Address",
         "near": "Near",
         "payment": "Payment",
+        "total": "Total",
+        "status": "Status",
         "items": "Items ({count})",
         "qtyEach": "Qty: {qty} | {price} each",
+        "addOrder": "Add Order",
+        "modalAddTitle": "Add New Order",
+        "modalEditTitle": "Edit Order",
+        "country": "Country",
+        "province": "Province",
+        "district": "District",
+        "sector": "Sector",
+        "landmark": "Nearby Landmark",
+        "mobileNumber": "Mobile Money Number",
+        "orderItems": "Order Items",
+        "addItem": "Add Item",
+        "itemName": "Product name",
+        "itemPrice": "Price (RWF)",
+        "itemQty": "Qty",
+        "selectProduct": "— Select product —",
+        "anyColor": "Any color",
+        "anySize": "Any size",
         "updateStatusError": "Error updating order status"
+      },
+      "register": {
+        "totalUsers": "{count} registered users",
+        "addUser": "Add User",
+        "modalAddTitle": "Add New User",
+        "modalEditTitle": "Edit User",
+        "name": "Name",
+        "phone": "Phone",
+        "role": "Role",
+        "loadingUsers": "Loading users...",
+        "noUsers": "No users found."
       }
     }
   }

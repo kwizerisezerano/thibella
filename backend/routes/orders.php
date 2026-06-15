@@ -28,6 +28,10 @@ switch ($method) {
         require_once __DIR__ . '/../middleware/admin.php';
         $ctrl->updateStatus();
         break;
+    case 'DELETE':
+        require_once __DIR__ . '/../middleware/admin.php';
+        $ctrl->destroy();
+        break;
     default:
         Response::error('Method not allowed', 405);
 }

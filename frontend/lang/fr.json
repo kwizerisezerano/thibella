@@ -160,14 +160,18 @@
       "noData": "Aucune donnée",
       "more": "+{count} de plus"
     },
-    "errors": {
+      "errors": {
       "saveProduct": "Erreur lors de l'enregistrement du produit",
       "deleteProduct": "Erreur lors de la suppression du produit",
       "saveCategory": "Erreur lors de l'enregistrement de la catégorie",
       "deleteCategory": "Erreur lors de la suppression de la catégorie",
       "saveSubcategory": "Erreur lors de l'enregistrement de la sous-catégorie",
       "deleteSubcategory": "Erreur lors de la suppression de la sous-catégorie",
-      "updateOrderStatus": "Erreur lors de la mise à jour du statut"
+      "updateOrderStatus": "Erreur lors de la mise à jour du statut",
+      "saveOrder": "Erreur lors de l'enregistrement de la commande",
+      "deleteOrder": "Erreur lors de la suppression de la commande",
+      "saveUser": "Erreur lors de l'enregistrement de l'utilisateur",
+      "deleteUser": "Erreur lors de la suppression de l'utilisateur"
     },
     "upload": {
       "optional": "(optionnel)",
@@ -178,10 +182,12 @@
       "uploadingImages": "Téléchargement {done} / {total} images...",
       "uploadRequiredProduct": "Veuillez télécharger au moins une image du produit."
     },
-    "confirm": {
+      "confirm": {
       "deleteProductTitle": "Supprimer le produit ?",
       "deleteCategoryTitle": "Supprimer la catégorie ?",
       "deleteSubcategoryTitle": "Supprimer la sous-catégorie ?",
+      "deleteOrderTitle": "Supprimer la commande ?",
+      "deleteUserTitle": "Supprimer l'utilisateur ?",
       "deleteMessageNamed": "Voulez-vous vraiment supprimer « {name} » ? Cette action est irréversible.",
       "deleteMessageGeneric": "Voulez-vous vraiment supprimer cet élément ? Cette action est irréversible.",
       "yesDelete": "Oui, supprimer"
@@ -285,15 +291,46 @@
         "title": "Gérer les commandes",
         "allStatuses": "Tous les statuts",
         "orderLabel": "Commande n°{id}",
+        "customer": "Client",
         "phone": "Téléphone",
         "email": "Email",
         "date": "Date",
         "address": "Adresse",
         "near": "Près de",
         "payment": "Paiement",
+        "total": "Total",
+        "status": "Statut",
         "items": "Articles ({count})",
         "qtyEach": "Qté : {qty} | {price} chacun",
+        "addOrder": "Ajouter une commande",
+        "modalAddTitle": "Nouvelle commande",
+        "modalEditTitle": "Modifier la commande",
+        "country": "Pays",
+        "province": "Province",
+        "district": "District",
+        "sector": "Secteur",
+        "landmark": "Repère",
+        "mobileNumber": "Numéro Mobile Money",
+        "orderItems": "Articles de la commande",
+        "addItem": "Ajouter un article",
+        "itemName": "Nom du produit",
+        "itemPrice": "Prix (RWF)",
+        "itemQty": "Qté",
+        "selectProduct": "— Sélectionner un produit —",
+        "anyColor": "Toute couleur",
+        "anySize": "Toute taille",
         "updateStatusError": "Erreur lors de la mise à jour du statut"
+      },
+      "register": {
+        "totalUsers": "{count} utilisateurs inscrits",
+        "addUser": "Ajouter un utilisateur",
+        "modalAddTitle": "Ajouter un utilisateur",
+        "modalEditTitle": "Modifier l'utilisateur",
+        "name": "Nom",
+        "phone": "Téléphone",
+        "role": "Rôle",
+        "loadingUsers": "Chargement des utilisateurs...",
+        "noUsers": "Aucun utilisateur trouvé."
       }
     }
   }

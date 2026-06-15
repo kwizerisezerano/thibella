@@ -167,7 +167,11 @@
       "deleteCategory": "Habaye ikibazo mu gusiba icyiciro",
       "saveSubcategory": "Habaye ikibazo mu kubika icyiciro-gito",
       "deleteSubcategory": "Habaye ikibazo mu gusiba icyiciro-gito",
-      "updateOrderStatus": "Habaye ikibazo mu guhindura uko komande ihagaze"
+      "updateOrderStatus": "Habaye ikibazo mu guhindura uko komande ihagaze",
+      "saveOrder": "Habaye ikibazo mu kubika komande",
+      "deleteOrder": "Habaye ikibazo mu gusiba komande",
+      "saveUser": "Habaye ikibazo mu kubika umukoresha",
+      "deleteUser": "Habaye ikibazo mu gusiba umukoresha"
     },
     "upload": {
       "optional": "(si ngombwa)",
@@ -182,6 +186,8 @@
       "deleteProductTitle": "Gusiba igicuruzwa?",
       "deleteCategoryTitle": "Gusiba icyiciro?",
       "deleteSubcategoryTitle": "Gusiba icyiciro-gito?",
+      "deleteOrderTitle": "Gusiba komande?",
+      "deleteUserTitle": "Gusiba umukoresha?",
       "deleteMessageNamed": "Uremeza ko ushaka gusiba “{name}”? Ibi ntibisubizwa inyuma.",
       "deleteMessageGeneric": "Uremeza ko ushaka gusiba? Ibi ntibisubizwa inyuma.",
       "yesDelete": "Yego, siba"
@@ -285,15 +291,46 @@
         "title": "Gucunga komande",
         "allStatuses": "Imiterere yose",
         "orderLabel": "Komande #{id}",
+        "customer": "Umukiriya",
         "phone": "Telefone",
         "email": "Email",
         "date": "Itariki",
         "address": "Aderesi",
         "near": "Hafi ya",
         "payment": "Uburyo bwo kwishyura",
+        "total": "Igiteranyo",
+        "status": "Uko ihagaze",
         "items": "Ibintu ({count})",
         "qtyEach": "Ingano: {qty} | {price} buri kimwe",
+        "addOrder": "Ongeramo komande",
+        "modalAddTitle": "Komande nshya",
+        "modalEditTitle": "Hindura komande",
+        "country": "Igihugu",
+        "province": "Intara",
+        "district": "Akarere",
+        "sector": "Umurenge",
+        "landmark": "Agace",
+        "mobileNumber": "Numero ya Mobile Money",
+        "orderItems": "Ibintu muri komande",
+        "addItem": "Ongeramo",
+        "itemName": "Izina ry'igicuruzwa",
+        "itemPrice": "Igiciro (RWF)",
+        "itemQty": "Ingano",
+        "selectProduct": "— Hitamo igicuruzwa —",
+        "anyColor": "Ibara iryo ariryo",
+        "anySize": "Ingano iyo ariyo",
         "updateStatusError": "Habaye ikibazo mu guhindura uko komande ihagaze"
+      },
+      "register": {
+        "totalUsers": "Abakoresha {count} biyandikishije",
+        "addUser": "Ongeramo umukoresha",
+        "modalAddTitle": "Umukoresha mushya",
+        "modalEditTitle": "Hindura umukoresha",
+        "name": "Amazina",
+        "phone": "Telefone",
+        "role": "Uruhare",
+        "loadingUsers": "Gutegura abakoresha...",
+        "noUsers": "Nta bakoresha babonetse."
       }
     }
   }

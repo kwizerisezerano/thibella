@@ -156,4 +156,17 @@ class OrderController
         DB::execute('UPDATE orders SET status = ? WHERE id = ?', 'si', [$status, $id]);
         Response::success(null, 'Order status updated');
     }
+
+    // ── DELETE /api/orders?id=1  (admin) ─────────────────────────────────────
+    public function destroy(): void
+    {
+        $id = qInt('id');
+        if (!$id) Response::error('id is required', 400);
+
+        if (!DB::fetchOne('SELECT id FROM orders WHERE id = ?', 'i', [$id]))
+            Response::error('Order not found', 404);
+
+        DB::execute('DELETE FROM orders WHERE id = ?', 'i', [$id]);
+        Response::success(null, 'Order deleted');
+    }
 }
