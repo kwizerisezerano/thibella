@@ -52,7 +52,6 @@
       </header>
 
       <main class="p-6">
-        <!-- Action Bar -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6 flex flex-wrap gap-4 items-center justify-between">
           <div class="flex flex-wrap gap-4 items-center">
             <input v-model="searchQuery" @input="fetchProducts" type="text" placeholder="Search products..." class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
@@ -73,7 +72,6 @@
           </button>
         </div>
 
-        <!-- Products Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
           <div v-if="loading" class="p-8 text-center text-gray-500 dark:text-gray-400">Loading products...</div>
           <div v-else-if="products.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">No products found.</div>
@@ -93,6 +91,7 @@
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                       <img v-if="product.imageUrl" :src="product.imageUrl" :alt="product.productName" class="w-12 h-12 object-cover rounded" />
+                      <div v-else class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-gray-400 text-xs">No img</div>
                       <div>
                         <div class="font-medium text-gray-900 dark:text-white">{{ product.productName }}</div>
                         <div class="text-sm text-gray-500 dark:text-gray-400">{{ product.brand }}</div>
@@ -125,8 +124,11 @@
     <!-- Product Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b dark:border-gray-700">
+        <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ editMode ? 'Edit Product' : 'Add New Product' }}</h2>
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
         </div>
         <form @submit.prevent="submitProduct" class="p-6 space-y-4">
           <div class="grid grid-cols-2 gap-4">
@@ -139,10 +141,12 @@
               <input v-model="form.brand" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <textarea v-model="form.description" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
           </div>
+
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category *</label>
@@ -153,12 +157,13 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subcategory</label>
-              <select v-model="form.subCategory_id" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">Select Subcategory</option>
+              <select v-model="form.subCategory_id" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" :disabled="!subcategories.length">
+                <option value="">{{ form.category_id ? 'Select Subcategory' : 'Select category first' }}</option>
                 <option v-for="sub in subcategories" :key="sub.id" :value="sub.id">{{ sub.name }}</option>
               </select>
             </div>
           </div>
+
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price (RWF) *</label>
@@ -169,19 +174,53 @@
               <input v-model="form.type" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
             </div>
           </div>
+
+          <!-- Cloudinary Multi-Image Upload -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Image URL</label>
-            <input v-model="form.imageUrl" class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Product Images <span class="text-gray-400 text-xs">(first image = main, multiple allowed)</span>
+            </label>
+
+            <!-- Drop zone -->
+            <div
+              class="border-2 border-dashed border-green-400 dark:border-green-600 rounded-lg p-6 text-center cursor-pointer hover:bg-green-50 dark:hover:bg-gray-700 transition-colors relative"
+              @click="$refs.fileInput.click()"
+              @dragover.prevent
+              @drop.prevent="onDrop"
+            >
+              <svg class="w-10 h-10 text-green-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Click or drag & drop images here</p>
+              <input ref="fileInput" type="file" multiple accept="image/*" class="hidden" @change="onFileChange" />
+            </div>
+
+            <!-- Upload progress -->
+            <div v-if="uploading" class="mt-2 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm">
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+              Uploading {{ uploadProgress.done }} / {{ uploadProgress.total }} images...
+            </div>
+
+            <!-- Uploaded images preview -->
+            <div v-if="uploadedImages.length" class="mt-3 grid grid-cols-4 gap-2">
+              <div v-for="(img, i) in uploadedImages" :key="img.public_id" class="relative group">
+                <img :src="img.url" class="w-full h-20 object-cover rounded-lg border-2" :class="i === 0 ? 'border-green-500' : 'border-gray-200 dark:border-gray-600'" />
+                <span v-if="i === 0" class="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 rounded">Main</span>
+                <button type="button" @click="removeImage(i)" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs items-center justify-center hidden group-hover:flex">×</button>
+              </div>
+            </div>
           </div>
+
           <div class="flex items-center gap-4">
             <label class="flex items-center">
               <input v-model="form.isOnSale" type="checkbox" class="w-4 h-4 text-green-600 rounded" />
               <span class="ml-2 text-gray-700 dark:text-gray-300">On Sale</span>
             </label>
           </div>
+
           <div class="flex justify-end gap-4 pt-4">
             <button type="button" @click="closeModal" class="px-4 py-2 border rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</button>
-            <button type="submit" :disabled="submitting" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">{{ submitting ? 'Saving...' : 'Save' }}</button>
+            <button type="submit" :disabled="submitting || uploading" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+              {{ submitting ? 'Saving...' : 'Save Product' }}
+            </button>
           </div>
         </form>
       </div>
@@ -195,7 +234,6 @@ import { useUserStore } from '~/stores/user'
 const userStore = useUserStore()
 const router = useRouter()
 const config = useRuntimeConfig()
-
 const { isDark, toggleDarkMode } = useDarkMode()
 
 const products = ref([])
@@ -211,10 +249,46 @@ const sortBy = ref('newest')
 const currentPage = ref(1)
 const totalPages = ref(1)
 
+// Cloudinary upload state
+const uploading = ref(false)
+const uploadProgress = ref({ done: 0, total: 0 })
+const uploadedImages = ref([]) // [{ url, public_id }]
+const fileInput = ref(null)
+
 const form = ref({
   productName: '', brand: '', description: '', category_id: '',
-  subCategory_id: '', priceCents: 0, type: '', imageUrl: '', isOnSale: false
+  subCategory_id: '', priceCents: 0, type: '', isOnSale: false
 })
+
+// Upload a single file to Cloudinary
+const uploadToCloudinary = async (file) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  fd.append('upload_preset', config.public.cloudinaryUploadPreset)
+  fd.append('cloud_name', config.public.cloudinaryCloudName)
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${config.public.cloudinaryCloudName}/image/upload`,
+    { method: 'POST', body: fd }
+  )
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error?.message || 'Upload failed')
+  return { url: data.secure_url, public_id: data.public_id }
+}
+
+const uploadFiles = async (files) => {
+  uploading.value = true
+  uploadProgress.value = { done: 0, total: files.length }
+  for (const file of files) {
+    const result = await uploadToCloudinary(file)
+    uploadedImages.value.push(result)
+    uploadProgress.value.done++
+  }
+  uploading.value = false
+}
+
+const onFileChange = (e) => uploadFiles(Array.from(e.target.files))
+const onDrop = (e) => uploadFiles(Array.from(e.dataTransfer.files))
+const removeImage = (i) => uploadedImages.value.splice(i, 1)
 
 const fetchProducts = async () => {
   loading.value = true
@@ -237,7 +311,7 @@ const fetchProducts = async () => {
 const fetchCategories = async () => {
   try {
     const res = await $fetch(`${config.public.baseUrl}/categories`)
-    if (res.success) categories.value = res.categories || res.data || []
+    if (res.success) categories.value = res.categories || []
   } catch (err) { console.error(err) }
 }
 
@@ -259,25 +333,57 @@ const formatPrice = (cents) => new Intl.NumberFormat('en-RW', { style: 'currency
 
 const openModal = (mode, product = null) => {
   editMode.value = mode === 'edit'
-  form.value = editMode.value && product ? {
-    id: product.id, productName: product.productName || '', brand: product.brand || '',
-    description: product.description || '', category_id: product.category_id || '',
-    subCategory_id: product.subCategory_id || '', priceCents: product.priceCents || 0,
-    type: product.type || '', imageUrl: product.imageUrl || '', isOnSale: product.isOnSale || false
-  } : { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', priceCents: 0, type: '', imageUrl: '', isOnSale: false }
+  uploadedImages.value = []
+  if (editMode.value && product) {
+    form.value = {
+      id: product.id,
+      productName: product.productName || '',
+      brand: product.brand || '',
+      description: product.description || '',
+      category_id: product.category_id || '',
+      subCategory_id: product.subCategory_id || '',
+      priceCents: product.priceCents || 0,
+      type: product.type || '',
+      isOnSale: product.isOnSale || false
+    }
+    // Populate existing images for preview
+    const existing = Array.isArray(product.possibleImagesUrls)
+      ? product.possibleImagesUrls
+      : (product.possibleImagesUrls ? JSON.parse(product.possibleImagesUrls) : [])
+    if (existing.length) {
+      uploadedImages.value = existing.map(url => ({ url, public_id: url }))
+    } else if (product.imageUrl) {
+      uploadedImages.value = [{ url: product.imageUrl, public_id: product.imageUrl }]
+    }
+  } else {
+    form.value = { productName: '', brand: '', description: '', category_id: '', subCategory_id: '', priceCents: 0, type: '', isOnSale: false }
+  }
   showModal.value = true
 }
 
-const closeModal = () => { showModal.value = false }
+const closeModal = () => {
+  showModal.value = false
+  uploadedImages.value = []
+}
 
 const submitProduct = async () => {
+  if (!uploadedImages.value.length) {
+    alert('Please upload at least one product image.')
+    return
+  }
   submitting.value = true
   try {
+    const urls = uploadedImages.value.map(i => i.url)
+    const body = {
+      ...form.value,
+      imageUrl: urls[0],
+      possibleImagesUrls: urls
+    }
     const headers = { Authorization: `Bearer ${userStore.user?.token}` }
     if (editMode.value) {
-      await $fetch(`${config.public.baseUrl}/products?id=${form.value.id}`, { method: 'PUT', headers, body: form.value })
+      await $fetch(`${config.public.baseUrl}/products?id=${form.value.id}`, { method: 'PUT', headers, body })
     } else {
-      await $fetch(`${config.public.baseUrl}/products`, { method: 'POST', headers, body: form.value })
+      await $fetch(`${config.public.baseUrl}/products`, { method: 'POST', headers, body })
     }
     closeModal()
     fetchProducts()
