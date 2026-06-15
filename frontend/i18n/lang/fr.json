@@ -123,5 +123,8 @@
   },
   "searchBar": {
     "placeholder": "Rechercher sur Thibella..."
+  },
+  "hero": {
+    "shopNow": "Acheter Maintenant"
   }
 }

@@ -24,7 +24,7 @@
             {{ slides[currentSlide]?.description }}
           </p>
           <span class="inline-block px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition-colors shadow-lg" style="font-family: 'Segoe UI', sans-serif;">
-            Shop Now &rarr;
+            {{ t('hero.shopNow') }} &rarr;
           </span>
         </div>
       </NuxtLink>
@@ -68,7 +68,7 @@
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const baseUrl = useRuntimeConfig().public.baseUrl;
 
 const currentSlide = ref(0);

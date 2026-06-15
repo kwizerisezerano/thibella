@@ -123,5 +123,8 @@
   },
   "searchBar": {
     "placeholder": "Search thibella..."
+  },
+  "hero": {
+    "shopNow": "Shop Now"
   }
 }
