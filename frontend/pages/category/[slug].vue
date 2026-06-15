@@ -222,10 +222,7 @@ const fetchData = async () => {
       if (subcategoryRes.success && subcategoryRes.data) {
         // It's a subcategory - redirect to subcategory page
         const sub = subcategoryRes.data
-        navigateTo({
-          path: `/category/subcategory/${sub.id}`,
-          query: { name: sub.name }
-        })
+        navigateTo(`/category/subcategory/${sub.id}`)
       } else {
         error.value = t('categories.notFound')
       }
@@ -242,10 +239,7 @@ onMounted(fetchData)
 watch(locale, fetchData)
 
 const goToSubcategory = (sub) => {
-  navigateTo({
-    path: `/category/subcategory/${sub.id}`,
-    query: { name: sub.name }
-  })
+  navigateTo(`/category/subcategory/${sub.id}`)
 }
 
 const goToProduct = (id) => {

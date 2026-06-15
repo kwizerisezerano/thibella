@@ -36,7 +36,6 @@ if (fetchError.value || !data.value || !data.value.success) {
   error.value = 'Failed to load products'
 } else {
   subcategoryTitle.value =
-    route.query.name ||
     data.value.subcategory_name ||
     data.value.products?.[0]?.subcategory ||
     'Products'
@@ -127,10 +126,7 @@ const nextProductImage = (productId) => {
 };
 
 const goToSubcategory = (sub) => {
-  router.push({
-    path: `/category/subcategory/${sub.id}`,
-    query: { name: sub.name }
-  })
+  router.push(`/category/subcategory/${sub.id}`)
 }
 
 const goToProduct = (id) => {

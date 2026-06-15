@@ -52,6 +52,8 @@ class ProductController
     // ?page=1 &limit=16   → pagination
     public function index(): void
     {
+        $locale = getLocale();
+
         if ($id = qInt('id')) {
             $row = DB::fetchOne('SELECT * FROM products WHERE id = ?', 'i', [$id]);
             if (!$row) Response::error('Product not found', 404);
@@ -98,10 +100,38 @@ class ProductController
             array_merge($values, [$limit, $offset])
         );
 
-        Response::paginated(
-            array_map([$this, 'decode'], $rows),
-            $total, $page, $limit, 'products'
-        );
+        // If subcategory_id is present, fetch the translated subcategory name
+        $subcategoryName = null;
+        if ($subId = qInt('subcategory_id')) {
+            $subRow = DB::fetchOne('SELECT * FROM subcategories WHERE id = ?', 'i', [$subId]);
+            if ($subRow) {
+                if ($locale !== 'en') {
+                    $subcategoryName = $subRow["name_{$locale}"] ?: $subRow['name'];
+                } else {
+                    $subcategoryName = $subRow['name'];
+                }
+            }
+        }
+
+        $products = array_map([$this, 'decode'], $rows);
+
+        $response = [
+            'success' => true,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'total_pages' => (int) ceil($total / max($limit, 1)),
+            ],
+            'data' => $products,
+            'products' => $products, // For backwards compatibility
+        ];
+        
+        if ($subcategoryName) {
+            $response['subcategory_name'] = $subcategoryName;
+        }
+        
+        Response::json($response);
     }
 
     // ── POST /api/products  (admin) ──────────────────────────────────────────
