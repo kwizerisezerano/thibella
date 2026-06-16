@@ -1,5 +1,5 @@
 <template>
-  <div v-if="slides.length > 0" class="relative w-full h-[420px] sm:h-[500px] overflow-hidden">
+  <div v-if="slides.length > 0" class="relative w-full h-[270px] sm:h-[350px] overflow-hidden">
 
     <!-- Background Image -->
     <img
@@ -23,9 +23,6 @@
           <p class="text-sm sm:text-base md:text-lg text-white/80 max-w-xl mx-auto animate-fade-in-delay mb-6" style="font-family: 'Segoe UI', sans-serif;">
             {{ slides[currentSlide]?.description }}
           </p>
-          <span class="inline-block px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition-colors shadow-lg" style="font-family: 'Segoe UI', sans-serif;">
-            {{ t('hero.shopNow') }} &rarr;
-          </span>
         </div>
       </NuxtLink>
     </div>
@@ -47,18 +44,6 @@
     >
       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </button>
-
-    <!-- Dot Indicators -->
-    <div class="absolute bottom-5 left-0 right-0 z-20 flex justify-center gap-2">
-      <button
-        v-for="(slide, i) in slides"
-        :key="i"
-        @click="goToSlide(i)"
-        class="w-2.5 h-2.5 rounded-full transition-all"
-        :class="i === currentSlide ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'"
-        :aria-label="`Go to slide ${i + 1}`"
-      />
-    </div>
 
   </div>
   <div v-else class="w-full h-[420px] sm:h-[500px] bg-gray-200 dark:bg-gray-700 animate-pulse" />

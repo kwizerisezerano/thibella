@@ -14,22 +14,24 @@ watch(() => searchStore.query, (newQuery) => {
 </script>
 
 <template>
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <div class="bg-white dark:bg-gray-950 min-h-screen">
 
-    <!-- Hero Banner — full width intentional -->
-    <section class="w-full">
+    <!-- Hero + Categories overlaid -->
+    <section class="relative">
       <TopProduct />
-    </section>
 
-    <!-- Categories -->
-    <section class="w-full bg-white dark:bg-gray-800 shadow-sm">
-      <div class="w-full px-3 sm:px-4">
-        <ProductsByCategories />
+      <div class="absolute bottom-0 left-0 right-0 translate-y-1/2 z-10">
+        <div class="max-w-screen-xl mx-auto px-4 ">
+          <ProductsByCategories />
+        </div>
       </div>
     </section>
 
+    <!-- Spacer: adjust this to match the height of your category cards -->
+    <div class="mt-32 sm:mt-36"></div>
+
     <!-- Divider -->
-    <div class="w-full px-3 sm:px-4 mt-8 mb-2 flex items-center gap-4">
+    <div class="max-w-screen-xl mx-auto px-4 mt-6 mb-4 flex items-center gap-4">
       <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
       <span class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 whitespace-nowrap">
         {{ $t('products.title') }}
@@ -39,10 +41,12 @@ watch(() => searchStore.query, (newQuery) => {
 
     <!-- Products -->
     <section id="products-section" class="w-full">
-      <div class="w-full px-3 sm:px-4">
+      <div class="max-w-screen-xl mx-auto px-4 pb-12">
         <ProductsList />
       </div>
     </section>
 
   </div>
 </template>
+
+

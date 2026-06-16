@@ -1,6 +1,6 @@
 <template>
   <div>
-    <section class="py-6 antialiased">
+    <section class="py-8 antialiased md:py-12">
 
       <!-- Search results banner -->
       <div v-if="query && !loading" class="mb-4 flex items-center justify-between">
@@ -14,6 +14,16 @@
         </button>
       </div>
 
+      <!-- Page Title -->
+      <div class="mb-6 text-center">
+        <h1 class="text-3xl font-extrabold tracking-tight text-green-800 dark:text-white sm:text-4xl">
+          {{ $t('products.title') }}
+        </h1>
+        <p class="mt-2 text-sm text-green-500 dark:text-gray-400">
+          {{ $t('products.subtitle') }}
+        </p>
+      </div>
+
       <!-- Loading -->
       <div v-if="loading && fetchedProducts.length === 0" class="text-center py-8">
         <p class="text-green-600 dark:text-green-400">{{ $t('products.loading') }}</p>
@@ -25,24 +35,27 @@
       </div>
 
       <!-- Product Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-4 md:mb-8">
         <div
           v-for="(product, index) in displayedProducts"
           :key="product.id || index"
-          @click="goToProductDetails(product.id)"
-          class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+          class="group block bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer"
         >
           <!-- Image -->
-          <div class="relative overflow-hidden aspect-square" @click.stop="">
+          <div class="relative overflow-hidden h-40 sm:h-48 md:h-56 lg:h-48 xl:h-52" @click="goToProductDetails(product.id)">
             <img
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               :src="getProductCurrentImage(product.id)"
               :alt="product.productName"
             />
-            <div v-if="product.isOnSale" class="absolute top-2 left-2">
-              <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">SALE</span>
+            <!-- Negotiable badge -->
+            <div class="absolute top-2 left-0 right-0 flex justify-center">
+              <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md tracking-wide">
+                💬 {{ $t('products.negotiable') }}
+              </span>
             </div>
-            <button 
+            <!-- Image nav buttons -->
+            <button
               @click.stop="prevProductImage(product.id)"
               v-if="getProductImages(product.id).length > 1"
               class="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -51,7 +64,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <button 
+            <button
               @click.stop="nextProductImage(product.id)"
               v-if="getProductImages(product.id).length > 1"
               class="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white dark:bg-gray-700 rounded-full shadow-md flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -63,12 +76,9 @@
           </div>
 
           <!-- Info -->
-          <div class="p-2.5">
-            <p class="text-xs sm:text-sm font-semibold text-gray-800 dark:text-white line-clamp-2 leading-snug">
+          <div class="p-2 md:p-3" @click="goToProductDetails(product.id)">
+            <p class="text-lg text-center font-bold text-green-800 dark:text-gray-300 line-clamp-2">
               {{ product.productName }}
-            </p>
-            <p class="mt-1 text-xs text-green-600 dark:text-green-400 font-medium">
-              {{ $t('products.negotiable') }}
             </p>
           </div>
         </div>
@@ -80,11 +90,11 @@
       </div>
 
       <!-- Load More -->
-      <div v-if="hasMoreProducts" class="flex justify-center mt-8 mb-4">
+      <div v-if="hasMoreProducts" class="flex justify-center mt-4 mb-8">
         <button
           @click="loadMore"
           :disabled="loadingMore"
-          class="px-8 py-2.5 text-sm font-medium text-white bg-green-600 rounded-full hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          class="px-6 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-200"
         >
           <span v-if="loadingMore">{{ $t('products.loading_more') }}</span>
           <span v-else>{{ $t('products.loadMore') }}</span>
