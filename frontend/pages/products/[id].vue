@@ -336,7 +336,6 @@ const nextImage = () => {
       <div class="text-gray-900 dark:text-white">
         <div class="flex items-center gap-2 mb-2">
           <h1 class="text-2xl font-bold dark:text-white">{{ product.productName }}</h1>
-          <!-- <span v-if="product.isOnSale" class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">SALE</span> -->
         </div>
         
         <!-- Brand -->
@@ -345,9 +344,9 @@ const nextImage = () => {
         </p>
 
         <!-- Price -->
-        <p class="text-3xl font-bold my-2" :class="product.isOnSale ? 'text-red-500' : 'text-green-600 dark:text-green-400'">
+        <!-- <p class="text-3xl font-bold my-2" :class="product.isOnSale ? 'text-red-500' : 'text-green-600 dark:text-green-400'">
           {{ product.price }} {{ product.currency }}
-        </p>
+        </p> -->
 
         <!-- Stock -->
 
