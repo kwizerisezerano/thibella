@@ -152,7 +152,7 @@ const goToProduct = (id) => {
     </div>
 
     <!-- Subcategory chips (sibling filter) -->
-    <div v-if="subcategories.length > 0" class="flex flex-wrap gap-2 mb-6">
+    <!-- <div v-if="subcategories.length > 0" class="flex flex-wrap gap-2 mb-6">
       <button
         v-for="sub in subcategories"
         :key="sub.id"
@@ -166,7 +166,7 @@ const goToProduct = (id) => {
       >
         {{ sub.name }}
       </button>
-    </div>
+    </div> -->
 
     <!-- Error state -->
     <div v-if="error" class="text-center py-16 text-red-500">
