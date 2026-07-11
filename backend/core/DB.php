@@ -2,7 +2,8 @@
 
 class DB
 {
-    private static ?mysqli $conn = null;
+    /** @var mysqli|null */
+    private static $conn = null;
 
     public static function connect(): mysqli
     {
@@ -29,8 +30,9 @@ class DB
     /**
      * Prepare → bind → execute → return mysqli_result
      * Usage: DB::run('SELECT * FROM t WHERE id = ?', 'i', [1])
+     * @return mysqli_result|bool
      */
-    public static function run(string $sql, string $types = '', array $values = []): \mysqli_result|bool
+    public static function run(string $sql, string $types = '', array $values = [])
     {
         $db   = self::connect();
         $stmt = $db->prepare($sql);

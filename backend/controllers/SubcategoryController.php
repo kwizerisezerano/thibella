@@ -39,7 +39,9 @@ class SubcategoryController
                 'SELECT * FROM subcategories WHERE category_id = ? ORDER BY name ASC LIMIT ? OFFSET ?',
                 'iii', [$catId, $limit, $offset]
             );
-            $rows = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
+            $rows = array_map(function ($r) use ($locale) {
+                return $this->applyLocale($r, $locale);
+            }, $rows);
             if ($withCat) {
                 $cat = $this->getCategory($catId, $locale);
                 foreach ($rows as &$row) $row['category'] = $cat;
@@ -50,7 +52,9 @@ class SubcategoryController
         [$page, $limit, $offset] = getPagination(10);
         $total = DB::count('subcategories');
         $rows  = DB::fetchAll('SELECT * FROM subcategories ORDER BY name ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
-        $rows  = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
+        $rows  = array_map(function ($r) use ($locale) {
+            return $this->applyLocale($r, $locale);
+        }, $rows);
         Response::paginated($rows, $total, $page, $limit, 'subcategories');
     }
 

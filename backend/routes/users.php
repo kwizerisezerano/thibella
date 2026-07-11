@@ -10,11 +10,16 @@ $subAction = $GLOBALS['subAction'] ?? '';
 // PUT  /api/users/profile?id=1  (auth)
 if ($subAction === 'profile') {
     require_once __DIR__ . '/../middleware/auth.php';
-    match ($method) {
-        'GET' => $ctrl->profile($authUser),
-        'PUT' => $ctrl->updateProfile($authUser),
-        default => Response::error('Method not allowed', 405),
-    };
+    switch ($method) {
+        case 'GET':
+            $ctrl->profile($authUser);
+            break;
+        case 'PUT':
+            $ctrl->updateProfile($authUser);
+            break;
+        default:
+            Response::error('Method not allowed', 405);
+    }
     exit;
 }
 

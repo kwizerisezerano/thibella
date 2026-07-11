@@ -10,12 +10,15 @@ if ($method !== 'POST') {
     Response::error('Method not allowed', 405);
 }
 
-match ($action) {
-    'login'    => $ctrl->login(),
-    'register' => (function () use ($ctrl) {
+switch ($action) {
+    case 'login':
+        $ctrl->login();
+        break;
+    case 'register':
         // Registration is admin-only
         require_once __DIR__ . '/../middleware/admin.php';
         $ctrl->register();
-    })(),
-    default    => Response::error("Auth action '{$action}' not found", 404),
-};
+        break;
+    default:
+        Response::error("Auth action '{$action}' not found", 404);
+}

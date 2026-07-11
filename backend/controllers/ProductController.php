@@ -25,7 +25,7 @@ class ProductController
                     $row[$f] = $isSingle ? $decoded : implode(', ', $decoded);
                 } else {
                     // Check if it's a comma-separated string
-                    if (str_contains($row[$f], ',')) {
+                    if (strpos($row[$f], ',') !== false) {
                         $splitArray = array_map('trim', explode(',', $row[$f]));
                         $row[$f] = $isSingle ? $splitArray : $row[$f];
                     } else {

@@ -32,7 +32,9 @@ class CategoryController
         $total = DB::count('categories');
         $rows  = DB::fetchAll('SELECT * FROM categories ORDER BY title ASC LIMIT ? OFFSET ?', 'ii', [$limit, $offset]);
 
-        $rows = array_map(fn($r) => $this->applyLocale($r, $locale), $rows);
+        $rows = array_map(function ($r) use ($locale) {
+            return $this->applyLocale($r, $locale);
+        }, $rows);
 
         if ($withSubs) {
             foreach ($rows as &$row) {

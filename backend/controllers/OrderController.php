@@ -53,7 +53,9 @@ class OrderController
             array_merge($values, [$limit, $offset])
         );
 
-        $orders = array_map(fn($o) => $this->withItems($this->mask($o)), $rows);
+        $orders = array_map(function ($o) {
+            return $this->withItems($this->mask($o));
+        }, $rows);
 
         Response::paginated($orders, $total, $page, $limit, 'orders');
     }
@@ -76,7 +78,9 @@ class OrderController
             'iii', [$userId, $limit, $offset]
         );
 
-        Response::paginated(array_map(fn($o) => $this->withItems($this->mask($o)), $rows), $total, $page, $limit, 'orders');
+        Response::paginated(array_map(function ($o) {
+            return $this->withItems($this->mask($o));
+        }, $rows), $total, $page, $limit, 'orders');
     }
 
     // ── POST /api/orders  (auth) ─────────────────────────────────────────────
@@ -103,8 +107,9 @@ class OrderController
 
         if (empty($items)) Response::error('orderItems cannot be empty', 400);
 
-        $total = array_reduce($items, fn($carry, $item) =>
-            $carry + (($item['priceCents'] ?? 0) * ($item['quantity'] ?? 1)), 0);
+        $total = array_reduce($items, function ($carry, $item) {
+            return $carry + (($item['priceCents'] ?? 0) * ($item['quantity'] ?? 1));
+        }, 0);
 
         $orderId = DB::insert(
             'INSERT INTO orders

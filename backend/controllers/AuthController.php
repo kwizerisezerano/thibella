@@ -9,7 +9,8 @@ use Firebase\JWT\JWT;
 
 class AuthController
 {
-    private array $jwt;
+    /** @var array */
+    private $jwt;
 
     public function __construct()
     {
