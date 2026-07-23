@@ -8,7 +8,7 @@
       <p class="text-red-600 dark:text-red-400 text-sm">{{ $t('categories.error') }}</p>
     </div>
 
-    <div v-else class="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+    <div v-else class="flex gap-4 overflow-x-auto pb-2">
       <div
         v-for="category in categories"
         :key="category.id"

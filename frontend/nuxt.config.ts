@@ -7,7 +7,8 @@ export default defineNuxtConfig({
   },  
     runtimeConfig: {
       public: {
-        baseUrl: process.env.NUXT_PUBLIC_BASE_URL || 'http://localhost/Thibella/backend/api',
+        // baseUrl: process.env.NUXT_PUBLIC_BASE_URL || 'http://localhost/Thibella/backend/api',
+        baseUrl: process.env.NUXT_PUBLIC_BASE_URL || 'https://api.thibella.com',
         cloudinaryCloudName: process.env.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'danzeqybu',
         cloudinaryUploadPreset: process.env.NUXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'thibella_products',
       },
